@@ -1,0 +1,1893 @@
+{
+  "generated_from": "seabird-data-export.csv",
+  "species_count": 22,
+  "species": [
+    {
+      "common_name": "Amsterdam Albatross",
+      "scientific_name": "Diomedea amsterdamensis",
+      "colonies": [
+        {
+          "colony_name": "Ile Amsterdam",
+          "site_name": "Amsterdam and St Paul",
+          "country": "France",
+          "lat": -37.85,
+          "lon": 77.51,
+          "ntracks": 345,
+          "nbirds": 72,
+          "npoints": 180822,
+          "min_year": 1996,
+          "max_year": 2012,
+          "years": [
+            "1996",
+            "2000",
+            "2005",
+            "2006",
+            "2007",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Antipodean Albatross",
+      "scientific_name": "Diomedea antipodensis",
+      "colonies": [
+        {
+          "colony_name": "Antipodes Island",
+          "site_name": "Antipodes Islands",
+          "country": "New Zealand",
+          "lat": -49.7,
+          "lon": 178.78,
+          "ntracks": 50,
+          "nbirds": 50,
+          "npoints": 22191,
+          "min_year": 2011,
+          "max_year": 2017,
+          "years": [
+            "2011",
+            "2012",
+            "2013",
+            "2014",
+            "2015",
+            "2016",
+            "2017"
+          ]
+        },
+        {
+          "colony_name": "Antipodes Islands",
+          "site_name": "Antipodes Islands",
+          "country": "New Zealand",
+          "lat": -49.68,
+          "lon": 178.8,
+          "ntracks": 298,
+          "nbirds": 233,
+          "npoints": 157003,
+          "min_year": 1996,
+          "max_year": 2023,
+          "years": [
+            "1996",
+            "1997",
+            "1998",
+            "1999",
+            "2000",
+            "2001",
+            "2003",
+            "2004",
+            "2019",
+            "2020",
+            "2021",
+            "2022",
+            "2023"
+          ]
+        },
+        {
+          "colony_name": "Adams Island",
+          "site_name": "Auckland Islands",
+          "country": "New Zealand",
+          "lat": -50.88,
+          "lon": 166.05,
+          "ntracks": 238,
+          "nbirds": 209,
+          "npoints": 112901,
+          "min_year": 1994,
+          "max_year": 2025,
+          "years": [
+            "1994",
+            "1995",
+            "1999",
+            "2000",
+            "2001",
+            "2002",
+            "2003",
+            "2009",
+            "2010",
+            "2011",
+            "2012",
+            "2013",
+            "2014",
+            "2015",
+            "2016",
+            "2017",
+            "2019",
+            "2022",
+            "2023",
+            "2024",
+            "2025"
+          ]
+        },
+        {
+          "colony_name": "Pitt Island",
+          "site_name": "Chatham Island",
+          "country": "New Zealand",
+          "lat": -44.28,
+          "lon": -176.23,
+          "ntracks": 1,
+          "nbirds": 1,
+          "npoints": 695,
+          "min_year": 2021,
+          "max_year": 2022,
+          "years": [
+            "2021",
+            "2022"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Atlantic Yellow-nosed Albatross",
+      "scientific_name": "Thalassarche chlororhynchos",
+      "colonies": [
+        {
+          "colony_name": "At-Sea",
+          "site_name": "At-Sea",
+          "country": "Brazil",
+          "lat": -25.62,
+          "lon": -40.69,
+          "ntracks": 4,
+          "nbirds": 4,
+          "npoints": 17148,
+          "min_year": 2019,
+          "max_year": 2020,
+          "years": [
+            "2019",
+            "2020"
+          ]
+        },
+        {
+          "colony_name": "Gough Island",
+          "site_name": "Gough",
+          "country": "Saint Helena, Ascension and Tristan da Cunha",
+          "lat": -40.31,
+          "lon": -9.91,
+          "ntracks": 194,
+          "nbirds": 119,
+          "npoints": 62652,
+          "min_year": 2000,
+          "max_year": 2018,
+          "years": [
+            "2000",
+            "2001",
+            "2004",
+            "2005",
+            "2006",
+            "2013",
+            "2014",
+            "2018"
+          ]
+        },
+        {
+          "colony_name": "Nightingale",
+          "site_name": "Nightingale Island",
+          "country": "Saint Helena, Ascension and Tristan da Cunha",
+          "lat": -37.42,
+          "lon": -12.48,
+          "ntracks": 9,
+          "nbirds": 9,
+          "npoints": 8955,
+          "min_year": 2017,
+          "max_year": 2017,
+          "years": [
+            "2017"
+          ]
+        },
+        {
+          "colony_name": "Inaccessible Island",
+          "site_name": "Tristan da Cunha",
+          "country": "Saint Helena, Ascension and Tristan da Cunha",
+          "lat": -37.31,
+          "lon": -12.73,
+          "ntracks": 18,
+          "nbirds": 18,
+          "npoints": 15135,
+          "min_year": 2018,
+          "max_year": 2018,
+          "years": [
+            "2018"
+          ]
+        },
+        {
+          "colony_name": "Nightingale",
+          "site_name": "Tristan da Cunha",
+          "country": "Saint Helena, Ascension and Tristan da Cunha",
+          "lat": -37.43,
+          "lon": -12.48,
+          "ntracks": 19,
+          "nbirds": 19,
+          "npoints": 14568,
+          "min_year": 2015,
+          "max_year": 2015,
+          "years": [
+            "2015"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Black-browed Albatross",
+      "scientific_name": "Thalassarche melanophris",
+      "colonies": [
+        {
+          "colony_name": "Unknown",
+          "site_name": " At-sea",
+          "country": "Argentina",
+          "lat": -40.67,
+          "lon": -59.27,
+          "ntracks": 29,
+          "nbirds": 29,
+          "npoints": 18460,
+          "min_year": 2011,
+          "max_year": 2016,
+          "years": [
+            "2011",
+            "2012",
+            "2013",
+            "2015",
+            "2016"
+          ]
+        },
+        {
+          "colony_name": "Heard Island",
+          "site_name": "Heard and McDonald Islands",
+          "country": "Australia",
+          "lat": -53.2,
+          "lon": 73.53,
+          "ntracks": 10,
+          "nbirds": 9,
+          "npoints": 4696,
+          "min_year": 2003,
+          "max_year": 2004,
+          "years": [
+            "2003",
+            "2004"
+          ]
+        },
+        {
+          "colony_name": "Macquarie Island",
+          "site_name": "Macquarie Island",
+          "country": "Australia",
+          "lat": -54.61,
+          "lon": 158.85,
+          "ntracks": 16,
+          "nbirds": 15,
+          "npoints": 25142,
+          "min_year": 1999,
+          "max_year": 2016,
+          "years": [
+            "1999",
+            "2000",
+            "2001",
+            "2005",
+            "2006",
+            "2016"
+          ]
+        },
+        {
+          "colony_name": "Isla Diego de Almagro",
+          "site_name": "Diego de Almagro",
+          "country": "Chile",
+          "lat": -51.5,
+          "lon": -75.25,
+          "ntracks": 13,
+          "nbirds": 1,
+          "npoints": 753,
+          "min_year": 2001,
+          "max_year": 2001,
+          "years": [
+            "2001"
+          ]
+        },
+        {
+          "colony_name": "Isla Bartolome",
+          "site_name": "Islas Diego Ramirez",
+          "country": "Chile",
+          "lat": -56.51,
+          "lon": -68.73,
+          "ntracks": 28,
+          "nbirds": 28,
+          "npoints": 7472,
+          "min_year": 2011,
+          "max_year": 2011,
+          "years": [
+            "2011"
+          ]
+        },
+        {
+          "colony_name": "Isla Gonzalo",
+          "site_name": "Islas Diego Ramirez",
+          "country": "Chile",
+          "lat": -56.51,
+          "lon": -68.68,
+          "ntracks": 3,
+          "nbirds": 3,
+          "npoints": 1887,
+          "min_year": 2010,
+          "max_year": 2010,
+          "years": [
+            "2010"
+          ]
+        },
+        {
+          "colony_name": "Islas Diego Ramirez",
+          "site_name": "Islas Diego Ramirez",
+          "country": "Chile",
+          "lat": -56.51,
+          "lon": -68.73,
+          "ntracks": 140,
+          "nbirds": 35,
+          "npoints": 12978,
+          "min_year": 1997,
+          "max_year": 2002,
+          "years": [
+            "1997",
+            "1999",
+            "2000",
+            "2001",
+            "2002"
+          ]
+        },
+        {
+          "colony_name": "Islas Ildefonso",
+          "site_name": "Islas Ildefonso",
+          "country": "Chile",
+          "lat": -55.73,
+          "lon": -69.43,
+          "ntracks": 26,
+          "nbirds": 1,
+          "npoints": 2677,
+          "min_year": 2001,
+          "max_year": 2001,
+          "years": [
+            "2001"
+          ]
+        },
+        {
+          "colony_name": "Islote Albatros",
+          "site_name": "Islote Albatros",
+          "country": "Chile",
+          "lat": -54.45,
+          "lon": -69.01,
+          "ntracks": 21,
+          "nbirds": 15,
+          "npoints": 1600,
+          "min_year": 2012,
+          "max_year": 2012,
+          "years": [
+            "2012"
+          ]
+        },
+        {
+          "colony_name": "Beauchene Island",
+          "site_name": "Falkland Islands (Islas Malvinas)",
+          "country": "Falkland Islands (Malvinas)",
+          "lat": -52.9,
+          "lon": -59.19,
+          "ntracks": 60,
+          "nbirds": 8,
+          "npoints": 4015,
+          "min_year": 2000,
+          "max_year": 2000,
+          "years": [
+            "2000"
+          ]
+        },
+        {
+          "colony_name": "Bird Island (Falklands/Malvinas)",
+          "site_name": "Falkland Islands (Islas Malvinas)",
+          "country": "Falkland Islands (Malvinas)",
+          "lat": -52.17,
+          "lon": -60.91,
+          "ntracks": 84,
+          "nbirds": 23,
+          "npoints": 48273,
+          "min_year": 2021,
+          "max_year": 2021,
+          "years": [
+            "2021"
+          ]
+        },
+        {
+          "colony_name": "Grand Jason",
+          "site_name": "Falkland Islands (Islas Malvinas)",
+          "country": "Falkland Islands (Malvinas)",
+          "lat": -51.05,
+          "lon": -61.08,
+          "ntracks": 27,
+          "nbirds": 27,
+          "npoints": 33425,
+          "min_year": 2020,
+          "max_year": 2020,
+          "years": [
+            "2020"
+          ]
+        },
+        {
+          "colony_name": "New Island",
+          "site_name": "Falkland Islands (Islas Malvinas)",
+          "country": "Falkland Islands (Malvinas)",
+          "lat": -51.71,
+          "lon": -61.3,
+          "ntracks": 756,
+          "nbirds": 405,
+          "npoints": 1629734,
+          "min_year": 1996,
+          "max_year": 2017,
+          "years": [
+            "1996",
+            "1997",
+            "2008",
+            "2009",
+            "2010",
+            "2013",
+            "2014",
+            "2017"
+          ]
+        },
+        {
+          "colony_name": "Saunders Island",
+          "site_name": "Falkland Islands (Islas Malvinas)",
+          "country": "Falkland Islands (Malvinas)",
+          "lat": -51.34,
+          "lon": -60.11,
+          "ntracks": 253,
+          "nbirds": 40,
+          "npoints": 16584,
+          "min_year": 1998,
+          "max_year": 2000,
+          "years": [
+            "1998",
+            "1999",
+            "2000"
+          ]
+        },
+        {
+          "colony_name": "Steeple Jason",
+          "site_name": "Falkland Islands (Islas Malvinas)",
+          "country": "Falkland Islands (Malvinas)",
+          "lat": -51.03,
+          "lon": -61.22,
+          "ntracks": 253,
+          "nbirds": 208,
+          "npoints": 68537,
+          "min_year": 2006,
+          "max_year": 2012,
+          "years": [
+            "2006",
+            "2007",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012"
+          ]
+        },
+        {
+          "colony_name": "Iles Kerguelen",
+          "site_name": "Kerguelen",
+          "country": "France",
+          "lat": -49.36,
+          "lon": 69.57,
+          "ntracks": 236,
+          "nbirds": 195,
+          "npoints": 82861,
+          "min_year": 1994,
+          "max_year": 2013,
+          "years": [
+            "1994",
+            "1995",
+            "1999",
+            "2007",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012",
+            "2013"
+          ]
+        },
+        {
+          "colony_name": "Jeanne d'Arc Peninsula",
+          "site_name": "Kerguelen",
+          "country": "France",
+          "lat": -49.68,
+          "lon": 70.0,
+          "ntracks": 26,
+          "nbirds": 9,
+          "npoints": 2258,
+          "min_year": 1994,
+          "max_year": 1999,
+          "years": [
+            "1994",
+            "1995",
+            "1999"
+          ]
+        },
+        {
+          "colony_name": "Bird Island (SGSSI (IGSISS))",
+          "site_name": "South Georgia (Islas Georgias del Sur)",
+          "country": "South Georgia and the South Sandwich Islands",
+          "lat": -54.0,
+          "lon": -38.03,
+          "ntracks": 826,
+          "nbirds": 318,
+          "npoints": 135539,
+          "min_year": 1992,
+          "max_year": 2019,
+          "years": [
+            "1992",
+            "1993",
+            "1994",
+            "1996",
+            "2001",
+            "2002",
+            "2003",
+            "2005",
+            "2006",
+            "2008",
+            "2009",
+            "2010",
+            "2014",
+            "2015",
+            "2019"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Black-footed Albatross",
+      "scientific_name": "Phoebastria nigripes",
+      "colonies": [
+        {
+          "colony_name": "French Frigate Shoals",
+          "site_name": "Hawaii",
+          "country": "United States",
+          "lat": 23.75,
+          "lon": -166.16,
+          "ntracks": 315,
+          "nbirds": 174,
+          "npoints": 71063,
+          "min_year": 1998,
+          "max_year": 2012,
+          "years": [
+            "1998",
+            "1999",
+            "2002",
+            "2003",
+            "2004",
+            "2005",
+            "2006",
+            "2007",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012"
+          ]
+        },
+        {
+          "colony_name": "Kure Atoll",
+          "site_name": "Hawaii",
+          "country": "United States",
+          "lat": 23.05,
+          "lon": -161.93,
+          "ntracks": 198,
+          "nbirds": 18,
+          "npoints": 65846,
+          "min_year": 2012,
+          "max_year": 2013,
+          "years": [
+            "2012",
+            "2013"
+          ]
+        },
+        {
+          "colony_name": "Midway Atoll",
+          "site_name": "Hawaii",
+          "country": "United States",
+          "lat": 28.25,
+          "lon": -177.33,
+          "ntracks": 33,
+          "nbirds": 32,
+          "npoints": 7014,
+          "min_year": 2006,
+          "max_year": 2012,
+          "years": [
+            "2006",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Buller's Albatross",
+      "scientific_name": "Thalassarche bulleri",
+      "colonies": [
+        {
+          "colony_name": "The Forty-fours",
+          "site_name": "Chatham Island",
+          "country": "New Zealand",
+          "lat": -43.8,
+          "lon": -175.83,
+          "ntracks": 79,
+          "nbirds": 79,
+          "npoints": 44267,
+          "min_year": 2021,
+          "max_year": 2024,
+          "years": [
+            "2021",
+            "2022",
+            "2023",
+            "2024"
+          ]
+        },
+        {
+          "colony_name": "The Pyramid",
+          "site_name": "Chatham Island",
+          "country": "New Zealand",
+          "lat": -44.43,
+          "lon": -176.23,
+          "ntracks": 2,
+          "nbirds": 2,
+          "npoints": 1897,
+          "min_year": 2008,
+          "max_year": 2008,
+          "years": [
+            "2008"
+          ]
+        },
+        {
+          "colony_name": "Great Solander Island",
+          "site_name": "Solander Islands",
+          "country": "New Zealand",
+          "lat": -46.58,
+          "lon": 166.9,
+          "ntracks": 282,
+          "nbirds": 70,
+          "npoints": 168307,
+          "min_year": 1997,
+          "max_year": 2024,
+          "years": [
+            "1997",
+            "2002",
+            "2016",
+            "2017",
+            "2024"
+          ]
+        },
+        {
+          "colony_name": "North-East Island",
+          "site_name": "The Snares",
+          "country": "New Zealand",
+          "lat": -48.01,
+          "lon": 166.6,
+          "ntracks": 530,
+          "nbirds": 228,
+          "npoints": 523649,
+          "min_year": 1995,
+          "max_year": 2025,
+          "years": [
+            "1995",
+            "1996",
+            "1997",
+            "1999",
+            "2000",
+            "2001",
+            "2002",
+            "2005",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2020",
+            "2021",
+            "2022",
+            "2024",
+            "2025"
+          ]
+        },
+        {
+          "colony_name": "Snares Islands",
+          "site_name": "The Snares",
+          "country": "New Zealand",
+          "lat": -48.02,
+          "lon": 166.6,
+          "ntracks": 13,
+          "nbirds": 13,
+          "npoints": 51071,
+          "min_year": 1995,
+          "max_year": 2024,
+          "years": [
+            "1995",
+            "2024"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Campbell Albatross",
+      "scientific_name": "Thalassarche impavida",
+      "colonies": [
+        {
+          "colony_name": "Campbell Island",
+          "site_name": "Campbell Islands",
+          "country": "New Zealand",
+          "lat": -52.55,
+          "lon": 169.15,
+          "ntracks": 78,
+          "nbirds": 78,
+          "npoints": 49543,
+          "min_year": 1997,
+          "max_year": 2011,
+          "years": [
+            "1997",
+            "2009",
+            "2010",
+            "2011"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Chatham Albatross",
+      "scientific_name": "Thalassarche eremita",
+      "colonies": [
+        {
+          "colony_name": "The Pyramid",
+          "site_name": "Chatham Island",
+          "country": "New Zealand",
+          "lat": -44.43,
+          "lon": -176.23,
+          "ntracks": 71,
+          "nbirds": 50,
+          "npoints": 41422,
+          "min_year": 1997,
+          "max_year": 2008,
+          "years": [
+            "1997",
+            "1998",
+            "1999",
+            "2006",
+            "2007",
+            "2008"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Grey-headed Albatross",
+      "scientific_name": "Thalassarche chrysostoma",
+      "colonies": [
+        {
+          "colony_name": "Macquarie Island",
+          "site_name": "Macquarie Island",
+          "country": "Australia",
+          "lat": -54.61,
+          "lon": 158.85,
+          "ntracks": 17,
+          "nbirds": 14,
+          "npoints": 12960,
+          "min_year": 1999,
+          "max_year": 2015,
+          "years": [
+            "1999",
+            "2000",
+            "2001",
+            "2005",
+            "2006",
+            "2015"
+          ]
+        },
+        {
+          "colony_name": "Islas Diego Ramirez",
+          "site_name": "Islas Diego Ramirez",
+          "country": "Chile",
+          "lat": -56.51,
+          "lon": -68.73,
+          "ntracks": 67,
+          "nbirds": 36,
+          "npoints": 12718,
+          "min_year": 1997,
+          "max_year": 2002,
+          "years": [
+            "1997",
+            "1999",
+            "2000",
+            "2001",
+            "2002"
+          ]
+        },
+        {
+          "colony_name": "Islas Ildefonso",
+          "site_name": "Islas Ildefonso",
+          "country": "Chile",
+          "lat": -55.73,
+          "lon": -69.43,
+          "ntracks": 1,
+          "nbirds": 1,
+          "npoints": 265,
+          "min_year": 2001,
+          "max_year": 2001,
+          "years": [
+            "2001"
+          ]
+        },
+        {
+          "colony_name": "Campbell Island",
+          "site_name": "Campbell Islands",
+          "country": "New Zealand",
+          "lat": -52.55,
+          "lon": 169.15,
+          "ntracks": 91,
+          "nbirds": 86,
+          "npoints": 167732,
+          "min_year": 1997,
+          "max_year": 2013,
+          "years": [
+            "1997",
+            "2009",
+            "2010",
+            "2011",
+            "2012",
+            "2013"
+          ]
+        },
+        {
+          "colony_name": "Marion Island",
+          "site_name": "Prince Edward Islands",
+          "country": "South Africa",
+          "lat": -46.9,
+          "lon": 37.75,
+          "ntracks": 273,
+          "nbirds": 230,
+          "npoints": 266442,
+          "min_year": 1997,
+          "max_year": 2020,
+          "years": [
+            "1997",
+            "1998",
+            "2002",
+            "2003",
+            "2004",
+            "2012",
+            "2013",
+            "2014",
+            "2015",
+            "2016",
+            "2017",
+            "2018",
+            "2019",
+            "2020"
+          ]
+        },
+        {
+          "colony_name": "Bird Island (SGSSI (IGSISS))",
+          "site_name": "South Georgia (Islas Georgias del Sur)",
+          "country": "South Georgia and the South Sandwich Islands",
+          "lat": -54.0,
+          "lon": -38.03,
+          "ntracks": 451,
+          "nbirds": 194,
+          "npoints": 80045,
+          "min_year": 1991,
+          "max_year": 2019,
+          "years": [
+            "1991",
+            "1993",
+            "1994",
+            "1995",
+            "1996",
+            "1999",
+            "2000",
+            "2001",
+            "2002",
+            "2003",
+            "2006",
+            "2009",
+            "2010",
+            "2012",
+            "2018",
+            "2019"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Indian Yellow-nosed Albatross",
+      "scientific_name": "Thalassarche carteri",
+      "colonies": [
+        {
+          "colony_name": "Falaise d'Entrecasteaux",
+          "site_name": "Amsterdam and St Paul",
+          "country": "France",
+          "lat": -37.84,
+          "lon": 77.53,
+          "ntracks": 80,
+          "nbirds": 45,
+          "npoints": 13982,
+          "min_year": 1995,
+          "max_year": 2008,
+          "years": [
+            "1995",
+            "1996",
+            "2000",
+            "2001",
+            "2006",
+            "2007",
+            "2008"
+          ]
+        },
+        {
+          "colony_name": "Ile Amsterdam",
+          "site_name": "Amsterdam and St Paul",
+          "country": "France",
+          "lat": -37.85,
+          "lon": 77.51,
+          "ntracks": 104,
+          "nbirds": 88,
+          "npoints": 9542,
+          "min_year": 1995,
+          "max_year": 2011,
+          "years": [
+            "1995",
+            "1996",
+            "2000",
+            "2001",
+            "2002",
+            "2006",
+            "2011"
+          ]
+        },
+        {
+          "colony_name": "Prince Edward Island",
+          "site_name": "Prince Edward Islands",
+          "country": "South Africa",
+          "lat": -46.63,
+          "lon": 37.95,
+          "ntracks": 18,
+          "nbirds": 18,
+          "npoints": 976,
+          "min_year": 2008,
+          "max_year": 2011,
+          "years": [
+            "2008",
+            "2009",
+            "2011"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Laysan Albatross",
+      "scientific_name": "Phoebastria immutabilis",
+      "colonies": [
+        {
+          "colony_name": "Guadalupe",
+          "site_name": "Guadalupe",
+          "country": "Mexico",
+          "lat": 28.91,
+          "lon": -118.29,
+          "ntracks": 244,
+          "nbirds": 42,
+          "npoints": 102276,
+          "min_year": 2014,
+          "max_year": 2018,
+          "years": [
+            "2014",
+            "2015",
+            "2016",
+            "2017",
+            "2018"
+          ]
+        },
+        {
+          "colony_name": "Isla Guadalupe",
+          "site_name": "Isla Guadalupe",
+          "country": "Mexico",
+          "lat": 29.03,
+          "lon": -118.28,
+          "ntracks": 189,
+          "nbirds": 137,
+          "npoints": 146155,
+          "min_year": 2003,
+          "max_year": 2020,
+          "years": [
+            "2003",
+            "2005",
+            "2006",
+            "2014",
+            "2019",
+            "2020"
+          ]
+        },
+        {
+          "colony_name": "French Frigate Shoals",
+          "site_name": "Hawaii",
+          "country": "United States",
+          "lat": 23.75,
+          "lon": -166.16,
+          "ntracks": 349,
+          "nbirds": 194,
+          "npoints": 92715,
+          "min_year": 1998,
+          "max_year": 2012,
+          "years": [
+            "1998",
+            "1999",
+            "2002",
+            "2003",
+            "2004",
+            "2005",
+            "2006",
+            "2007",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012"
+          ]
+        },
+        {
+          "colony_name": "Midway Atoll",
+          "site_name": "Hawaii",
+          "country": "United States",
+          "lat": 28.25,
+          "lon": -177.33,
+          "ntracks": 37,
+          "nbirds": 37,
+          "npoints": 9644,
+          "min_year": 2008,
+          "max_year": 2012,
+          "years": [
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Light-mantled Albatross",
+      "scientific_name": "Phoebetria palpebrata",
+      "colonies": [
+        {
+          "colony_name": "Heard Island",
+          "site_name": "Heard and McDonald Islands",
+          "country": "Australia",
+          "lat": -53.2,
+          "lon": 73.53,
+          "ntracks": 6,
+          "nbirds": 5,
+          "npoints": 3950,
+          "min_year": 2003,
+          "max_year": 2004,
+          "years": [
+            "2003",
+            "2004"
+          ]
+        },
+        {
+          "colony_name": "Macquarie Island",
+          "site_name": "Macquarie Island",
+          "country": "Australia",
+          "lat": -54.61,
+          "lon": 158.85,
+          "ntracks": 17,
+          "nbirds": 14,
+          "npoints": 5820,
+          "min_year": 1992,
+          "max_year": 2007,
+          "years": [
+            "1992",
+            "2002",
+            "2003",
+            "2005",
+            "2006",
+            "2007"
+          ]
+        },
+        {
+          "colony_name": "Ile de la Possession",
+          "site_name": "Crozet",
+          "country": "France",
+          "lat": -46.4,
+          "lon": 51.75,
+          "ntracks": 7,
+          "nbirds": 7,
+          "npoints": 1255,
+          "min_year": 2008,
+          "max_year": 2010,
+          "years": [
+            "2008",
+            "2009",
+            "2010"
+          ]
+        },
+        {
+          "colony_name": "Iles Crozet",
+          "site_name": "Crozet",
+          "country": "France",
+          "lat": -46.42,
+          "lon": 51.74,
+          "ntracks": 8,
+          "nbirds": 8,
+          "npoints": 2168,
+          "min_year": 2009,
+          "max_year": 2009,
+          "years": [
+            "2009"
+          ]
+        },
+        {
+          "colony_name": "Canyon des Sourcils Noirs",
+          "site_name": "Kerguelen",
+          "country": "France",
+          "lat": -49.68,
+          "lon": 70.24,
+          "ntracks": 5,
+          "nbirds": 5,
+          "npoints": 1234,
+          "min_year": 2007,
+          "max_year": 2010,
+          "years": [
+            "2007",
+            "2008",
+            "2009",
+            "2010"
+          ]
+        },
+        {
+          "colony_name": "Iles Kerguelen",
+          "site_name": "Kerguelen",
+          "country": "France",
+          "lat": -49.36,
+          "lon": 69.57,
+          "ntracks": 3,
+          "nbirds": 3,
+          "npoints": 1728,
+          "min_year": 2010,
+          "max_year": 2010,
+          "years": [
+            "2010"
+          ]
+        },
+        {
+          "colony_name": "Adams Island",
+          "site_name": "Auckland Islands",
+          "country": "New Zealand",
+          "lat": -50.88,
+          "lon": 166.05,
+          "ntracks": 2,
+          "nbirds": 2,
+          "npoints": 7531,
+          "min_year": 2025,
+          "max_year": 2025,
+          "years": [
+            "2025"
+          ]
+        },
+        {
+          "colony_name": "Campbell Island",
+          "site_name": "Campbell Islands",
+          "country": "New Zealand",
+          "lat": -52.55,
+          "lon": 169.15,
+          "ntracks": 10,
+          "nbirds": 10,
+          "npoints": 16315,
+          "min_year": 2023,
+          "max_year": 2025,
+          "years": [
+            "2023",
+            "2024",
+            "2025"
+          ]
+        },
+        {
+          "colony_name": "Marion Island",
+          "site_name": "Prince Edward Islands",
+          "country": "South Africa",
+          "lat": -46.9,
+          "lon": 37.75,
+          "ntracks": 48,
+          "nbirds": 44,
+          "npoints": 23116,
+          "min_year": 2002,
+          "max_year": 2018,
+          "years": [
+            "2002",
+            "2008",
+            "2009",
+            "2011",
+            "2013",
+            "2014",
+            "2015",
+            "2016",
+            "2017",
+            "2018"
+          ]
+        },
+        {
+          "colony_name": "Bird Island (SGSSI (IGSISS))",
+          "site_name": "South Georgia (Islas Georgias del Sur)",
+          "country": "South Georgia and the South Sandwich Islands",
+          "lat": -54.0,
+          "lon": -38.03,
+          "ntracks": 98,
+          "nbirds": 45,
+          "npoints": 24995,
+          "min_year": 2003,
+          "max_year": 2015,
+          "years": [
+            "2003",
+            "2004",
+            "2005",
+            "2009",
+            "2010",
+            "2014",
+            "2015"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Northern Royal Albatross",
+      "scientific_name": "Diomedea sanfordi",
+      "colonies": [
+        {
+          "colony_name": "The Forty-fours",
+          "site_name": "Chatham Island",
+          "country": "New Zealand",
+          "lat": -43.8,
+          "lon": -175.83,
+          "ntracks": 35,
+          "nbirds": 35,
+          "npoints": 8892,
+          "min_year": 2008,
+          "max_year": 2021,
+          "years": [
+            "2008",
+            "2021"
+          ]
+        },
+        {
+          "colony_name": "The Little (Middle) Sister",
+          "site_name": "Chatham Island",
+          "country": "New Zealand",
+          "lat": -43.56,
+          "lon": -176.81,
+          "ntracks": 20,
+          "nbirds": 14,
+          "npoints": 3246,
+          "min_year": 1994,
+          "max_year": 1998,
+          "years": [
+            "1994",
+            "1995",
+            "1996",
+            "1997",
+            "1998"
+          ]
+        },
+        {
+          "colony_name": "Taiaroa Head",
+          "site_name": "New Zealand",
+          "country": "New Zealand",
+          "lat": -45.76,
+          "lon": 170.71,
+          "ntracks": 63,
+          "nbirds": 60,
+          "npoints": 13311,
+          "min_year": 1993,
+          "max_year": 2025,
+          "years": [
+            "1993",
+            "1998",
+            "2002",
+            "2004",
+            "2005",
+            "2007",
+            "2008",
+            "2024",
+            "2025"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Salvin's Albatross",
+      "scientific_name": "Thalassarche salvini",
+      "colonies": [
+        {
+          "colony_name": "Proclamation Island",
+          "site_name": "Bounty Islands",
+          "country": "New Zealand",
+          "lat": -47.74,
+          "lon": 179.02,
+          "ntracks": 31,
+          "nbirds": 31,
+          "npoints": 18296,
+          "min_year": 2018,
+          "max_year": 2019,
+          "years": [
+            "2018",
+            "2019"
+          ]
+        },
+        {
+          "colony_name": "Toru Islet",
+          "site_name": "The Snares",
+          "country": "New Zealand",
+          "lat": -48.05,
+          "lon": 166.51,
+          "ntracks": 68,
+          "nbirds": 22,
+          "npoints": 11655,
+          "min_year": 2008,
+          "max_year": 2010,
+          "years": [
+            "2008",
+            "2009",
+            "2010"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Short-tailed Albatross",
+      "scientific_name": "Phoebastria albatrus",
+      "colonies": [
+        {
+          "colony_name": "Torishima",
+          "site_name": "Izu Shoto",
+          "country": "Japan",
+          "lat": 30.48,
+          "lon": 140.31,
+          "ntracks": 52,
+          "nbirds": 32,
+          "npoints": 16058,
+          "min_year": 2002,
+          "max_year": 2008,
+          "years": [
+            "2002",
+            "2003",
+            "2006",
+            "2007",
+            "2008"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Shy Albatross",
+      "scientific_name": "Thalassarche cauta",
+      "colonies": [
+        {
+          "colony_name": "Albatross Island (AU)",
+          "site_name": "Tasmania",
+          "country": "Australia",
+          "lat": -40.38,
+          "lon": 144.65,
+          "ntracks": 215,
+          "nbirds": 152,
+          "npoints": 158150,
+          "min_year": 1993,
+          "max_year": 2019,
+          "years": [
+            "1993",
+            "1994",
+            "1995",
+            "1996",
+            "1997",
+            "2004",
+            "2005",
+            "2013",
+            "2014",
+            "2015",
+            "2016",
+            "2017",
+            "2018",
+            "2019"
+          ]
+        },
+        {
+          "colony_name": "Pedra Branca",
+          "site_name": "Tasmania",
+          "country": "Australia",
+          "lat": -43.86,
+          "lon": 146.96,
+          "ntracks": 11,
+          "nbirds": 7,
+          "npoints": 1503,
+          "min_year": 1997,
+          "max_year": 2005,
+          "years": [
+            "1997",
+            "2002",
+            "2004",
+            "2005"
+          ]
+        },
+        {
+          "colony_name": "The Mewstone",
+          "site_name": "Tasmania",
+          "country": "Australia",
+          "lat": -43.73,
+          "lon": 146.36,
+          "ntracks": 20,
+          "nbirds": 10,
+          "npoints": 3549,
+          "min_year": 1997,
+          "max_year": 2017,
+          "years": [
+            "1997",
+            "1998",
+            "2002",
+            "2004",
+            "2005",
+            "2006",
+            "2017"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Sooty Albatross",
+      "scientific_name": "Phoebetria fusca",
+      "colonies": [
+        {
+          "colony_name": "Ile Amsterdam",
+          "site_name": "Amsterdam and St Paul",
+          "country": "France",
+          "lat": -37.85,
+          "lon": 77.51,
+          "ntracks": 16,
+          "nbirds": 12,
+          "npoints": 7922,
+          "min_year": 2008,
+          "max_year": 2011,
+          "years": [
+            "2008",
+            "2009",
+            "2010",
+            "2011"
+          ]
+        },
+        {
+          "colony_name": "Iles Crozet",
+          "site_name": "Crozet",
+          "country": "France",
+          "lat": -46.42,
+          "lon": 51.74,
+          "ntracks": 50,
+          "nbirds": 25,
+          "npoints": 13006,
+          "min_year": 1992,
+          "max_year": 2009,
+          "years": [
+            "1992",
+            "1993",
+            "1994",
+            "1995",
+            "2007",
+            "2008",
+            "2009"
+          ]
+        },
+        {
+          "colony_name": "Gough Island",
+          "site_name": "Gough",
+          "country": "Saint Helena, Ascension and Tristan da Cunha",
+          "lat": -40.31,
+          "lon": -9.91,
+          "ntracks": 75,
+          "nbirds": 29,
+          "npoints": 42364,
+          "min_year": 2003,
+          "max_year": 2013,
+          "years": [
+            "2003",
+            "2004",
+            "2005",
+            "2006",
+            "2007",
+            "2013"
+          ]
+        },
+        {
+          "colony_name": "Tristan da Cunha",
+          "site_name": "Tristan da Cunha",
+          "country": "Saint Helena, Ascension and Tristan da Cunha",
+          "lat": -37.11,
+          "lon": -12.28,
+          "ntracks": 3,
+          "nbirds": 3,
+          "npoints": 3862,
+          "min_year": 2015,
+          "max_year": 2015,
+          "years": [
+            "2015"
+          ]
+        },
+        {
+          "colony_name": "Marion Island",
+          "site_name": "Prince Edward Islands",
+          "country": "South Africa",
+          "lat": -46.9,
+          "lon": 37.75,
+          "ntracks": 193,
+          "nbirds": 134,
+          "npoints": 142285,
+          "min_year": 2008,
+          "max_year": 2020,
+          "years": [
+            "2008",
+            "2009",
+            "2013",
+            "2014",
+            "2015",
+            "2016",
+            "2017",
+            "2018",
+            "2019",
+            "2020"
+          ]
+        },
+        {
+          "colony_name": "Prince Edward Island",
+          "site_name": "Prince Edward Islands",
+          "country": "South Africa",
+          "lat": -46.63,
+          "lon": 37.95,
+          "ntracks": 2,
+          "nbirds": 2,
+          "npoints": 502,
+          "min_year": 2011,
+          "max_year": 2011,
+          "years": [
+            "2011"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Southern Royal Albatross",
+      "scientific_name": "Diomedea epomophora",
+      "colonies": [
+        {
+          "colony_name": "Campbell Island",
+          "site_name": "Campbell Islands",
+          "country": "New Zealand",
+          "lat": -52.55,
+          "lon": 169.15,
+          "ntracks": 129,
+          "nbirds": 118,
+          "npoints": 277492,
+          "min_year": 1999,
+          "max_year": 2025,
+          "years": [
+            "1999",
+            "2012",
+            "2013",
+            "2015",
+            "2016",
+            "2017",
+            "2023",
+            "2024",
+            "2025"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Tristan Albatross",
+      "scientific_name": "Diomedea dabbenena",
+      "colonies": [
+        {
+          "colony_name": "Gough Island",
+          "site_name": "Gough",
+          "country": "Saint Helena, Ascension and Tristan da Cunha",
+          "lat": -40.31,
+          "lon": -9.91,
+          "ntracks": 308,
+          "nbirds": 150,
+          "npoints": 107095,
+          "min_year": 2001,
+          "max_year": 2019,
+          "years": [
+            "2001",
+            "2004",
+            "2005",
+            "2006",
+            "2013",
+            "2014",
+            "2015",
+            "2016",
+            "2018",
+            "2019"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Wandering Albatross",
+      "scientific_name": "Diomedea exulans",
+      "colonies": [
+        {
+          "colony_name": "Macquarie Island",
+          "site_name": "Macquarie Island",
+          "country": "Australia",
+          "lat": -54.61,
+          "lon": 158.85,
+          "ntracks": 12,
+          "nbirds": 12,
+          "npoints": 9925,
+          "min_year": 1998,
+          "max_year": 2009,
+          "years": [
+            "1998",
+            "1999",
+            "2003",
+            "2004",
+            "2005",
+            "2006",
+            "2007",
+            "2008",
+            "2009"
+          ]
+        },
+        {
+          "colony_name": "Ile de la Possession",
+          "site_name": "Crozet",
+          "country": "France",
+          "lat": -46.4,
+          "lon": 51.75,
+          "ntracks": 13,
+          "nbirds": 13,
+          "npoints": 4832,
+          "min_year": 2001,
+          "max_year": 2003,
+          "years": [
+            "2001",
+            "2002",
+            "2003"
+          ]
+        },
+        {
+          "colony_name": "Iles Crozet",
+          "site_name": "Crozet",
+          "country": "France",
+          "lat": -46.42,
+          "lon": 51.74,
+          "ntracks": 636,
+          "nbirds": 363,
+          "npoints": 353448,
+          "min_year": 1989,
+          "max_year": 2016,
+          "years": [
+            "1989",
+            "1990",
+            "1991",
+            "1992",
+            "1994",
+            "1998",
+            "1999",
+            "2000",
+            "2001",
+            "2002",
+            "2003",
+            "2006",
+            "2007",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012",
+            "2013",
+            "2016"
+          ]
+        },
+        {
+          "colony_name": "Iles Kerguelen",
+          "site_name": "Kerguelen",
+          "country": "France",
+          "lat": -49.36,
+          "lon": 69.57,
+          "ntracks": 89,
+          "nbirds": 70,
+          "npoints": 40796,
+          "min_year": 1998,
+          "max_year": 2013,
+          "years": [
+            "1998",
+            "1999",
+            "2001",
+            "2002",
+            "2004",
+            "2005",
+            "2007",
+            "2008",
+            "2009",
+            "2010",
+            "2011",
+            "2012",
+            "2013"
+          ]
+        },
+        {
+          "colony_name": "Marion Island",
+          "site_name": "Prince Edward Islands",
+          "country": "South Africa",
+          "lat": -46.9,
+          "lon": 37.75,
+          "ntracks": 175,
+          "nbirds": 170,
+          "npoints": 794591,
+          "min_year": 1997,
+          "max_year": 2021,
+          "years": [
+            "1997",
+            "1998",
+            "2007",
+            "2013",
+            "2014",
+            "2016",
+            "2017",
+            "2018",
+            "2019",
+            "2020",
+            "2021"
+          ]
+        },
+        {
+          "colony_name": "Bird Island (SGSSI (IGSISS))",
+          "site_name": "South Georgia (Islas Georgias del Sur)",
+          "country": "South Georgia and the South Sandwich Islands",
+          "lat": -54.0,
+          "lon": -38.03,
+          "ntracks": 1180,
+          "nbirds": 840,
+          "npoints": 935140,
+          "min_year": 1990,
+          "max_year": 2022,
+          "years": [
+            "1990",
+            "1991",
+            "1992",
+            "1995",
+            "1996",
+            "1997",
+            "1998",
+            "1999",
+            "2000",
+            "2001",
+            "2002",
+            "2003",
+            "2004",
+            "2005",
+            "2006",
+            "2007",
+            "2008",
+            "2009",
+            "2010",
+            "2012",
+            "2015",
+            "2019",
+            "2020",
+            "2021",
+            "2022"
+          ]
+        },
+        {
+          "colony_name": "Prion Island",
+          "site_name": "South Georgia (Islas Georgias del Sur)",
+          "country": "South Georgia and the South Sandwich Islands",
+          "lat": -54.01,
+          "lon": -37.25,
+          "ntracks": 133,
+          "nbirds": 10,
+          "npoints": 29154,
+          "min_year": 2022,
+          "max_year": 2022,
+          "years": [
+            "2022"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "Waved Albatross",
+      "scientific_name": "Phoebastria irrorata",
+      "colonies": [
+        {
+          "colony_name": "Isla Espanola",
+          "site_name": "Galapagos",
+          "country": "Ecuador",
+          "lat": -1.37,
+          "lon": -89.67,
+          "ntracks": 64,
+          "nbirds": 34,
+          "npoints": 5063,
+          "min_year": 1995,
+          "max_year": 2003,
+          "years": [
+            "1995",
+            "1996",
+            "2000",
+            "2001",
+            "2003"
+          ]
+        }
+      ]
+    },
+    {
+      "common_name": "White-capped Albatross",
+      "scientific_name": "Thalassarche steadi",
+      "colonies": [
+        {
+          "colony_name": "Auckland Island",
+          "site_name": "Auckland Islands",
+          "country": "New Zealand",
+          "lat": -50.68,
+          "lon": 166.08,
+          "ntracks": 66,
+          "nbirds": 13,
+          "npoints": 6785,
+          "min_year": 2006,
+          "max_year": 2007,
+          "years": [
+            "2006",
+            "2007"
+          ]
+        },
+        {
+          "colony_name": "Disappointment Island",
+          "site_name": "Auckland Islands",
+          "country": "New Zealand",
+          "lat": -50.6,
+          "lon": 165.98,
+          "ntracks": 170,
+          "nbirds": 26,
+          "npoints": 31929,
+          "min_year": 2006,
+          "max_year": 2010,
+          "years": [
+            "2006",
+            "2007",
+            "2008",
+            "2009",
+            "2010"
+          ]
+        }
+      ]
+    }
+  ]
+}

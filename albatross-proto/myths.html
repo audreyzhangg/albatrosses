@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Albatross • Myths & Stories</title>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+  <header>
+    <h1>Albatross • Folklore & Superstitions</h1>
+    <p class="deck">Flip through famous appearances of the albatross in literature and history.</p>
+    <nav class="topnav">
+      <a href="intro.html">Intro</a>
+      <a href="species.html">Species</a>
+      <a href="colonies.html">Migration</a>
+      <a href="threats.html">Threats</a>
+      <a href="myths.html" class="active">Myths</a>
+    </nav>
+  </header>
+
+  <!-- controls section removed -->
+
+  <main>
+    <section class="card viz">
+      <!-- <h3>Albatross in Literature & History</h3> -->
+
+      <div id="pcStage" class="pc-stage" aria-live="polite">
+        <button id="prevBtn" class="carousel-btn prev" aria-label="Previous story" title="Previous">‹</button>
+
+        <div id="pcViewport" class="pc-viewport" aria-label="Postcard viewport">
+          <div id="pcTrack" class="pc-track" role="list">
+            <!-- JS injects multiple .pc-card items here -->
+          </div>
+        </div>
+
+        <button id="nextBtn" class="carousel-btn next" aria-label="Next story" title="Next">›</button>
+      </div>
+
+      <div class="pc-footer">
+        <span id="pcCounter" class="pc-counter">—</span>
+        <span class="hint">Use arrows or swipe to explore.</span>
+      </div>
+    </section>
+
+    <aside id="notes">
+      <section class="card">
+        <h3>About this page</h3>
+        <p>
+          These cards highlight how albatrosses have shaped culture—from Romantic poetry and
+          Greek legend to classic adventure novels. Each card includes a short narrative,
+          a relevant quote, and an image.
+        </p>
+        <p><strong>Interact:</strong> Click the ◀︎ ▶︎ buttons, press your keyboard’s left/right arrows, or swipe on touch devices.</p>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="js/myths.js"></script>
+</body>
+</html>

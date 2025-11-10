@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Albatross Intro</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+  <style>
+    :root{
+      --ink:#0f172a;        /* deep text */
+      --ink-2:#1f2937;
+      --muted:#6b7280;
+      --chip:#f3f4f6;
+      --chip-b:#e5e7eb;
+      --chip-act:#e8f0ff;
+      --chip-act-b:#bfdbfe;
+    }
+
+    body{ margin:0; font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:#fff; color:var(--ink); }
+
+    .container{ padding:18px; max-width:1200px; margin:0 auto; }
+
+    /* Original title + subtitle (unchanged copy) */
+    h1{ font-size:28px; line-height:1.2; text-align:center; margin:10px 0 6px; }
+    .sub{ text-align:center; color:var(--muted); margin:0 0 12px; }
+
+    /* Nav bar (same look/feel as other pages) */
+    .site-nav{
+      display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
+      margin:8px auto 16px; padding:6px 0 14px; position:relative;
+    }
+    .site-nav::after{
+      content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+      background: linear-gradient(90deg,#c7d2fe,#fbcfe8);
+      opacity:.6;
+    }
+    .site-nav a{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 14px; border-radius:999px;
+      background:var(--chip); border:1px solid var(--chip-b);
+      color:var(--ink-2); text-decoration:none; font-weight:600; font-size:14px;
+      box-shadow:0 1px 0 rgba(15,23,42,.06), inset 0 -1px 0 rgba(255,255,255,.7);
+      transition:transform .05s ease, background .15s ease, box-shadow .15s ease;
+    }
+    .site-nav a:hover{ transform:translateY(-1px); background:#eef2f7; }
+    .site-nav a.active{
+      background:var(--chip-act); border-color:var(--chip-act-b); color:var(--ink);
+      box-shadow:0 2px 6px rgba(59,130,246,.15), inset 0 -1px 0 rgba(255,255,255,.75);
+    }
+
+    /* Center & scale the visualization */
+    #intro-visual{
+      display:flex; align-items:center; justify-content:center;
+      padding: 8px 0 28px;
+    }
+    /* Let the SVG grow but stay within the page; keeps aspect ratio */
+    #intro-visual svg{
+      width: min(95vw, 1100px);
+      height: auto;
+      display: block;
+    }
+
+    /* Hotspot hover fills (unchanged behavior) */
+    .wing-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
+    .wing-hotspot:hover{ fill: rgba(0,0,0,0.06); }
+    .stomach-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
+    .stomach-hotspot:hover{ fill: rgba(255,165,0,0.12); }
+    .beak-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
+    .beak-hotspot:hover{ fill: rgba(255,99,71,0.12); }
+
+    /* Tooltip, if your intro.js uses it */
+    .tooltip{
+      position:absolute; background:rgba(0,0,0,.85); color:#fff;
+      padding:6px 8px; border-radius:4px; font-size:14px;
+      pointer-events:none; z-index:9999; display:none;
+    }
+    .vertex-handle{ fill:#fff; stroke:#1976d2; stroke-width:2px; cursor:move; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Keep your original heading & line -->
+    <h1>Albatross Intro — hover the wings</h1>
+    <p class="sub">Hover the highlighted regions (wings, stomach, beak) to see information.</p>
+
+    <!-- NEW: site nav goes right under the original title/subtitle -->
+    <nav class="site-nav" aria-label="Primary">
+      <a href="intro.html" class="active">Intro</a>
+      <a href="species.html">Species</a>
+      <a href="colonies.html">Migration</a>
+      <a href="threats.html">Threats</a>
+      <a href="myths.html">Myths</a>
+    </nav>
+
+    <!-- Visualization -->
+    <div id="intro-visual"></div>
+  </div>
+
+  <script src="intro.js"></script>
+</body>
+</html>

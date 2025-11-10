@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Albatross Migration Prototype</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+</head>
+<body>
+  <header>
+    <h1>Albatross • Colony Information</h1>
+    <p class="deck">Pick a species to see known colony locations.</p>
+    <nav class="topnav">
+      <a href="intro.html">Intro</a>
+      <a href="species.html">Species</a>
+      <a href="colonies.html" class="active">Migration</a>
+      <a href="threats.html">Threats</a>
+      <a href="myths.html">Myths</a>
+    </nav>
+  </header>
+
+  <section class="controls">
+    <label>Species
+      <select id="speciesSelect" aria-label="Select albatross species"></select>
+    </label>
+  </section>
+
+  <main>
+    <svg id="map" width="1100" height="600" role="img" aria-label="World map of albatross colonies"></svg>
+
+    <aside id="notes" aria-live="polite">
+      <h2 id="speciesTitle">Select a species</h2>
+      <img id="speciesPhoto" alt="" />
+      <section class="card">
+        <h3>Colonies shown</h3>
+        <ul id="colonyList" class="colony-list" aria-label="List of colonies for selected species"></ul>
+        <p class="hint">Hover a colony to highlight it on the map.</p>
+      </section>
+    </aside>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
