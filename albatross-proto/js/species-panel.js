@@ -144,7 +144,7 @@ function openPanel(speciesData) {
             html += `<p><span class="info-label">Fun Fact:</span> ${funFactsData[speciesData['Common name']]}</p>`;
         }
 
-        // Population
+            // Population
         if (speciesData['Population size (mature individuals)']) {
             const pop = speciesData['Population size (mature individuals)'];
             html += `<p><span class="info-label">Population:</span> ${typeof pop === 'number' ? pop.toLocaleString() : pop} mature individuals</p>`;
@@ -181,6 +181,25 @@ function openPanel(speciesData) {
         // Weight
         if (speciesData['Weight (kg)']) {
             html += `<p><span class="info-label">Weight:</span> ${speciesData['Weight (kg)']} kg</p>`;
+        }
+
+        // Append a human-readable colony location summary from the colonies data (if available)
+        try {
+            if (typeof coloniesData !== 'undefined' && coloniesData && speciesData['Common name']) {
+                const matching = coloniesData.species.find(s => s.common_name === speciesData['Common name'] || s.common_name === speciesData['common_name']);
+                if (matching && Array.isArray(matching.colonies) && matching.colonies.length) {
+                    const locs = matching.colonies.map(c => {
+                        const name = c.colony_name || c.site_name || 'Unknown';
+                        const country = c.country ? `, ${c.country}` : '';
+                        return `${name}${country}`;
+                    });
+                    const summary = locs.slice(0, 6).join('; ');
+                    html += `<p><span class="info-label">Colony locations:</span> ${summary}</p>`;
+                }
+            }
+        } catch (e) {
+            // non-fatal; if coloniesData isn't ready we'll still render the panel and the map updater will retry
+            console.warn('Could not append colony summary:', e);
         }
 
         infoEl.innerHTML = html || '<p>No additional information available.</p>';
@@ -227,22 +246,25 @@ function updateColoniesMap(speciesName) {
         .fitSize([width, height], worldData);
     currentPath = d3.geoPath(currentProjection);
 
+    // Create a group for zoomable map base (water, graticule, countries)
+    const svg = d3.select(mapEl);
+    const gZoom = svg.append('g').attr('class', 'zoom-group');
+    // Keep colonies in a separate group outside zoom transform so we can control their size
+    const gColonies = svg.append('g').attr('class', 'colonies-group');
+
     // Draw water background
-    d3.select(mapEl)
-        .append('rect')
+    gZoom.append('rect')
         .attr('width', width)
         .attr('height', height)
         .attr('fill', '#cfe8ff');
 
     // Draw graticule
-    d3.select(mapEl)
-        .append('path')
+    gZoom.append('path')
         .attr('class', 'graticule')
         .attr('d', currentPath(d3.geoGraticule10()));
 
     // Draw countries
-    d3.select(mapEl)
-        .append('g')
+    gZoom.append('g')
         .selectAll('path')
         .data(worldData.features)
         .join('path')
@@ -250,15 +272,37 @@ function updateColoniesMap(speciesName) {
         .attr('d', currentPath);
 
     // Draw colonies
-    const colonies = speciesInfo.colonies.filter(d => d.lat != null && d.lon != null);
+    // Normalize coordinates and flag suspicious entries (out-of-range or possibly swapped lat/lon)
+    const colonies = speciesInfo.colonies.map(d => {
+        let lat = d.lat;
+        let lon = d.lon;
+        // coerce to numbers when possible
+        if (lat != null) lat = Number(lat);
+        if (lon != null) lon = Number(lon);
+        let suspect = false;
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) suspect = true;
+        // if lat outside valid range but lon looks like a latitude, they may be swapped
+        if (Number.isFinite(lat) && Math.abs(lat) > 90 && Number.isFinite(lon) && Math.abs(lon) <= 90) {
+            console.warn(`Possible swapped coords for ${d.colony_name || d.site_name || 'unknown'}: lat=${d.lat}, lon=${d.lon} — attempting to swap for display`);
+            const t = lat; lat = lon; lon = t; suspect = true;
+        }
+        // if lon outside range, mark suspect
+        if (Number.isFinite(lon) && (lon < -180 || lon > 180)) suspect = true;
+        return Object.assign({}, d, { lat, lon, suspect });
+    }).filter(d => d.lat != null && d.lon != null && Number.isFinite(d.lat) && Number.isFinite(d.lon));
     
     function radius(d) {
+        // Make the panel dots smaller and less aggressive so they appear more geographically precise
         const size = d.nbirds || d.ntracks || d.npoints || 1;
-        return 3 + Math.min(8, Math.log(size + 1) * 1.5);
+        // base size and modest growth; caps small so dots are compact
+        const r = 1.6 + Math.min(5, Math.log(size + 1) * 1.1);
+        return Math.max(1.2, Math.round(r * 10) / 10);
     }
 
-    const gCol = d3.select(mapEl).append('g');
+    const gCol = gColonies.append('g');
     const nodeMap = new Map();
+    let currentZoomScale = 1; // Track zoom scale for circle sizing
+    let currentTransform = d3.zoomIdentity; // Track the current zoom transform
 
     function colonyKey(d) {
         return `${d.colony_name}|${d.lat}|${d.lon}`;
@@ -270,6 +314,7 @@ function updateColoniesMap(speciesName) {
     circles.join(
         enter => enter.append('circle')
             .attr('class', 'colony')
+            .classed('suspect', d => d.suspect)
             .attr('cx', d => {
                 const coords = currentProjection([d.lon, d.lat]);
                 return coords ? coords[0] : 0;
@@ -279,6 +324,7 @@ function updateColoniesMap(speciesName) {
                 return coords ? coords[1] : 0;
             })
             .attr('r', 0)
+            .attr('stroke-width', 0.6)
             .each(function(d) {
                 nodeMap.set(colonyKey(d), this);
             })
@@ -299,8 +345,10 @@ function updateColoniesMap(speciesName) {
             .remove()
     );
 
+    // Make title include lat/lon for easy inspection/diagnostics
+    circles.select('title').remove();
     circles.append('title')
-        .text(d => `${d.colony_name || 'Unknown'} • ${d.site_name || 'Unknown'} • ${d.country || 'Unknown'}`);
+        .text(d => `${d.colony_name || 'Unknown'} • ${d.site_name || 'Unknown'} • ${d.country || 'Unknown'} — lat:${d.lat ?? 'NA'}, lon:${d.lon ?? 'NA'}`);
 
     // Add hover effects
     circles.on('mouseenter', function(event, d) {
@@ -308,14 +356,36 @@ function updateColoniesMap(speciesName) {
             .classed('highlight', true)
             .transition()
             .duration(150)
-            .attr('r', radius(d) + 2);
+            .attr('r', radius(d) / currentZoomScale + 2);
     })
     .on('mouseleave', function(event, d) {
         d3.select(this)
             .classed('highlight', false)
             .transition()
             .duration(150)
-            .attr('r', radius(d));
+            .attr('r', radius(d) / currentZoomScale);
+    });
+
+    // Add zoom and pan behavior
+    const zoom = d3.zoom()
+        .scaleExtent([1, 8])
+        .on('zoom', (event) => {
+            gZoom.attr('transform', event.transform);
+            // Apply same transform to colonies group but also scale circles inversely
+            currentZoomScale = event.transform.k;
+            currentTransform = event.transform;
+            gColonies.attr('transform', event.transform);
+            // Update circle radii inversely with zoom scale so they appear smaller when zoomed in
+            gCol.selectAll('circle').attr('r', d => radius(d) / currentZoomScale);
+        });
+
+    svg.call(zoom);
+
+    // Reset zoom on double-click
+    svg.on('dblclick.zoom', () => {
+        svg.transition()
+            .duration(750)
+            .call(zoom.transform, d3.zoomIdentity);
     });
 }
 

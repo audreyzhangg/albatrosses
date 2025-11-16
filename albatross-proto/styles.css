@@ -11,7 +11,41 @@
   }
   
   *{box-sizing:border-box}
-  body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:large;margin:0;padding:0;color:#2c3e50;background:linear-gradient(180deg,#f0f9ff 0%, #e0f2fe 60%, #ffffff 100%)}
+  body{
+    font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+    font-size:large;
+    margin:0;
+    padding:0;
+    color:#2c3e50;
+    background:linear-gradient(180deg,#f0f9ff 0%, #e0f2fe 60%, #ffffff 100%);
+    cursor:url('./images/albatross_cursor.png') 0 0, auto !important;
+  }
+
+  /* Clickable elements use the standing albatross cursor */
+  button, 
+  a, 
+  [role="button"], 
+  input[type="button"], 
+  input[type="submit"], 
+  .carousel-btn, 
+  .matrix-circle,
+  circle,
+  .colony,
+  .bird-icon,
+  .bird-label,
+  .bird-group,
+  svg text,
+  [onclick],
+  label,
+  svg circle {
+    cursor:url('./images/albatross_stand.png') 0 0, pointer !important;
+  }
+
+  /* Extra specificity for SVG elements */
+  svg circle:hover,
+  svg g:hover {
+    cursor:url('./images/albatross_stand.png') 0 0, pointer !important;
+  }
   
   /* Header with a soft gradient stripe */
   header{
