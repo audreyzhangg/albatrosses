@@ -5,11 +5,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const maxDisplayWidth = Math.min(container.clientWidth || 900, 1000);
     const imgUrl = 'images/albatrossintro.jpeg';
 
-    // tooltip div
-    let tooltip = d3.select('body').select('.tooltip');
-    if (tooltip.empty()) {
-        tooltip = d3.select('body').append('div').attr('class', 'tooltip');
-    }
+    // tooltip divs - create separate ones for each region
+    const tooltips = {
+        wings: d3.select('body').append('div').attr('class', 'tooltip intro-tooltip-wings').style('display', 'none'),
+        stomach: d3.select('body').append('div').attr('class', 'tooltip intro-tooltip-stomach').style('display', 'none'),
+        beak: d3.select('body').append('div').attr('class', 'tooltip intro-tooltip-beak').style('display', 'none')
+    };
 
     const preload = new Image();
     preload.onload = function() {
@@ -33,6 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
             .attr('width', W)
             .attr('height', H)
             .attr('preserveAspectRatio', 'xMidYMid meet');
+
+        // Hide tooltip when clicking on SVG background
+        svg.on('click', function(event) {
+            if (event.target === this || event.target.tagName === 'svg') {
+                hideTooltip();
+            }
+        });
 
         // default hotspot polygons (normalized coords)
         const defaultPolys = {
@@ -126,25 +134,105 @@ document.addEventListener('DOMContentLoaded', () => {
                     .attr('class', name === 'stomach' ? 'stomach-hotspot' : (name === 'beak' ? 'beak-hotspot' : 'wing-hotspot'))
                     .style('pointer-events', 'visiblePainted');
 
-                // tooltip text per region
-                let info = '';
-                if (name === 'left' || name === 'right') info = `<strong>Wings</strong><br/>Albatrosses are famous for their long wings, which lock in place to keep them horizontal for hours at a time. They use a special technique known as dynamic soaring which allows them to fly even without flapping their wings!`;
-                else if (name === 'stomach') info = `<strong>Stomach</strong><br/>Albatrosses produce a foul-smelling waxy stomach oil. This stomach oil has two main purposes: feeding their young and spraying at predators when threatened.`;
-                else if (name === 'beak') info = `<strong>Beak</strong><br/>Albatrosses are in the order Procellariformes, aka 'tubenoses'. They get this name for the tubes around their nostrils that release salty excrement from their salt glands. These salt glands filters out salt from the water they drink, which allows them to drink seawater without getting dehydrated.`;
+                // tooltip content per region (now with images and standardized format)
+                const wingsInfo = {
+                    title: 'Wings',
+                    text: 'Albatrosses are famous for their long wings, which lock in place to keep them horizontal for hours at a time. They use a special technique known as dynamic soaring which allows them to fly even without flapping their wings!',
+                    image: 'images/wings.jpg',
+                    position: 'top-right'
+                };
+                const stomachInfo = {
+                    title: 'Stomach',
+                    text: 'Albatrosses produce a foul-smelling waxy stomach oil. This stomach oil has two main purposes: feeding their young and spraying at predators when threatened.',
+                    image: 'images/stomach.jpg',
+                    position: 'bottom-right'
+                };
+                const beakInfo = {
+                    title: 'Beak',
+                    text: 'Albatrosses are in the order Procellariformes, aka \'tubenoses\'. They get this name for the tubes around their nostrils that release salty excrement from their salt glands. These salt glands filters out salt from the water they drink, which allows them to drink seawater without getting dehydrated.',
+                    image: 'images/beak.jpg',
+                    position: 'top-left'
+                };
 
-                poly.on('mouseover', (e) => showTooltip(e, info))
-                    .on('mousemove', (e) => showTooltip(e, info))
-                    .on('mouseout', hideTooltip);
+                let info = null;
+                let regionKey = null;
+                if (name === 'left' || name === 'right') {
+                    info = wingsInfo;
+                    regionKey = 'wings';
+                }
+                else if (name === 'stomach') {
+                    info = stomachInfo;
+                    regionKey = 'stomach';
+                }
+                else if (name === 'beak') {
+                    info = beakInfo;
+                    regionKey = 'beak';
+                }
+
+                poly.on('click', function(e) {
+                    e.stopPropagation();
+                    showTooltip(info, regionKey);
+                });
             });
         }
 
-        function showTooltip(event, text) {
-            tooltip.style('display', 'block').html(text);
-            const mx = event.pageX + 12;
-            const my = event.pageY + 12;
-            tooltip.style('left', mx + 'px').style('top', my + 'px');
+        function showTooltip(content, regionKey) {
+            const tooltip = tooltips[regionKey];
+            if (!tooltip) return;
+            
+            // Build HTML from content object with close button
+            let html = '<div class="intro-popup-content">';
+            html += `<button class="popup-close-btn" onclick="document.querySelector('.intro-tooltip-${regionKey}').style.display='none'" style="position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 24px; cursor: pointer; color: #666; line-height: 1; padding: 5px 10px;">&times;</button>`;
+            html += `<h3>${content.title}</h3>`;
+            
+            // Add image if present
+            if (content.image) {
+                html += `<img src="${content.image}" alt="${content.title}" style="width: 100%; max-height: 250px; object-fit: cover; border-radius: 4px; margin-bottom: 15px;">`;
+            }
+            
+            html += `<p>${content.text}</p>`;
+            html += '</div>';
+            
+            // Position based on content.position
+            tooltip
+                .style('display', 'block')
+                .html(html)
+                .style('position', 'fixed')
+                .style('width', '400px')
+                .style('max-width', '90vw')
+                .style('background', 'white')
+                .style('color', 'black')
+                .style('padding', '30px')
+                .style('border-radius', '8px')
+                .style('box-shadow', '0 4px 20px rgba(0,0,0,0.3)')
+                .style('z-index', '10000')
+                .style('pointer-events', 'auto');
+            
+            // Clear previous positioning
+            tooltip.style('left', null).style('right', null).style('top', null).style('bottom', null).style('transform', null);
+            
+            // Set position based on content
+            if (content.position === 'top-right') {
+                tooltip.style('right', '20px').style('top', '20px');
+            } else if (content.position === 'top-left') {
+                tooltip.style('left', '20px').style('top', '20px');
+            } else if (content.position === 'bottom-right') {
+                tooltip.style('right', '20px').style('bottom', '20px');
+            } else if (content.position === 'bottom-left') {
+                tooltip.style('left', '20px').style('bottom', '20px');
+            } else {
+                // Default to top-right
+                tooltip.style('right', '20px').style('top', '20px');
+            }
         }
-        function hideTooltip() { tooltip.style('display', 'none'); }
+        function hideTooltip(regionKey) {
+            if (regionKey && tooltips[regionKey]) {
+                tooltips[regionKey].style('display', 'none');
+            } else {
+                // Hide all tooltips
+                Object.values(tooltips).forEach(t => t.style('display', 'none'));
+            }
+        }
 
         // initial draw
         drawPolys();
