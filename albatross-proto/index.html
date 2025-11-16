@@ -155,6 +155,13 @@
     #matrix-viz {
       overflow-x: auto;
       overflow-y: visible;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    #matrix-viz svg {
+      max-width: 100%;
     }
 
     .species-label{ font-size:13px; fill:#2c3e50; text-anchor:end; }
@@ -168,6 +175,7 @@
       gap: 20px;
       margin-bottom: 20px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .threats-legend-item {
@@ -178,9 +186,8 @@
     }
 
     .threats-legend-circle {
-      width: 12px;
-      height: 12px;
       border-radius: 50%;
+      background: #888;
     }
 
     /* Myths section */
@@ -539,20 +546,53 @@
   <section id="threats-section" class="section">
     <h1>Albatross Species Threats Matrix</h1>
     <p class="subtitle">Each circle represents a threat affecting a species. Hover for details.</p>
-    <div class="threats-legend">
-      <div class="threats-legend-item">
-        <div class="threats-legend-circle" style="background:#e74c3c;"></div>
-        <span>High Impact</span>
-      </div>
-      <div class="threats-legend-item">
-        <div class="threats-legend-circle" style="background:#f39c12;"></div>
-        <span>Medium Impact</span>
-      </div>
-      <div class="threats-legend-item">
-        <div class="threats-legend-circle" style="background:#3498db;"></div>
-        <span>Low Impact</span>
+    
+    <!-- Conservation Status Legend -->
+    <div style="margin-bottom: 15px;">
+      <div style="text-align: center; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Conservation Status</div>
+      <div class="threats-legend">
+        <div class="threats-legend-item">
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#d32f2f;"></div>
+          <span>Critically Endangered</span>
+        </div>
+        <div class="threats-legend-item">
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#f57c00;"></div>
+          <span>Endangered</span>
+        </div>
+        <div class="threats-legend-item">
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#fbc02d;"></div>
+          <span>Vulnerable</span>
+        </div>
+        <div class="threats-legend-item">
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#388e3c;"></div>
+          <span>Near Threatened</span>
+        </div>
+        <div class="threats-legend-item">
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#1976d2;"></div>
+          <span>Least Concern</span>
+        </div>
       </div>
     </div>
+    
+    <!-- Threat Impact Legend -->
+    <div style="margin-bottom: 20px;">
+      <div style="text-align: center; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Threat Impact</div>
+      <div class="threats-legend">
+        <div class="threats-legend-item">
+          <div class="threats-legend-circle" style="width:16px; height:16px;"></div>
+          <span>High Impact</span>
+        </div>
+        <div class="threats-legend-item">
+          <div class="threats-legend-circle" style="width:12px; height:12px;"></div>
+          <span>Medium Impact</span>
+        </div>
+        <div class="threats-legend-item">
+          <div class="threats-legend-circle" style="width:8px; height:8px;"></div>
+          <span>Low Impact</span>
+        </div>
+      </div>
+    </div>
+    
     <div id="matrix-viz"></div>
   </section>
 

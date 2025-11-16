@@ -88,9 +88,33 @@ function createVisualization(data) {
         .attr('class', 'bird-group')
         .attr('transform', d => `translate(${d.x}, ${d.y})`)
         .style('cursor', 'pointer')
+        .style('pointer-events', 'all')  // Ensure the group captures clicks
         .on('click', function(event, d) {
+            console.log('Bird group clicked FIRST!', d['Common name']);
             event.stopPropagation();
+            event.preventDefault();
             const commonName = d['Common name'] || 'Unknown';
+            
+            console.log('Clicked on:', commonName);
+            
+            // Gray out all other circles
+            birdGroups.each(function(otherD) {
+                const group = d3.select(this);
+                if (otherD !== d) {
+                    // Gray out other birds - reduce opacity significantly with transition
+                    group.transition()
+                        .duration(300)
+                        .style('opacity', 0.2);
+                    console.log('Graying out:', otherD['Common name']);
+                } else {
+                    // Keep clicked bird fully visible with transition
+                    group.transition()
+                        .duration(300)
+                        .style('opacity', 1);
+                    console.log('Keeping visible:', d['Common name']);
+                }
+            });
+            
             // Trigger panel open via custom event
             window.dispatchEvent(new CustomEvent('openSpeciesPanel', { detail: { speciesData: d } }));
         })
@@ -109,11 +133,7 @@ function createVisualization(data) {
         .attr('class', 'status-ring')
         .attr('r', 60)
         .style('stroke', d => statusColors[d['RL Category']])
-        .style('cursor', 'pointer')
-        .on('click', function(event, d) {
-            event.stopPropagation();
-            window.dispatchEvent(new CustomEvent('openSpeciesPanel', { detail: { speciesData: d } }));
-        });
+        .style('cursor', 'pointer');
 
     // Add bird silhouette (fallback) and an image (preferred if available)
     // Draw silhouette first so the image overlays it when present
@@ -137,9 +157,16 @@ function createVisualization(data) {
         const group = d3.select(this);
         const name = (d['Common name'] || '').toString();
         const base = slugify(name);
+        
+        // Also create a version with apostrophe preserved for filenames that use it
+        const baseWithApostrophe = name.toString().toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9\-']/g, '')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
 
-        // Build variants to try: hyphen (base), underscore, concatenated
-        const variants = [base, base.replace(/-/g, '_'), base.replace(/-/g, '')];
+        // Build variants to try: with apostrophe, hyphen (base), underscore, concatenated
+        const variants = [baseWithApostrophe, base, base.replace(/-/g, '_'), base.replace(/-/g, '')];
         const tried = [];
 
         // Helper to try next variant/extension
@@ -152,14 +179,12 @@ function createVisualization(data) {
                     tried.push(url);
                     try {
                         await checkImage(url);
-                        // success: create a pattern (userSpaceOnUse) and fill a circle with it
+                        // success: create a pattern (objectBoundingBox) to center the image in the circle
                         defs.append('pattern')
                             .attr('id', patternId)
-                            .attr('patternUnits', 'userSpaceOnUse')
-                            .attr('width', 120)
-                            .attr('height', 120)
-                            .attr('x', d.x - 60)
-                            .attr('y', d.y - 60)
+                            .attr('patternUnits', 'objectBoundingBox')
+                            .attr('width', 1)
+                            .attr('height', 1)
                             .append('image')
                             .attr('href', url)
                             .attr('x', 0)
@@ -173,11 +198,7 @@ function createVisualization(data) {
                             .attr('class', 'bird-img-circle')
                             .attr('r', 60)
                             .attr('fill', `url(#${patternId})`)
-                            .style('cursor', 'pointer')
-                            .on('click', function(event) {
-                                event.stopPropagation();
-                                window.dispatchEvent(new CustomEvent('openSpeciesPanel', { detail: { speciesData: d } }));
-                            });
+                            .style('cursor', 'pointer');
 
                         // ensure the status ring is on top of the image circle
                         const ring = group.select('.status-ring');
@@ -200,12 +221,6 @@ function createVisualization(data) {
         .attr('class', 'bird-label')
         .attr('y', 90)
         .style('cursor', 'pointer')
-        .on('click', function(event, d) {
-            event.stopPropagation();
-            const commonName = d['Common name'] || 'Unknown';
-            // Trigger panel open via custom event
-            window.dispatchEvent(new CustomEvent('openSpeciesPanel', { detail: { speciesData: d } }));
-        })
         .each(function(d) {
             const name = (d['Common name'] || '').toString();
             const maxChars = 18; // threshold to decide when to split into 2 lines
@@ -233,6 +248,56 @@ function createVisualization(data) {
                     .text(line);
             });
         });
+    
+    // Listen for panel close event to reset all birds to full opacity
+    const panelCloseHandler = function() {
+        console.log('Panel closed - resetting opacity');
+        birdGroups.transition()
+            .duration(300)
+            .style('opacity', 1);
+    };
+    
+    // Remove old handler if it exists and add new one
+    window.removeEventListener('speciesPanelClosed', panelCloseHandler);
+    window.addEventListener('speciesPanelClosed', panelCloseHandler);
+    
+    // Also handle clicking on the background of the visualization
+    svg.on('click', function(event) {
+        // Reset all birds to full opacity when clicking on SVG background (not on a bird)
+        const target = event.target;
+        // Check if we clicked on a bird-related element
+        const clickedOnBird = target.closest('.bird-group') || 
+                             target.classList.contains('bird-icon') ||
+                             target.classList.contains('bird-img-circle') ||
+                             target.classList.contains('status-ring') ||
+                             target.classList.contains('bird-label');
+        
+        if (!clickedOnBird && (target.tagName === 'svg' || target === this)) {
+            console.log('Clicked on SVG background - resetting opacity');
+            birdGroups.transition()
+                .duration(300)
+                .style('opacity', 1);
+        }
+    });
+    
+    // Click outside the visualization to reset
+    const outsideClickHandler = function(event) {
+        const target = event.target;
+        const clickedInsideViz = container.contains(target);
+        const clickedInsidePanel = document.getElementById('species-panel')?.contains(target);
+        
+        // Reset if clicked outside both visualization and panel
+        if (!clickedInsideViz && !clickedInsidePanel) {
+            console.log('Clicked outside - resetting opacity');
+            birdGroups.transition()
+                .duration(300)
+                .style('opacity', 1);
+        }
+    };
+    
+    // Store handler reference to avoid memory leaks
+    document.removeEventListener('click', outsideClickHandler);
+    document.addEventListener('click', outsideClickHandler);
 }
 
 // Load and parse CSV
