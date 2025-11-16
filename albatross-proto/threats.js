@@ -20,12 +20,47 @@ document.addEventListener('DOMContentLoaded', () => {
         tooltip.style('display', 'none');
     }
 
-    // Color mapping for impact levels
-    const impactColors = {
-        'High': '#e74c3c',
-        'Medium': '#f39c12',
-        'Low': '#3498db',
-        '': '#95a5a6'  // Unknown/missing impact
+    // Color mapping for conservation status (matching visualization.js)
+    const statusColors = {
+        'CR': '#d32f2f',  // Critical - Red
+        'EN': '#f57c00',  // Endangered - Orange
+        'VU': '#fbc02d',  // Vulnerable - Yellow
+        'NT': '#388e3c',  // Near Threatened - Green
+        'LC': '#1976d2'   // Least Concern - Blue
+    };
+
+    // Mapping of species to conservation status
+    const speciesStatus = {
+        'Northern Royal Albatross': 'EN',
+        'Southern Royal Albatross': 'VU',
+        'Wandering Albatross': 'VU',
+        'Antipodean Albatross': 'EN',
+        'Amsterdam Albatross': 'EN',
+        'Tristan Albatross': 'CR',
+        'Sooty Albatross': 'EN',
+        'Light-mantled Albatross': 'NT',
+        'Waved Albatross': 'CR',
+        'Black-footed Albatross': 'NT',
+        'Laysan Albatross': 'NT',
+        'Short-tailed Albatross': 'VU',
+        'Atlantic Yellow-nosed Albatross': 'EN',
+        'Indian Yellow-nosed Albatross': 'EN',
+        'Grey-headed Albatross': 'EN',
+        'Black-browed Albatross': 'LC',
+        'Campbell Albatross': 'VU',
+        'Buller\'s Albatross': 'NT',
+        'Shy Albatross': 'NT',
+        'White-capped Albatross': 'NT',
+        'Chatham Albatross': 'VU',
+        'Salvin\'s Albatross': 'VU'
+    };
+
+    // Radius mapping for impact levels
+    const impactRadius = {
+        'High': 8,
+        'Medium': 6,
+        'Low': 4,
+        '': 3  // Unknown/missing impact
     };
 
     // Load and parse CSV
@@ -71,11 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Layout parameters
-        const cellWidth = 40;
-        const cellHeight = 25;
-        const leftMargin = 200;
-        const topMargin = 150;
-        const circleRadius = 6;
+        const cellWidth = 60;
+        const cellHeight = 30;
+        const leftMargin = 220;
+        const topMargin = 180;
 
         const width = leftMargin + threats.length * cellWidth + 50;
         const height = topMargin + species.length * cellHeight + 50;
@@ -105,16 +139,45 @@ document.addEventListener('DOMContentLoaded', () => {
                 .attr('y2', topMargin + i * cellHeight + cellHeight / 2);
         });
 
-        // Add species labels (rows) with click handlers
+        // Add species labels (rows) with click handlers and color coding by conservation status
+        const speciesLabels = [];
         species.forEach((sp, i) => {
-            svg.append('text')
+            const status = speciesStatus[sp] || 'LC'; // default to Least Concern if not found
+            const color = statusColors[status] || '#000000';
+            
+            const label = svg.append('text')
                 .attr('class', 'species-label')
+                .attr('data-species', sp)
                 .attr('x', leftMargin - 10)
                 .attr('y', topMargin + i * cellHeight + cellHeight / 2 + 4)
                 .text(sp)
                 .style('cursor', 'pointer')
+                .style('fill', color)
+                .style('font-weight', 'bold')
                 .on('click', function(event) {
                     event.stopPropagation();
+                    
+                    // Gray out all other species
+                    speciesLabels.forEach(lbl => {
+                        const lblSpecies = lbl.attr('data-species');
+                        if (lblSpecies !== sp) {
+                            lbl.transition().duration(300).style('opacity', 0.2);
+                        } else {
+                            lbl.transition().duration(300).style('opacity', 1);
+                        }
+                    });
+                    
+                    // Gray out circles
+                    svg.selectAll('.matrix-circle').each(function() {
+                        const circle = d3.select(this);
+                        const circleSpecies = circle.attr('data-species');
+                        if (circleSpecies !== sp) {
+                            circle.transition().duration(300).style('opacity', 0.1);
+                        } else {
+                            circle.transition().duration(300).style('opacity', 0.8);
+                        }
+                    });
+                    
                     // Open panel with species name
                     if (typeof window.openSpeciesPanel === 'function') {
                         window.openSpeciesPanel(sp);
@@ -122,6 +185,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.dispatchEvent(new CustomEvent('openSpeciesPanelByName', { detail: { speciesName: sp } }));
                     }
                 });
+            
+            speciesLabels.push(label);
         });
 
         // Add threat labels (columns) - rotated
@@ -136,25 +201,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Draw circles for species-threat intersections
         species.forEach((sp, rowIdx) => {
+            const speciesColor = statusColors[speciesStatus[sp]] || statusColors['LC'];
+            
             threats.forEach((threat, colIdx) => {
                 const cellData = matrix[sp][threat];
                 if (cellData) {
                     const cx = leftMargin + colIdx * cellWidth + cellWidth / 2;
                     const cy = topMargin + rowIdx * cellHeight + cellHeight / 2;
-                    const color = impactColors[cellData.impact] || impactColors[''];
+                    const radius = impactRadius[cellData.impact] || impactRadius[''];
 
                     svg.append('circle')
                         .attr('class', 'matrix-circle')
+                        .attr('data-species', sp)
                         .attr('cx', cx)
                         .attr('cy', cy)
-                        .attr('r', circleRadius)
-                        .attr('fill', color)
+                        .attr('r', radius)
+                        .attr('fill', speciesColor)
                         .attr('opacity', 0.8)
+                        .style('cursor', 'pointer')
+                        .on('click', function(event) {
+                            event.stopPropagation();
+                            
+                            // Gray out all other species
+                            speciesLabels.forEach(lbl => {
+                                const lblSpecies = lbl.attr('data-species');
+                                if (lblSpecies !== sp) {
+                                    lbl.transition().duration(300).style('opacity', 0.2);
+                                } else {
+                                    lbl.transition().duration(300).style('opacity', 1);
+                                }
+                            });
+                            
+                            // Gray out circles
+                            svg.selectAll('.matrix-circle').each(function() {
+                                const circle = d3.select(this);
+                                const circleSpecies = circle.attr('data-species');
+                                if (circleSpecies !== sp) {
+                                    circle.transition().duration(300).style('opacity', 0.1);
+                                } else {
+                                    circle.transition().duration(300).style('opacity', 0.8);
+                                }
+                            });
+                            
+                            // Open panel with species name
+                            if (typeof window.openSpeciesPanel === 'function') {
+                                window.openSpeciesPanel(sp);
+                            } else {
+                                window.dispatchEvent(new CustomEvent('openSpeciesPanelByName', { detail: { speciesName: sp } }));
+                            }
+                        })
                         .on('mouseover', function(event) {
                             d3.select(this)
                                 .transition()
                                 .duration(200)
-                                .attr('r', circleRadius * 1.5)
+                                .attr('r', radius * 1.5)
                                 .attr('opacity', 1);
                             
                             let tooltipText = `<strong>${sp}</strong><br/>`;
@@ -178,12 +278,36 @@ document.addEventListener('DOMContentLoaded', () => {
                             d3.select(this)
                                 .transition()
                                 .duration(200)
-                                .attr('r', circleRadius)
+                                .attr('r', radius)
                                 .attr('opacity', 0.8);
                             hideTooltip();
                         });
                 }
             });
+        });
+        
+        // Listen for panel close event to reset all elements
+        window.addEventListener('speciesPanelClosed', function() {
+            speciesLabels.forEach(lbl => {
+                lbl.transition().duration(300).style('opacity', 1);
+            });
+            svg.selectAll('.matrix-circle')
+                .transition()
+                .duration(300)
+                .style('opacity', 0.8);
+        });
+        
+        // Reset on clicking SVG background
+        svg.on('click', function(event) {
+            if (event.target.tagName === 'svg' || event.target === this) {
+                speciesLabels.forEach(lbl => {
+                    lbl.transition().duration(300).style('opacity', 1);
+                });
+                svg.selectAll('.matrix-circle')
+                    .transition()
+                    .duration(300)
+                    .style('opacity', 0.8);
+            }
         });
     }
 });

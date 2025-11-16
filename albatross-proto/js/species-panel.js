@@ -79,7 +79,15 @@ function openPanel(speciesData) {
     if (imageEl) {
         const commonName = speciesData['Common name'] || 'Unknown';
         const slug = slugify(commonName);
-        const variants = [slug, slug.replace(/-/g, '_'), slug.replace(/-/g, '')];
+        
+        // Also create a version with apostrophe preserved for filenames that use it
+        const slugWithApostrophe = commonName.toString().toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9\-']/g, '')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        
+        const variants = [slugWithApostrophe, slug, slug.replace(/-/g, '_'), slug.replace(/-/g, '')];
         let imageLoaded = false;
 
         const tryLoadImage = (variantIndex, extIndex) => {
@@ -393,6 +401,8 @@ function closePanel() {
     const panel = document.getElementById('species-panel');
     if (panel) {
         panel.classList.remove('open');
+        // Dispatch event to notify other components that panel is closed
+        window.dispatchEvent(new CustomEvent('speciesPanelClosed'));
     }
 }
 
