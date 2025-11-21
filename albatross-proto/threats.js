@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusColors = {
         'CR': '#d32f2f',  // Critical - Red
         'EN': '#f57c00',  // Endangered - Orange
-        'VU': '#fbc02d',  // Vulnerable - Yellow
-        'NT': '#388e3c',  // Near Threatened - Green
-        'LC': '#1976d2'   // Least Concern - Blue
+        'VU': '#FFC34B',  // Vulnerable - Yellow
+        'NT': '#5AB361',  // Near Threatened - Green
+        'LC': '#2F6690'   // Least Concern - Blue
     };
 
     // Mapping of species to conservation status
@@ -57,10 +57,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Radius mapping for impact levels
     const impactRadius = {
-        'High': 8,
-        'Medium': 6,
-        'Low': 4,
-        '': 3  // Unknown/missing impact
+        'High': 12,
+        'Medium': 9,
+        'Low': 6,
+        '': 4  // Unknown/missing impact
     };
 
     // Load and parse CSV

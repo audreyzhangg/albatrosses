@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Albatross Exploration</title>
   <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     :root{
       --ink:#0f172a;
@@ -21,7 +23,7 @@
     body{ 
       margin:0; 
       font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; 
-      background:#fff; 
+      background:#dbf0fe; 
       color:var(--ink); 
     }
 
@@ -48,7 +50,7 @@
 
     /* Intro section */
     #intro-section {
-      background: #fff;
+      background: #dbf0fe;
     }
 
     #intro-visual {
@@ -71,9 +73,198 @@
     .beak-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
     .beak-hotspot:hover{ fill: rgba(255,99,71,0.12); }
 
+    /* Quiz section */
+    #quiz-section {
+      background: #dbf0fe;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+    }
+
+    #quiz-container {
+      max-width: 600px;
+      text-align: center;
+      padding: 40px;
+    }
+
+    #quiz-question {
+      font-size: 22px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      line-height: 1.4;
+    }
+
+    #quiz-input-container {
+      margin: 30px 0;
+      position: relative;
+    }
+
+    #quiz-input {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 18px;
+      border: 3px solid #e5e7eb;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.3s ease;
+      font-family: inherit;
+    }
+
+    #quiz-input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    #quiz-submit {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 18px;
+      font-weight: 600;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #quiz-submit:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+    }
+
+    #quiz-submit:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #quiz-answer {
+      margin-top: 30px;
+      padding: 20px;
+      background: #ecfdf5;
+      border: 2px solid #10b981;
+      border-radius: 12px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+    }
+
+    #quiz-answer.correct {
+      background: #ecfdf5;
+      border-color: #10b981;
+    }
+
+    #quiz-answer.incorrect {
+      background: #fef2f2;
+      border-color: #ef4444;
+    }
+
+    #quiz-answer.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #quiz-answer h3 {
+      color: #047857;
+      font-size: 24px;
+      margin: 0 0 10px 0;
+    }
+
+    #quiz-answer.incorrect h3 {
+      color: #dc2626;
+    }
+
+    #quiz-answer p {
+      color: #065f46;
+      font-size: 16px;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    #quiz-answer.incorrect p {
+      color: #991b1b;
+    }
+
+    #quiz-continue {
+      margin-top: 25px;
+      padding: 12px 25px;
+      font-size: 16px;
+      font-weight: 600;
+      background: #047857;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    #quiz-continue.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #quiz-continue:hover {
+      background: #065f46;
+      transform: translateY(-1px);
+    }
+
+    #quiz-answer.incorrect #quiz-continue {
+      background: #dc2626;
+    }
+
+    #quiz-answer.incorrect #quiz-continue:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+    }
+
+    /* Distance section */
+    #distance-section {
+      background: #dbf0fe;
+    }
+
+    #distance-container {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    #distance-info {
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 30px;
+      font-weight: 600;
+    }
+
+    #distance-map {
+      width: 100%;
+      height: 500px;
+      border: 2px solid #dbf0fe;
+      border-radius: 12px;
+      margin: 20px 0;
+      z-index: 1;
+    }
+
+    /* Leaflet map custom styles */
+    .distance-info-control {
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .leaflet-popup-content {
+      font-family: inherit;
+      font-size: 13px;
+    }
+
     /* Species section */
     #species-section {
-      background: #f9fafb;
+      background: #dbf0fe;
     }
 
     #species-legend {
@@ -149,7 +340,7 @@
 
     /* Threats section */
     #threats-section {
-      background: #ffffff;
+      background: #dbf0fe;
     }
 
     #matrix-viz {
@@ -167,7 +358,7 @@
     .species-label{ font-size:13px; fill:#2c3e50; text-anchor:end; }
     .threat-label{ font-size:12px; fill:#2c3e50; text-anchor:start; }
     .matrix-circle{ cursor:pointer; }
-    .grid-line{ stroke:#ecf0f1; stroke-width:1; }
+    .grid-line{ stroke:none; }
 
     .threats-legend {
       display: flex;
@@ -192,7 +383,7 @@
 
     /* Myths section */
     #myths-section {
-      background: #f9fafb;
+      background: #dbf0fe;
     }
 
     .pc-stage {
@@ -362,7 +553,7 @@
 
     .carousel-btn:hover {
       background: var(--chip-act);
-      cursor: url('./images/albatross_stand.png') 0 0, pointer !important;
+      cursor: pointer;
     }
 
     .carousel-btn.prev {
@@ -519,6 +710,68 @@
       opacity: 0.6;
     }
 
+    /* Navigation Dots */
+    .nav-dots {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(44, 62, 80, 0.3);
+      border: 2px solid rgba(44, 62, 80, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-dot:hover {
+      background: rgba(44, 62, 80, 0.6);
+      transform: scale(1.2);
+    }
+
+    .nav-dot.active {
+      background: #2c3e50;
+      border-color: #2c3e50;
+      transform: scale(1.3);
+    }
+
+    .nav-dot::after {
+      content: attr(data-label);
+      position: absolute;
+      right: 25px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(44, 62, 80, 0.9);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .nav-dot:hover::after {
+      opacity: 1;
+    }
+
+    /* Hide nav dots on mobile */
+    @media (max-width: 768px) {
+      .nav-dots {
+        display: none;
+      }
+    }
+
     /* Responsive */
     @media (max-width: 980px) {
       .pc-card {
@@ -552,7 +805,7 @@
 </head>
 <body>
   <!-- Landing Section -->
-  <section id="landing-section" class="section" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #fff;">
+  <section id="landing-section" class="section" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #dbf0fe;">
     <h1 style="font-size: 64px; color: #2c3e50; margin: 0;">Wings Over Water: The Albatross</h1>
   </section>
 
@@ -561,6 +814,35 @@
     <h1>Anatomy of an Albatross</h1>
     <p class="subtitle">Click the highlighted regions (wings, stomach, beak) to see information.</p>
     <div id="intro-visual"></div>
+  </section>
+
+  <!-- Quiz Section -->
+  <section id="quiz-section" class="section">
+    <div id="quiz-container">
+      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">In Around the World in 80 Days, the main character Phileas Fogg attemps to circumnavigate the globe in 80 days.</h2>
+      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">Albatrosses regularly make this trip by wing, travelling over 13000 miles. Guess how many days this trip took:</p>
+      <div id="quiz-input-container">
+        <input type="text" id="quiz-input" placeholder="Enter your guess..." autocomplete="off">
+        <button id="quiz-submit" type="button">Submit Answer</button>
+      </div>
+      <div id="quiz-answer">
+        <h3>Just 46 days!</h3>
+        <p>Albatrosses are incredible long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land! </p>
+        <button id="quiz-continue" type="button">Continue Exploring →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Distance Section -->
+  <section id="distance-section" class="section">
+    <div id="distance-container">
+      <h1>All in a Day's Work</h1>
+      <p class="subtitle">Albatrosses can travel up to 560 miles in a single day, traveling on average at 45 miles per hour. </p>
+      <p class="subtitle">
+        From Boston, this would reach as far as:
+      <p>
+      <div id="distance-map"></div>
+    </div>
   </section>
 
   <!-- Species Section -->
@@ -589,15 +871,15 @@
           <span>Endangered</span>
         </div>
         <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#fbc02d;"></div>
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#FFC34B;"></div>
           <span>Vulnerable</span>
         </div>
         <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#388e3c;"></div>
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#5AB361;"></div>
           <span>Near Threatened</span>
         </div>
         <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#1976d2;"></div>
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#2F6690;"></div>
           <span>Least Concern</span>
         </div>
       </div>
@@ -608,15 +890,15 @@
       <div style="text-align: center; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Threat Impact</div>
       <div class="threats-legend">
         <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:16px; height:16px;"></div>
+          <div class="threats-legend-circle" style="width:24px; height:24px;"></div>
           <span>High Impact</span>
         </div>
         <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px;"></div>
+          <div class="threats-legend-circle" style="width:18px; height:18px;"></div>
           <span>Medium Impact</span>
         </div>
         <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:8px; height:8px;"></div>
+          <div class="threats-legend-circle" style="width:12px; height:12px;"></div>
           <span>Low Impact</span>
         </div>
       </div>
@@ -642,6 +924,17 @@
     </div>
   </section>
 
+  <!-- Navigation Dots -->
+  <div class="nav-dots">
+    <div class="nav-dot active" data-section="landing" data-label="Home"></div>
+    <div class="nav-dot" data-section="intro" data-label="Anatomy"></div>
+    <div class="nav-dot" data-section="quiz" data-label="Quiz"></div>
+    <div class="nav-dot" data-section="distance" data-label="Distance"></div>
+    <div class="nav-dot" data-section="species" data-label="Species"></div>
+    <div class="nav-dot" data-section="threats" data-label="Threats"></div>
+    <div class="nav-dot" data-section="myths" data-label="Myths"></div>
+  </div>
+
   <!-- Right Panel for Species Info -->
   <div id="species-panel">
     <button id="species-panel-close">×</button>
@@ -662,6 +955,259 @@
   <script src="threats.js"></script>
   <script type="module" src="js/myths.js"></script>
   <script type="module" src="js/species-panel.js"></script>
+  
+  <!-- Quiz functionality -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const quizInput = document.getElementById('quiz-input');
+      const quizSubmit = document.getElementById('quiz-submit');
+      const quizAnswer = document.getElementById('quiz-answer');
+      const quizContinue = document.getElementById('quiz-continue');
+      const speciesSection = document.getElementById('species-section');
+
+      function showAnswer() {
+        const userAnswer = parseInt(quizInput.value.trim());
+        const isExact = userAnswer === 46;
+        const isClose = userAnswer >= 40 && userAnswer <= 50;
+        
+        quizSubmit.disabled = true;
+        quizInput.disabled = true;
+        
+        // Update content based on correctness
+        const answerTitle = quizAnswer.querySelector('h3');
+        const answerText = quizAnswer.querySelector('p');
+        
+        if (isExact) {
+          quizAnswer.classList.add('correct');
+          quizAnswer.classList.remove('incorrect');
+          answerTitle.textContent = 'Correct! Just 46 days!';
+          answerText.textContent = 'Albatrosses are incredible long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land!';
+        } else if (isClose) {
+          quizAnswer.classList.add('correct');
+          quizAnswer.classList.remove('incorrect');
+          answerTitle.textContent = 'Close guess! The answer is 46 days.';
+          answerText.textContent = 'Albatrosses are incredible long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land!';
+        } else {
+          quizAnswer.classList.add('incorrect');
+          quizAnswer.classList.remove('correct');
+          answerTitle.textContent = 'Not quite! The answer is 46 days.';
+          answerText.textContent = 'Albatrosses are incredible long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land!';
+        }
+        
+        quizAnswer.classList.add('visible');
+        
+        // Show continue button after a short delay
+        setTimeout(() => {
+          quizContinue.classList.add('visible');
+        }, 500);
+      }
+
+      // Handle submit button click
+      quizSubmit.addEventListener('click', function() {
+        if (quizInput.value.trim() !== '') {
+          showAnswer();
+        }
+      });
+
+      // Handle Enter key press
+      quizInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && quizInput.value.trim() !== '') {
+          showAnswer();
+        }
+      });
+
+      // Handle continue button click - scroll to species section
+      quizContinue.addEventListener('click', function() {
+        speciesSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      });
+
+      // Enable/disable submit button based on input
+      quizInput.addEventListener('input', function() {
+        quizSubmit.disabled = quizInput.value.trim() === '';
+      });
+
+      // Initially disable submit button
+      quizSubmit.disabled = true;
+    });
+
+    // Distance map functionality with Leaflet
+    document.addEventListener('DOMContentLoaded', function() {
+      const mapContainer = document.getElementById('distance-map');
+      if (!mapContainer) return;
+
+      // Boston coordinates (latitude, longitude)
+      const bostonCoords = [42.3601, -71.0589];
+      
+      // Initialize the map
+      const map = L.map('distance-map').setView(bostonCoords, 6);
+
+      // Add OpenStreetMap tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Create custom red marker icon for Boston
+      const redIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+
+      // Add Boston marker with red icon
+      const bostonMarker = L.marker(bostonCoords, {icon: redIcon})
+        .addTo(map)
+        .bindPopup('<b>Boston, MA</b>')
+        .openPopup();
+
+      // Add 560-mile radius circle (560 miles = ~901 km)
+      const radiusCircle = L.circle(bostonCoords, {
+        color: '#ef4444',
+        fillColor: '#ef4444',
+        fillOpacity: 0.1,
+        radius: 901000, // 560 miles in meters
+        dashArray: '10, 10'
+      }).addTo(map);
+
+      // Function to calculate distance between two points (Haversine formula)
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 3959; // Earth's radius in miles
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c; // Distance in miles
+      }
+
+      // Cities within 560 miles of Boston
+      const citiesInRange = [
+        { name: 'New York, NY', coords: [40.7128, -74.0060] },
+        { name: 'Philadelphia, PA', coords: [39.9526, -75.1652] },
+        { name: 'Washington, DC', coords: [38.9072, -77.0369] },
+        { name: 'Montreal, Canada', coords: [45.5017, -73.5673] },
+        { name: 'Portland, ME', coords: [43.6591, -70.2553] },
+        { name: 'Buffalo, NY', coords: [42.8864, -78.8784] },
+        { name: 'Pittsburgh, PA', coords: [40.4406, -79.9959] },
+        { name: 'Richmond, VA', coords: [37.5407, -77.4360] }
+      ];
+
+      // Add city markers with flight time calculations
+      citiesInRange.forEach(city => {
+        // Calculate distance from Boston to this city
+        const distance = calculateDistance(
+          bostonCoords[0], bostonCoords[1], // Boston lat, lon
+          city.coords[0], city.coords[1]    // City lat, lon
+        );
+        
+        // Calculate flight time (distance / 45 mph)
+        const flightTimeHours = distance / 45;
+        const hours = Math.floor(flightTimeHours);
+        const minutes = Math.round((flightTimeHours - hours) * 60);
+        
+        // Format time display
+        let timeText;
+        if (hours === 0) {
+          timeText = `${minutes} minutes`;
+        } else if (minutes === 0) {
+          timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
+        } else {
+          timeText = `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minutes`;
+        }
+
+        L.marker(city.coords)
+          .addTo(map)
+          .bindPopup(`<b>${city.name}</b><br>Distance: ${Math.round(distance)} miles<br>Flight time: ${timeText}`)
+          .on('mouseover', function(e) {
+            this.openPopup();
+          });
+      });
+
+      // Custom control for distance info
+      const distanceInfo = L.control({position: 'topright'});
+      distanceInfo.onAdd = function(map) {
+        const div = L.DomUtil.create('div', 'distance-info-control');
+        div.style.backgroundColor = 'white';
+        div.style.padding = '10px';
+        div.style.borderRadius = '5px';
+        div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+        div.innerHTML = '<b>Albatross Daily Range</b><br>560 miles from Boston';
+        return div;
+      };
+      distanceInfo.addTo(map);
+
+      // Fit map to show the circle and all cities
+      const group = new L.featureGroup([radiusCircle, bostonMarker, ...citiesInRange.map(city => L.marker(city.coords))]);
+      map.fitBounds(group.getBounds().pad(0.1));
+    });
+
+    // Navigation dots functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const navDots = document.querySelectorAll('.nav-dot');
+      const sections = {
+        'landing': document.getElementById('landing-section'),
+        'intro': document.getElementById('intro-section'),
+        'quiz': document.getElementById('quiz-section'),
+        'distance': document.getElementById('distance-section'),
+        'species': document.getElementById('species-section'),
+        'threats': document.getElementById('threats-section'),
+        'myths': document.getElementById('myths-section')
+      };
+
+      // Handle dot clicks
+      navDots.forEach(dot => {
+        dot.addEventListener('click', function() {
+          const sectionName = this.getAttribute('data-section');
+          const targetSection = sections[sectionName];
+          
+          if (targetSection) {
+            targetSection.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          }
+        });
+      });
+
+      // Update active dot on scroll
+      function updateActiveDot() {
+        const scrollPosition = window.scrollY + window.innerHeight / 2;
+        
+        let activeSection = 'landing';
+        
+        Object.entries(sections).forEach(([name, section]) => {
+          if (section) {
+            const sectionTop = section.offsetTop;
+            const sectionBottom = sectionTop + section.offsetHeight;
+            
+            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+              activeSection = name;
+            }
+          }
+        });
+
+        // Update active dot
+        navDots.forEach(dot => {
+          dot.classList.remove('active');
+          if (dot.getAttribute('data-section') === activeSection) {
+            dot.classList.add('active');
+          }
+        });
+      }
+
+      // Listen for scroll events
+      window.addEventListener('scroll', updateActiveDot);
+      
+      // Initial update
+      updateActiveDot();
+    });
+  </script>
 </body>
 </html>
 

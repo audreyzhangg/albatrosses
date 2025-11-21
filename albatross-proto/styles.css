@@ -21,7 +21,7 @@
     cursor:url('./images/albatross_cursor.png') 0 0, auto !important;
   }
 
-  /* Clickable elements use the standing albatross cursor */
+  /* Clickable elements use the normal pointer cursor */
   button, 
   a, 
   [role="button"], 
@@ -38,13 +38,13 @@
   [onclick],
   label,
   svg circle {
-    cursor:url('./images/albatross_stand.png') 0 0, pointer !important;
+    cursor: pointer !important;
   }
 
   /* Extra specificity for SVG elements */
   svg circle:hover,
   svg g:hover {
-    cursor:url('./images/albatross_stand.png') 0 0, pointer !important;
+    cursor: pointer !important;
   }
   
   /* Header with a soft gradient stripe */

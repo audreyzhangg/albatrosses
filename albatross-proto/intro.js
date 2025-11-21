@@ -237,6 +237,26 @@ document.addEventListener('DOMContentLoaded', () => {
         // initial draw
         drawPolys();
 
+        // Add scroll listener to hide tooltips when scrolling
+        window.addEventListener('scroll', function() {
+            hideTooltip();
+        });
+
+        // Add listener for navigation dot clicks to hide tooltips
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('nav-dot')) {
+                hideTooltip();
+            }
+        });
+
+        // Hide tooltips when clicking outside the intro section
+        document.addEventListener('click', function(event) {
+            const introSection = document.getElementById('intro-section');
+            if (introSection && !introSection.contains(event.target)) {
+                hideTooltip();
+            }
+        });
+
         // Editing and save/load UI removed per request; hotspots are read-only and loaded from hotspots.json/localStorage/defaults
     };
     preload.onerror = function() { console.warn('Could not load intro image:', imgUrl); };

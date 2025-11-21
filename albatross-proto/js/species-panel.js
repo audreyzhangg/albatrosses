@@ -128,9 +128,9 @@ function openPanel(speciesData) {
         const statusColors = {
             'CR': '#d32f2f',
             'EN': '#f57c00',
-            'VU': '#fbc02d',
-            'NT': '#388e3c',
-            'LC': '#1976d2'
+            'VU': '#FFC34B',
+            'NT': '#5AB361',
+            'LC': '#2F6690'
         };
         const statusLabels = {
             'CR': 'Critically Endangered',
