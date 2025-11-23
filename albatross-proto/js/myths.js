@@ -4,6 +4,7 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
 let viewport, track, prevBtn, nextBtn, counter;
+let dotsWrap;
 let allCards = [];
 let visibleIdxs = [];
 let i = 0;
@@ -103,6 +104,14 @@ function buildTrack(){
   visibleIdxs.forEach(idx => track.insertAdjacentHTML("beforeend", cardHTML(allCards[idx])));
   updateCounter();
   track.children[0]?.scrollIntoView({ behavior: "instant", inline: "start", block: "nearest" });
+  const stageEl = viewport.closest('.pc-stage');
+  const footer = stageEl?.querySelector('.pc-footer');
+  if (footer) {
+    dotsWrap = document.createElement('div');
+    dotsWrap.className = 'pc-dots';
+    footer.insertBefore(dotsWrap, footer.querySelector('.hint'));
+  }
+  renderDots();
 }
 
 function paraHTML(text){
@@ -146,9 +155,30 @@ function cardHTML(c){
 function esc(s){ return String(s).replace(/[&<>"]/g,c=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c])); }
 function escAttr(s){ return String(s).replace(/"/g, '&quot;'); }
 
+function renderDots(){
+  if (!dotsWrap) return;
+  dotsWrap.innerHTML = '';
+  visibleIdxs.forEach((_, idx) => {
+    const d = document.createElement('button');
+    d.type = 'button';
+    d.className = 'pc-dot' + (idx === i ? ' active' : '');
+    d.setAttribute('aria-label', `Go to card ${idx+1}`);
+    d.addEventListener('click', () => goTo(idx));
+    dotsWrap.appendChild(d);
+  });
+}
+
+function updateDots(){
+  if (!dotsWrap) return;
+  [...dotsWrap.children].forEach((el, idx) => {
+    el.classList.toggle('active', idx === i);
+  });
+}
+
 function updateCounter(){
-  counter.textContent = `${Math.min(i+1, visibleIdxs.length)} of ${visibleIdxs.length}`;
+  //counter.textContent = `${Math.min(i+1, visibleIdxs.length)} of ${visibleIdxs.length}`;
   prevBtn.disabled = nextBtn.disabled = visibleIdxs.length <= 1;
+  updateDots();
 }
 
 function goTo(idx){
@@ -177,6 +207,7 @@ async function init(){
   allCards = await loadData();
   applyFilter();
   buildTrack();
+  renderDots();
 
   prevBtn.addEventListener("click", () => goTo(i-1));
   nextBtn.addEventListener("click", () => goTo(i+1));
