@@ -79,8 +79,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      /* Place content toward the top of the section and add extra top padding
+         so the quiz appears lower on the page visually. */
+      justify-content: flex-start;
       min-height: 80vh;
+      padding: 140px 20px 60px;
     }
 
     #quiz-container {
@@ -807,7 +810,12 @@
   <!-- Landing Section -->
   <section id="landing-section" class="section" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #dbf0fe;">
     <h1 style="font-size: 64px; color: #2c3e50; margin: 0;">Wings Over Water: The Albatross</h1>
+    <div style="width:100%; text-align:center; margin-top:20px;">
+      <!-- 3D visualization is embedded below the "All in a Day's Work" section; no button required. -->
+      <p style="color:var(--muted); margin:0;">Interactive 3D flight path visualization is embedded below the distance section.</p>
+    </div>
   </section>
+
 
   <!-- Intro Section -->
   <section id="intro-section" class="section">
@@ -844,6 +852,86 @@
       <div id="distance-map"></div>
     </div>
   </section>
+
+  <!-- Inline 3D Scatter Visualization (embedded directly below "All in a Day's Work") -->
+  <section id="scatter-section" class="section">
+    <h1>Dynamic Soaring</h1>
+    <p class="subtitle">Albatrosses are one of very few families of birds that utilize dynamic soaring, a special flying technique that takes advantage of ocean winds to fly without using much energy. The wind right above the waves is slow due to drag from the water and faster a few meters up. An albatross loops up and down through this wind gradient to grab free energy from the wind. One loop has four steps:</p>
+    <div style="width:100%; display:flex; justify-content:center;">
+      <div style="display:flex; gap:24px; width:100%; max-width:1200px; align-items:flex-start;">
+        <!-- Left column: iframe occupying half the available width -->
+        <div style="flex:1; min-width:0;">
+          <iframe src="3d-scatter.html?zoom=2.7" style="width:100%;height:540px;border-radius:8px;border:1px solid rgba(0,0,0,0.12);background:#fff;box-shadow:0 6px 18px rgba(15,23,42,0.08);" allowfullscreen></iframe>
+        </div>
+
+        <!-- Right column: explanatory/context content -->
+        <div id="scatter-text-col" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+          <div id="box-1" class="scatter-info" style="background:#fff;padding:16px;border-radius:8px;border:1px solid #eef2ff; width:100%;">
+            <h3 style="margin:0 0 8px 0; font-size:18px; color:#2c3e50;">1. Prepare to climb:</h3>
+            <p class="small" style="margin:0 0 8px 0;"> The bird stays just a meter or two above the water, where the air moves more slowly. This lets it line up the next turn with very little effort.</p>
+        </div>
+
+        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+          <div id="box-2" class="scatter-info" style="background:#fff;padding:16px;border-radius:8px;border:1px solid #eef2ff; width:100%;">
+            <h3 style="margin:0 0 8px 0; font-size:18px; color:#2c3e50;">2. Climb into the wind:</h3>
+            <p class="small" style="margin:0 0 8px 0;"> The albatrosses faces the wind while climbing a few to ~20 meters. As it crosses into the faster-moving air aloft, its airspeed through the air increases.</p>
+        </div>
+
+        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+          <div id="box-3" class="scatter-info scatter-jump" data-jump-t="0.66" style="background:#fff;padding:16px;border-radius:8px;border:1px solid #eef2ff; width:100%; cursor:pointer;">
+            <h3 style="margin:0 0 8px 0; font-size:18px; color:#2c3e50;">3. Turn back down:</h3>
+            <p class="small" style="margin:0 0 8px 0;"> Once at the top, the albatross turns down against the wind in preperation for its descent downwards.</p>
+        </div>
+
+        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
+          <div id="box-4" class="scatter-info scatter-jump" data-jump-t="1.0" style="background:#fff;padding:16px;border-radius:8px;border:1px solid #eef2ff; width:100%; cursor:pointer;">
+            <h3 style="margin:0 0 8px 0; font-size:18px; color:#2c3e50;">4. Glide down with the wind:</h3>
+            <p class="small" style="margin:0 0 8px 0;"> The albatross glides downwards, facing away from the wind, and converts the potential energy gained from its upward climb into kinetic energy.<p>
+      </div>
+    </div>
+  </section>
+    </div>
+  </section>
+
+  <script>
+    // Listen for highlight messages from the embedded scatter iframe
+    window.addEventListener('message', (ev) => {
+      if (!ev.data || typeof ev.data !== 'object') return;
+      if (ev.data.type === 'highlight-box') {
+        const box = Number(ev.data.box) || 0; // 1..4 expected
+        const boxes = [document.getElementById('box-1'), document.getElementById('box-2'), document.getElementById('box-3'), document.getElementById('box-4')];
+        for (let i = 0; i < boxes.length; i++) {
+          const el = boxes[i];
+          if (!el) continue;
+          if (i === (box - 1)) {
+            el.style.background = 'linear-gradient(90deg, #e8f0ff, #dbeafe)';
+            el.style.borderColor = '#bfdbfe';
+            el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.08)';
+            el.style.opacity = '1';
+            el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          } else {
+            el.style.background = '#f8fafc';
+            el.style.borderColor = '#eef2ff';
+            el.style.boxShadow = 'none';
+            el.style.opacity = '0.6';
+          }
+        }
+      }
+    }, false);
+
+    // Wire clicks on the .scatter-jump elements to postMessage to the iframe (jump-to)
+    window.addEventListener('DOMContentLoaded', () => {
+      const iframe = document.querySelector('iframe[src^="3d-scatter.html"]');
+      if (!iframe) return;
+      document.querySelectorAll('.scatter-jump').forEach(el => {
+        el.style.cursor = 'pointer';
+        el.addEventListener('click', () => {
+          const t = parseFloat(el.dataset.jumpT || '0');
+          iframe.contentWindow.postMessage({ type: 'jump-to-t', t: t }, '*');
+        });
+      });
+    });
+  </script>
 
   <!-- Species Section -->
   <section id="species-section" class="section">
@@ -893,11 +981,11 @@
       <div style="text-align: center; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Conservation Status</div>
       <div class="threats-legend">
         <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#d32f2f;"></div>
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#DD403A;"></div>
           <span>Critically Endangered</span>
         </div>
         <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#f57c00;"></div>
+          <div class="threats-legend-circle" style="width:12px; height:12px; background:#FF7B3D;"></div>
           <span>Endangered</span>
         </div>
         <div class="threats-legend-item">
@@ -1052,6 +1140,8 @@
       // Initially disable submit button
       quizSubmit.disabled = true;
     });
+
+    // NOTE: 3D scatter is embedded inline now; overlay/button handlers removed.
 
     // Distance map functionality with Leaflet
     document.addEventListener('DOMContentLoaded', function() {

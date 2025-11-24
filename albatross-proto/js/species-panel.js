@@ -126,8 +126,8 @@ function openPanel(speciesData) {
 
         // Status
         const statusColors = {
-            'CR': '#d32f2f',
-            'EN': '#f57c00',
+            'CR': '#DD403A',
+            'EN': '#FF7B3D',
             'VU': '#FFC34B',
             'NT': '#5AB361',
             'LC': '#2F6690'

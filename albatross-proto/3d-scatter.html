@@ -1,0 +1,1113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>3D Scatter — Lat/Long/Alt</title>
+  <style>
+    html,body { margin:0; height:100%; font-family: system-ui,Segoe UI,Roboto,Helvetica,Arial; background:#f7fbfe; }
+  /* app now only contains the 3D viewer */
+  #app { width:100%; height:100vh; display:block; }
+  #viewer { width:100%; height:100vh; position:relative; }
+    h2 { margin:0 0 12px 0; font-size:16px; }
+    label { display:block; margin:8px 0 4px 0; font-size:13px; color:#334155; }
+    input[type=range] { width:100%; }
+    .small { font-size:13px; color:#6b7280; }
+    .btn { display:inline-block; padding:8px 12px; border-radius:8px; border:none; background:#2563eb; color:white; cursor:pointer; margin-top:8px; }
+    .info { font-size:13px; color:#475569; margin-top:8px; }
+    #legend { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; padding:4px 6px; background:#fff; border-radius:6px; border:1px solid #eef2ff; }
+    .axis-label { position:absolute; left:12px; bottom:12px; background:rgba(255,255,255,0.9); padding:6px 8px; border-radius:6px; border:1px solid #eef2ff; font-size:13px; }
+    #dropzone { border: 2px dashed #dbeafe; padding:10px; text-align:center; border-radius:8px; color:#475569; margin-top:8px; }
+    a.small-link { color:#2563eb; text-decoration:none; font-size:13px; }
+    /* 3D axis label styles rendered via CSS2DRenderer */
+    .axis-title {
+      background: rgba(255,255,255,0.92);
+      color: #0f172a;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid #e6eef6;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(2,6,23,0.06);
+      white-space: nowrap;
+    }
+    .tick-label {
+      /* plain text tick labels — no bubble background or border */
+      background: transparent;
+      color: #334155;
+      padding: 0;
+      border-radius: 0;
+      border: none;
+      font-size: 11px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    /* marker percent label (CSS2D) */
+    .marker-percent {
+      background: rgba(255,255,255,0.94);
+      color: #0f172a;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(11,18,32,0.06);
+      font-size: 12px;
+      font-weight: 600;
+      pointer-events: none;
+      transform: translateY(6px); /* nudge slightly below the anchor */
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <!-- Load PapaParse for CSV parsing (global `Papa`) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+  <div id="app">
+    <div id="viewer"></div>
+  </div>
+
+  <script type="module">
+    // Module imports from CDN (use esm.sh which rewrites imports for the browser)
+  import * as THREE from 'https://esm.sh/three@0.154.0';
+  import { OrbitControls } from 'https://esm.sh/three@0.154.0/examples/jsm/controls/OrbitControls.js';
+  import { CSS2DRenderer, CSS2DObject } from 'https://esm.sh/three@0.154.0/examples/jsm/renderers/CSS2DRenderer.js';
+  import { Line2 } from 'https://esm.sh/three@0.154.0/examples/jsm/lines/Line2.js';
+  import { LineMaterial } from 'https://esm.sh/three@0.154.0/examples/jsm/lines/LineMaterial.js';
+  import { LineGeometry } from 'https://esm.sh/three@0.154.0/examples/jsm/lines/LineGeometry.js';
+  // We'll use PapaParse (loaded via script tag) to parse CSV robustly.
+
+  // DOM refs (minimal viewer-only UI)
+  const viewer = document.getElementById('viewer');
+
+    // Three.js scene setup
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf7fbff);
+
+    const camera = new THREE.PerspectiveCamera(60, viewer.clientWidth / viewer.clientHeight, 0.1, 10000);
+    camera.position.set(200, 200, 200);
+  // Make the scene's up direction the Z axis so Z points upward visually
+  camera.up.set(0, 0, 1);
+
+  // Optional view zoom can be supplied via URL param `?zoom=` (e.g. ?zoom=1.35).
+  // Values >1 zoom in (camera moves closer); values <1 zoom out. Clamped to a safe range.
+  const _urlParams = new URLSearchParams(window.location.search);
+  const _rawZoom = parseFloat(_urlParams.get('zoom')) || 1.0;
+  const VIEW_ZOOM = Math.max(0.25, Math.min(4.0, _rawZoom));
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    viewer.appendChild(renderer.domElement);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.target.set(0,0,0);
+  controls.update();
+
+    // Lights
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x666666, 0.85);
+    scene.add(hemi);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.6);
+    dir.position.set(100,200,100);
+    scene.add(dir);
+
+  // We'll draw a labeled axes box similar to the diagram instead of the default AxesHelper
+
+    // Group for points
+    const pointsGroup = new THREE.Group();
+    scene.add(pointsGroup);
+  // Group for axes and labels
+  const axesGroup = new THREE.Group();
+  scene.add(axesGroup);
+
+  // Label renderer (CSS2D) for axis labels and tick labels
+  const labelRenderer = new CSS2DRenderer();
+  labelRenderer.setSize(viewer.clientWidth, viewer.clientHeight);
+  labelRenderer.domElement.style.position = 'absolute';
+  labelRenderer.domElement.style.top = '0';
+  labelRenderer.domElement.style.left = '0';
+  labelRenderer.domElement.style.pointerEvents = 'none';
+  viewer.appendChild(labelRenderer.domElement);
+
+  // Marker controls: create a simple slider UI so users can scrub the marker along the curve.
+  const markerControls = document.createElement('div');
+  markerControls.id = 'marker-controls';
+  markerControls.style.position = 'absolute';
+  markerControls.style.left = '50%';
+  markerControls.style.bottom = '12px';
+  markerControls.style.transform = 'translateX(-50%)';
+  markerControls.style.background = 'rgba(255,255,255,0.92)';
+  markerControls.style.padding = '6px 10px';
+  markerControls.style.borderRadius = '10px';
+  markerControls.style.boxShadow = '0 6px 18px rgba(2,6,23,0.08)';
+  markerControls.style.display = 'none';
+  markerControls.style.alignItems = 'center';
+  markerControls.style.gap = '8px';
+  markerControls.style.zIndex = '5';
+
+  const markerSlider = document.createElement('input');
+  markerSlider.type = 'range';
+  markerSlider.id = 'marker-slider';
+  markerSlider.min = '0';
+  markerSlider.max = '1000';
+  markerSlider.step = '1';
+  markerSlider.value = '0';
+  markerSlider.style.width = '360px';
+  markerSlider.style.cursor = 'pointer';
+
+  markerControls.appendChild(markerSlider);
+  viewer.appendChild(markerControls);
+
+  // Marker info display removed (user requested no labels under the slider/marker)
+
+  // Playback controls: Play/Pause, Loop toggle, Next step
+  const playbackControls = document.createElement('div');
+  playbackControls.id = 'playback-controls';
+  playbackControls.style.position = 'absolute';
+  playbackControls.style.left = '50%';
+  playbackControls.style.bottom = '62px';
+  playbackControls.style.transform = 'translateX(-50%)';
+  playbackControls.style.display = 'flex';
+  playbackControls.style.gap = '8px';
+  playbackControls.style.zIndex = '6';
+  playbackControls.style.alignItems = 'center';
+
+  const playBtn = document.createElement('button');
+  playBtn.id = 'play-btn';
+  playBtn.textContent = 'Play';
+  playBtn.style.padding = '6px 10px';
+  playBtn.style.borderRadius = '8px';
+  playBtn.style.border = '1px solid rgba(11,18,32,0.06)';
+  playBtn.style.background = '#fff';
+  playBtn.style.color = '#0f172a';
+  playBtn.style.cursor = 'pointer';
+
+  const nextBtn = document.createElement('button');
+  nextBtn.id = 'next-btn';
+  nextBtn.textContent = 'Next';
+  nextBtn.style.padding = '6px 10px';
+  nextBtn.style.borderRadius = '8px';
+  nextBtn.style.border = '1px solid rgba(11,18,32,0.06)';
+  nextBtn.style.background = '#fff';
+  nextBtn.style.cursor = 'pointer';
+
+  playbackControls.appendChild(playBtn);
+  playbackControls.appendChild(nextBtn);
+  viewer.appendChild(playbackControls);
+
+  // Segments editor removed: segments are now loaded from data/albatross_segments.json
+
+  // store references on currentState (created below) once available
+
+  // Legend: color (gradient) + speed info
+  const legend = document.createElement('div');
+  legend.id = 'viewer-legend';
+  legend.style.position = 'absolute';
+  legend.style.left = '12px';
+  legend.style.top = '12px';
+  legend.style.background = 'rgba(255,255,255,0.92)';
+  legend.style.padding = '8px 10px';
+  legend.style.borderRadius = '8px';
+  legend.style.boxShadow = '0 6px 18px rgba(2,6,23,0.06)';
+  legend.style.fontSize = '12px';
+  legend.style.color = '#0f172a';
+  legend.style.zIndex = '5';
+  legend.style.display = 'flex';
+  legend.style.flexDirection = 'column';
+  legend.style.gap = '8px';
+
+  // Color legend row
+  const colorRow = document.createElement('div');
+  colorRow.style.display = 'flex';
+  colorRow.style.alignItems = 'center';
+  colorRow.style.gap = '8px';
+
+  const colorBar = document.createElement('div');
+  colorBar.id = 'color-bar';
+  colorBar.style.width = '160px';
+  colorBar.style.height = '12px';
+  colorBar.style.borderRadius = '6px';
+  colorBar.style.border = '1px solid rgba(11,18,32,0.06)';
+  colorBar.style.background = 'linear-gradient(to right, #2563eb, #ef4444)';
+
+  const colorLabels = document.createElement('div');
+  colorLabels.style.display = 'flex';
+  colorLabels.style.justifyContent = 'space-between';
+  colorLabels.style.width = '160px';
+  colorLabels.style.fontSize = '11px';
+  colorLabels.style.color = '#334155';
+  const minLabel = document.createElement('span'); minLabel.id = 'color-min'; minLabel.textContent = ''; 
+  const maxLabel = document.createElement('span'); maxLabel.id = 'color-max'; maxLabel.textContent = '';
+  colorLabels.appendChild(minLabel); colorLabels.appendChild(maxLabel);
+
+  const colorCol = document.createElement('div');
+  colorCol.style.display = 'flex';
+  colorCol.style.flexDirection = 'column';
+  colorCol.appendChild(colorBar);
+  colorCol.appendChild(colorLabels);
+
+  const colorTitle = document.createElement('div');
+  colorTitle.textContent = 'Vertical Speed (m/s)';
+  colorTitle.style.width = '48px';
+  colorTitle.style.fontSize = '12px';
+  colorTitle.style.color = '#0f172a';
+
+  colorRow.appendChild(colorTitle);
+  colorRow.appendChild(colorCol);
+
+  // Only append the color row to the legend (edit/download removed per request)
+  legend.appendChild(colorRow);
+  viewer.appendChild(legend);
+
+
+    // Utility: detect candidate column names
+      function findCol(keys, candidates) {
+        const low = keys.map(k => k.toLowerCase());
+        for (const c of candidates) {
+          const idx = low.indexOf(c.toLowerCase());
+          if (idx >= 0) return keys[idx];
+        }
+        return null;
+      }
+
+    // Find nearest point index for a given time string. Returns index or -1.
+    function findIndexForTime(timeStr) {
+      if (!timeStr) return -1;
+      const pts = currentState.points || [];
+      if (!pts.length) return -1;
+      // first try exact match against precomputed timeString
+      for (let i = 0; i < pts.length; i++) {
+        if (pts[i].timeString && pts[i].timeString === timeStr) return i;
+      }
+      // try contains
+      for (let i = 0; i < pts.length; i++) {
+        if (pts[i].timeString && pts[i].timeString.includes(timeStr)) return i;
+      }
+      // try parsing to Date and compare to parsed p.timeRaw values
+      let targetDate = new Date(timeStr);
+      if (!isNaN(targetDate.getTime())) {
+        let best = -1; let bestD = Infinity;
+        for (let i = 0; i < pts.length; i++) {
+          const tr = pts[i].timeRaw;
+          if (tr == null) continue;
+          const pd = new Date(tr);
+          if (isNaN(pd.getTime())) continue;
+          const d = Math.abs(pd.getTime() - targetDate.getTime());
+          if (d < bestD) { bestD = d; best = i; }
+        }
+        if (best >= 0) return best;
+      }
+      return -1;
+    }
+
+    // Load only the requested CSV path (do not allow uploads or alternate files)
+    const defaultPath = 'raw/BiP_WA_CROZET2019_M11675_NW03_G.csv';
+
+    async function loadCSV(pathOrText, isText=false) {
+      let text;
+      if (isText) text = pathOrText;
+      else {
+        const res = await fetch(pathOrText).catch(()=>null);
+        if (!res || !res.ok) throw new Error('Failed to fetch file: '+pathOrText);
+        text = await res.text();
+      }
+
+      // Parse CSV to array of objects using PapaParse (robust CSV parser)
+      const parsed = Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true });
+      return parsed.data;
+    }
+
+    // Build points from data (minimal — no labels, single color)
+    function buildPoints(data) {
+      // Clear previous
+      while (pointsGroup.children.length) pointsGroup.remove(pointsGroup.children[0]);
+
+      // remove any existing moving marker from previous builds
+      if (currentState && currentState.movingMarker) {
+        try {
+          pointsGroup.remove(currentState.movingMarker);
+          if (currentState.movingMarker.geometry) currentState.movingMarker.geometry.dispose();
+          if (currentState.movingMarker.material) currentState.movingMarker.material.dispose();
+        } catch (e) {}
+        currentState.movingMarker = null;
+        currentState.curve = null;
+      }
+
+      if (!data || !data.length) return;
+  const keys = Object.keys(data[0]);
+  // try to find columns (latitude, longitude, altitude)
+  const latKey = findCol(keys, ['lat','latitude','y','gps_lat','gps_latitude','LAT','LATITUDE']);
+  const lonKey = findCol(keys, ['lon','long','longitude','x','lng','gps_lon','gps_longitude','LON','LONGITUDE']);
+  const altKey = findCol(keys, ['alt','altitude','elevation','height','z','ALT','ALTITUDE']);
+  const s2Key = findCol(keys, ['s2down','s2_down','s2','s2-down','s2down_d','s2_down_d','S2DOWN']);
+
+      // filter rows that have numeric lat/lon/alt
+      const points = [];
+      for (const r of data) {
+        const lat = latKey ? parseFloat(r[latKey]) : NaN;
+        const lon = lonKey ? parseFloat(r[lonKey]) : NaN;
+        const alt = altKey ? parseFloat(r[altKey]) : NaN;
+        if (!isFinite(lat) || !isFinite(lon)) continue;
+        // alt may be missing; treat as 0
+        const z = isFinite(alt) ? alt : 0;
+    const s2 = s2Key ? parseFloat(r[s2Key]) : NaN;
+  // timestamps were removed by user request — do not store time fields on points
+  points.push({x: lat, y: lon, z, s2});
+      }
+
+      if (!points.length) {
+        const m = document.createElement('div');
+        m.style.position = 'absolute';
+        m.style.left = '50%';
+        m.style.top = '50%';
+        m.style.transform = 'translate(-50%,-50%)';
+        m.style.background = 'rgba(255,255,255,0.95)';
+        m.style.padding = '10px 12px';
+        m.style.borderRadius = '8px';
+        m.style.border = '1px solid #e6eef6';
+        m.style.color = '#334155';
+        m.textContent = 'No numeric lat/long values found in the CSV.';
+        viewer.appendChild(m);
+        return;
+      }
+
+  // If you want to plot a specific slice (Python-style), set SLICE.start and SLICE.end
+  // Example: { start: -400, end: -200 } will select points.slice(len-400, len-200)
+  const SLICE = { start: -400, end: -200 }; // set to null or undefined to disable slicing
+
+  function pythonSlice(arr, start, end) {
+    const len = arr.length;
+    let s = (typeof start === 'number') ? (start < 0 ? Math.max(0, len + start) : Math.min(len, start)) : 0;
+    let e = (typeof end === 'number') ? (end < 0 ? Math.max(0, len + end) : Math.min(len, end)) : len;
+    // ensure bounds
+    s = Math.max(0, Math.min(len, s));
+    e = Math.max(0, Math.min(len, e));
+    if (e < s) return [];
+    return arr.slice(s, e);
+  }
+
+  let displayPoints;
+  if (SLICE && (typeof SLICE.start === 'number' || typeof SLICE.end === 'number')) {
+    displayPoints = pythonSlice(points, SLICE.start, SLICE.end);
+  } else {
+    // Fallback: last N points to avoid performance issues
+    const MAX_POINTS = 500;
+    displayPoints = points.length > MAX_POINTS ? points.slice(points.length - MAX_POINTS) : points;
+  }
+
+  // compute ranges
+  const xs = displayPoints.map(p=>p.x); const ys = displayPoints.map(p=>p.y); const zs = displayPoints.map(p=>p.z);
+      const minX = Math.min(...xs), maxX = Math.max(...xs);
+      const minY = Math.min(...ys), maxY = Math.max(...ys);
+      const minZ = Math.min(...zs), maxZ = Math.max(...zs);
+
+      // choose scale to fit into [-scale, scale]
+      const scale = 150; // world scale
+      const sx = v => ((v - minX) / (maxX - minX || 1) - 0.5) * scale * 2;
+      const sy = v => ((v - minY) / (maxY - minY || 1) - 0.5) * scale * 2;
+      const sz = v => ((v - minZ) / (maxZ - minZ || 1) - 0.5) * scale * 2;
+
+  // color mapping: single fixed color
+  const colorMap = () => new THREE.Color(0x2563eb);
+
+      // build a continuous line geometry and color it by the `s2down` column if available
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(displayPoints.length * 3);
+      const colorsArr = new Float32Array(displayPoints.length * 3);
+
+  // Determine if s2 values exist and compute range (use absolute magnitude)
+  // We color by the magnitude of s2down regardless of sign, so take Math.abs
+  const s2vals = displayPoints.map(p => (isFinite(p.s2) ? Math.abs(p.s2) : NaN)).filter(v => isFinite(v));
+      const hasS2 = s2vals.length > 0;
+      const minS2 = hasS2 ? Math.min(...s2vals) : 0;
+      const maxS2 = hasS2 ? Math.max(...s2vals) : 1;
+
+      // update legend: color gradient and labels
+      try {
+        const bar = document.getElementById('color-bar');
+        const minEl = document.getElementById('color-min');
+        const maxEl = document.getElementById('color-max');
+        const speedEl = document.getElementById('speed-value');
+        if (bar) {
+          // build gradient stops using a single blue hue and varying lightness
+          // lighter -> darker blue where darker indicates larger magnitude
+          const stops = [];
+          const steps = 6;
+          for (let si = 0; si <= steps; si++) {
+            const t = si / steps; // 0 = min (light), 1 = max (dark)
+            const hue = 0.60; // blue hue
+            const sat = 0.75;
+            const light = 0.85 - 0.6 * t; // from 0.85 (light) to ~0.25 (dark)
+            const c = new THREE.Color(); c.setHSL(hue, sat, Math.max(0, Math.min(1, light)));
+            stops.push('#' + c.getHexString());
+          }
+          bar.style.background = 'linear-gradient(to right, ' + stops.join(', ') + ')';
+        }
+        if (minEl && maxEl) {
+          if (hasS2) {
+            minEl.textContent = (Math.round(minS2 * 100) / 100).toString();
+            maxEl.textContent = (Math.round(maxS2 * 100) / 100).toString();
+          } else {
+            minEl.textContent = 'start';
+            maxEl.textContent = 'end';
+          }
+        }
+        if (speedEl) {
+          const secs = ((currentState && currentState.animDuration) ? currentState.animDuration : 0) / 1000;
+          speedEl.textContent = secs ? (secs.toFixed(1) + ' s') : '';
+        }
+      } catch (e) { /* ignore legend update errors */ }
+
+      const n = displayPoints.length;
+      for (let i = 0; i < n; i++) {
+        const p = displayPoints[i];
+        positions[3*i] = -sx(p.x);         // X (left)
+        positions[3*i+1] = sy(p.y);        // Y (right)
+        positions[3*i+2] = sz(p.z);        // Z (up)
+
+        // Color by s2 magnitude (absolute value) if present, otherwise fall back to sequence color
+        let t;
+        if (hasS2 && isFinite(p.s2)) {
+          t = (Math.abs(p.s2) - minS2) / ( (maxS2 - minS2) || 1 );
+          t = Math.max(0, Math.min(1, t));
+        } else {
+          t = n > 1 ? i / (n - 1) : 0;
+        }
+        // map t to a single blue hue with decreasing lightness (darker = faster)
+        const hue = 0.60; // blue
+        const sat = 0.75;
+        const light = 0.85 - 0.6 * t; // 0.85 -> 0.25
+        const col = new THREE.Color();
+        col.setHSL(hue, sat, Math.max(0, Math.min(1, light)));
+        colorsArr[3*i] = col.r; colorsArr[3*i+1] = col.g; colorsArr[3*i+2] = col.b;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colorsArr, 3));
+
+      // Create a thicker, mesh-based tube along the path so the line appears thicker
+      // Build curve points from the positions
+      const curvePoints = [];
+      for (let i = 0; i < n; i++) curvePoints.push(new THREE.Vector3(positions[3*i], positions[3*i+1], positions[3*i+2]));
+      // If there are fewer than 2 points, fallback to single point handling
+      if (curvePoints.length < 2) {
+        const material = new THREE.PointsMaterial({ size: 4, vertexColors: true });
+        const pts = new THREE.Points(geometry, material);
+        pointsGroup.add(pts);
+        currentState.geometry = geometry;
+        currentState.material = material;
+        currentState.pointsMesh = pts;
+        // no curve available for animation when fewer than 2 points
+        currentState.curve = null;
+        // ensure no moving marker remains
+        if (currentState.movingMarker) {
+          try { pointsGroup.remove(currentState.movingMarker); } catch(e){}
+          currentState.movingMarker = null;
+        }
+      } else {
+        const curve = new THREE.CatmullRomCurve3(curvePoints);
+        // choose tubularSegments relative to number of points but cap to avoid heavy geometry
+        const tubularSegments = Math.min(Math.max(n * 4, 64), 1024);
+        const radialSegments = 8;
+
+        // compute world span to pick a reasonable radius
+        const wx = v => -sx(v);
+        const wy = v => sy(v);
+        const wz = v => sz(v);
+        const worldRangeX = Math.abs(wx(maxX) - wx(minX));
+        const worldRangeY = Math.abs(wy(maxY) - wy(minY));
+        const worldRangeZ = Math.abs(wz(maxZ) - wz(minZ));
+        const maxSpan = Math.max(worldRangeX, worldRangeY, worldRangeZ, 1);
+        const radius = Math.max(0.3, maxSpan * 0.01); // heuristic radius
+
+        const tubeGeo = new THREE.TubeGeometry(curve, tubularSegments, radius, radialSegments, false);
+
+        // create a color array for the tube by sampling s2 along the curve
+        const vcount = tubeGeo.attributes.position.count;
+        const tubeColors = new Float32Array(vcount * 3);
+        for (let i = 0; i < vcount; i++) {
+          const tpos = i / Math.max(1, vcount - 1);
+          // map tpos to nearest sample in displayPoints
+          const idx = Math.floor(tpos * (n - 1));
+          const dp = displayPoints[Math.max(0, Math.min(n - 1, idx))];
+          let tt;
+          if (hasS2 && isFinite(dp.s2)) {
+            // Use absolute magnitude when sampling s2 for tube colors
+            tt = (Math.abs(dp.s2) - minS2) / ((maxS2 - minS2) || 1);
+            tt = Math.max(0, Math.min(1, tt));
+          } else {
+            tt = idx / Math.max(1, n - 1);
+          }
+          // single blue hue, darker for larger magnitude
+          const hue = 0.60;
+          const sat = 0.75;
+          const light = 0.85 - 0.6 * tt;
+          const col = new THREE.Color(); col.setHSL(hue, sat, Math.max(0, Math.min(1, light)));
+          tubeColors[3*i] = col.r; tubeColors[3*i+1] = col.g; tubeColors[3*i+2] = col.b;
+        }
+        tubeGeo.setAttribute('color', new THREE.BufferAttribute(tubeColors, 3));
+
+        // Instead of a heavy TubeGeometry, create a fat line in screen-space using Line2
+        const posArray = [];
+        const colArray = [];
+        for (let i = 0; i < n; i++) {
+          posArray.push(positions[3*i], positions[3*i+1], positions[3*i+2]);
+          colArray.push(colorsArr[3*i], colorsArr[3*i+1], colorsArr[3*i+2]);
+        }
+        const lineGeom = new LineGeometry();
+        lineGeom.setPositions(posArray);
+        lineGeom.setColors(colArray);
+
+        const lineMat = new LineMaterial({ linewidth: 5, vertexColors: true, dashed: false, alphaToCoverage: true });
+        // set resolution for linewidth in pixels
+        lineMat.resolution.set(viewer.clientWidth, viewer.clientHeight);
+        const fatLine = new Line2(lineGeom, lineMat);
+        fatLine.computeLineDistances();
+        fatLine.scale.set(1,1,1);
+        pointsGroup.add(fatLine);
+
+        // store references
+        currentState.geometry = lineGeom;
+        currentState.material = lineMat;
+        currentState.pointsMesh = fatLine;
+
+  // create (or recreate) a small black marker that will animate along the curve
+        try {
+          if (currentState.movingMarker) {
+            try { pointsGroup.remove(currentState.movingMarker); } catch(e){}
+            if (currentState.movingMarker.geometry) currentState.movingMarker.geometry.dispose();
+            if (currentState.movingMarker.material) currentState.movingMarker.material.dispose();
+            currentState.movingMarker = null;
+          }
+          // remove any existing marker label
+          if (currentState.markerLabel) {
+            try { if (currentState.markerLabel.element && currentState.markerLabel.element.parentNode) currentState.markerLabel.element.parentNode.removeChild(currentState.markerLabel.element); } catch(e){}
+            currentState.markerLabel = null;
+          }
+        } catch (e) {}
+
+        // marker size chosen relative to the data span so it remains visible
+        // increase base size so the marker is clearly visible
+        const markerRadius = Math.max(3, maxSpan * 0.02);
+        const markerGeo = new THREE.SphereGeometry(markerRadius, 12, 8);
+        const markerMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const marker = new THREE.Mesh(markerGeo, markerMat);
+        marker.position.copy(curve.getPoint(0));
+        pointsGroup.add(marker);
+        currentState.movingMarker = marker;
+        // marker percent label removed per user request
+        currentState.markerLabel = null;
+        currentState.curve = curve;
+    // set discrete step size (one step per sample point)
+    currentState.stepSize = 1 / Math.max(1, n - 1);
+    // Precompute classification segments (continuous runs where the local altitude behavior is constant)
+    try {
+      const samples = Math.min(1200, Math.max(200, n * 4));
+      const computed = computeClassificationSegments(currentState.curve, samples);
+      // Respect the runtime limit: only keep the first 16 segments from computed
+      const computedClipped = (computed && computed.length) ? computed.slice(0,16) : [];
+      // Default to computed segments, then attempt to load the repo-provided JSON file and prefer it if valid.
+      currentState.segments = computedClipped;
+      try {
+        fetch('data/albatross_segments.json').then(r => {
+          if (!r.ok) return null;
+          return r.json();
+        }).then(j => {
+          if (Array.isArray(j) && j.length) {
+            const ok = j.every(s => s && typeof s.start === 'number' && typeof s.end === 'number' && typeof s.box === 'number');
+            if (ok) currentState.segments = j.slice(0,16);
+          }
+        }).catch(()=>{});
+      } catch (e) { /* ignore fetch errors */ }
+    } catch (e) { currentState.segments = null; }
+        // animation duration (ms) — tuneable; scale with number of points to keep speed reasonable
+  // original duration scaled and then doubled so marker moves at half the previous speed
+  // slow down the marker by 2x (previously doubled once; multiply by 4 total)
+        currentState.animDuration = Math.max(3000, Math.min(20000, n * 20)) * 4;
+        // Default start position: 45% along the curve (paused by default)
+        const DEFAULT_START_T = 0.45;
+        currentState.userT = DEFAULT_START_T;
+        currentState.userControlled = true;
+        // position marker at default T if present
+        try {
+          if (currentState.movingMarker && currentState.curve) {
+            currentState.movingMarker.position.copy(currentState.curve.getPoint(DEFAULT_START_T));
+          }
+          if (currentState.slider) {
+            currentState.slider.value = Math.round(DEFAULT_START_T * parseInt(currentState.slider.max || '1000', 10));
+          }
+        } catch (e) { /* ignore */ }
+        // Set animStartTime so if the user hits Play the timing aligns with the desired t
+        currentState.animStartTime = performance.now() - (DEFAULT_START_T * (currentState.animDuration || 8000));
+
+        // show and initialize slider control
+        if (currentState.controlsDiv) currentState.controlsDiv.style.display = '';
+        if (currentState.slider) {
+          currentState.slider.value = '0';
+          // input: user scrubbing — update marker and suspend autoplay while dragging
+          currentState.slider.oninput = (e) => {
+            currentState.userControlled = true;
+            const v = parseInt(e.target.value, 10) / parseInt(e.target.max, 10);
+            currentState.userT = isFinite(v) ? v : 0;
+            if (currentState.movingMarker && currentState.curve) {
+              currentState.movingMarker.position.copy(currentState.curve.getPoint(currentState.userT));
+            }
+          };
+          // change/end: resume autoplay from the chosen position
+          currentState.slider.onchange = (e) => {
+            const v = parseInt(e.target.value, 10) / parseInt(e.target.max, 10);
+            currentState.userT = isFinite(v) ? v : 0;
+            currentState.userControlled = false;
+            // set animation start time so autoplay continues from this t
+            currentState.animStartTime = performance.now() - (currentState.userT * (currentState.animDuration || 8000));
+          };
+        }
+      }
+
+      // hide slider when no curve
+      if (!currentState.curve && currentState.controlsDiv) currentState.controlsDiv.style.display = 'none';
+
+      // no category legend (single color plot)
+
+  // store for interactivity (geometry/material/pointsMesh are set above per-branch)
+  currentState.points = displayPoints;
+
+      // auto fit camera to scene
+  // compute bounding box from the object we actually stored; fallback to pointsGroup
+  const box = new THREE.Box3().setFromObject(currentState.pointsMesh || pointsGroup);
+      const size = box.getSize(new THREE.Vector3()).length();
+      const center = box.getCenter(new THREE.Vector3());
+
+  const fitOffset = 1.2;
+  // Apply VIEW_ZOOM so larger values bring the camera closer (i.e. zoom in)
+  const distance = (Math.abs(size / Math.tan((camera.fov*Math.PI)/360)) * fitOffset) / (typeof VIEW_ZOOM !== 'undefined' ? VIEW_ZOOM : 1.0);
+      camera.position.copy(center);
+      camera.position.x += distance; camera.position.y += distance; camera.position.z += distance;
+      camera.lookAt(center);
+      controls.target.copy(center);
+      controls.update();
+      // draw axes box and labels like the diagram
+      try {
+        createAxesBox(minX, maxX, minY, maxY, minZ, maxZ, sx, sy, sz, 4);
+      } catch (e) {
+        console.warn('Error creating axes box', e);
+      }
+    }
+
+    // state
+    /**
+     * Create a wireframe box around the data with tick marks and CSS2D labels.
+     * min/max are in original data units; sx/sy/sz map data->world coordinates.
+     */
+    function createAxesBox(minX, maxX, minY, maxY, minZ, maxZ, sx, sy, sz, divisions = 4) {
+      // clear previous
+      while (axesGroup.children.length) axesGroup.remove(axesGroup.children[0]);
+
+      // mapping to world coordinates (remember X world = -sx(lat) in our plot)
+      const wx = v => -sx(v);
+      const wy = v => sy(v);
+      const wz = v => sz(v);
+
+      const x0 = wx(minX), x1 = wx(maxX);
+      const y0 = wy(minY), y1 = wy(maxY);
+      const z0 = wz(minZ), z1 = wz(maxZ);
+
+      // box edges (12 segments)
+      const corners = [
+        new THREE.Vector3(x0,y0,z0), new THREE.Vector3(x1,y0,z0), new THREE.Vector3(x1,y1,z0), new THREE.Vector3(x0,y1,z0),
+        new THREE.Vector3(x0,y0,z1), new THREE.Vector3(x1,y0,z1), new THREE.Vector3(x1,y1,z1), new THREE.Vector3(x0,y1,z1)
+      ];
+      const edges = [
+        [0,1],[1,2],[2,3],[3,0], // bottom
+        [4,5],[5,6],[6,7],[7,4], // top
+        [0,4],[1,5],[2,6],[3,7]  // verticals
+      ];
+      const linePos = new Float32Array(edges.length * 2 * 3);
+      for (let i=0;i<edges.length;i++) {
+        const a = corners[edges[i][0]]; const b = corners[edges[i][1]];
+        linePos[6*i] = a.x; linePos[6*i+1] = a.y; linePos[6*i+2] = a.z;
+        linePos[6*i+3] = b.x; linePos[6*i+4] = b.y; linePos[6*i+5] = b.z;
+      }
+      const boxGeo = new THREE.BufferGeometry();
+      boxGeo.setAttribute('position', new THREE.BufferAttribute(linePos, 3));
+      const boxMat = new THREE.LineBasicMaterial({ color: 0x0b1220, linewidth: 1, opacity: 0.7, transparent: true });
+      const boxLines = new THREE.LineSegments(boxGeo, boxMat);
+      axesGroup.add(boxLines);
+
+      // (Removed face overlay meshes — highlighting of DOM text is handled in the parent page.)
+      try { if (typeof currentState !== 'undefined') { currentState.activeBox = -1; } } catch(e){}
+
+      // tick marks and labels
+      const tickLen = Math.max( (Math.abs(x1-x0) + Math.abs(y1-y0) + Math.abs(z1-z0)) * 0.005, 2 );
+      const tickMat = new THREE.LineBasicMaterial({ color: 0x0b1220, linewidth: 1, opacity: 0.8 });
+
+      function makeTicksOnAxis(axis, minV, maxV, posFunc, orthoDir) {
+        const segs = divisions + 1;
+        const pts = [];
+        for (let i=0;i<segs;i++) {
+          const t = i / (segs - 1);
+          const v = minV + t * (maxV - minV);
+          const px = posFunc(v);
+          // orthoDir is a small vector (dx,dy,dz) perpendicular to the axis to draw tick
+          const p1 = new THREE.Vector3(px.x, px.y, px.z);
+          const p2 = new THREE.Vector3(px.x + orthoDir.x * tickLen, px.y + orthoDir.y * tickLen, px.z + orthoDir.z * tickLen);
+          pts.push(p1, p2);
+
+          // label
+          const dv = document.createElement('div');
+          dv.className = 'tick-label';
+          // format numeric to reasonable precision
+          const valStr = Math.abs(v) < 1 ? v.toFixed(3) : (Math.round(v*100)/100).toString();
+          dv.textContent = valStr;
+          const label = new CSS2DObject(dv);
+          label.position.copy(p2);
+          axesGroup.add(label);
+        }
+        const arr = new Float32Array(pts.length * 3);
+        for (let i=0;i<pts.length;i++) { arr[3*i] = pts[i].x; arr[3*i+1] = pts[i].y; arr[3*i+2] = pts[i].z; }
+        const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(arr, 3));
+        const lines = new THREE.LineSegments(geo, tickMat);
+        axesGroup.add(lines);
+      }
+
+      // helper to provide world position for axis tick
+      // X axis ticks along bottom front edge (vary x, y=minY, z=minZ)
+      makeTicksOnAxis('x', minX, maxX, v => new THREE.Vector3(wx(v), wy(minY), wz(minZ)), new THREE.Vector3(0, -1, 0));
+      // Y axis ticks along bottom left edge (x=minX, vary y, z=minZ)
+      makeTicksOnAxis('y', minY, maxY, v => new THREE.Vector3(wx(minX), wy(v), wz(minZ)), new THREE.Vector3(-1, 0, 0));
+      // Z axis ticks along left vertical edge (x=minX, y=minY, vary z)
+      makeTicksOnAxis('z', minZ, maxZ, v => new THREE.Vector3(wx(minX), wy(minY), wz(v)), new THREE.Vector3(-1, 0, 0));
+
+  // axis titles
+  const xTitle = document.createElement('div'); xTitle.className = 'axis-title'; xTitle.textContent = 'x [latitute]';
+  const yTitle = document.createElement('div'); yTitle.className = 'axis-title'; yTitle.textContent = 'y [longitude]';
+  const zTitle = document.createElement('div'); zTitle.className = 'axis-title'; zTitle.textContent = 'Altitude [m]';
+
+  // Offset labels further than tick marks to avoid overlap. Compute offset relative to
+  // the box span so labels never touch the axis box even for large data spans.
+  const boxSpan = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0));
+  // Ensure label offset is clearly beyond tick marks; pick the larger of a multiple of tickLen
+  // and a small percentage of the overall box span.
+  // Increase label offset so titles sit well outside the axis box and tick marks.
+  // Use a conservative multiplier of tickLen and a percentage of the overall box span,
+  // and add a small extra margin to guarantee separation for small or large spans.
+  const labelOffset = Math.max(tickLen * 28, boxSpan * 0.20) + Math.max(6, boxSpan * 0.03);
+  // Nudge X/Y labels in Z so they sit clearly outside the box; use a larger Z nudge as well.
+  const zNudge = Math.max(8, tickLen * 4, boxSpan * 0.06);
+
+  const xLabel = new CSS2DObject(xTitle);
+  // Place X axis title flush on the face opposite the X-axis tick marks (ticks are at y=minY)
+  // Removed extra offsets so the label sits directly at the face.
+  xLabel.position.set((x0 + x1) / 2, y1, z0);
+  axesGroup.add(xLabel);
+
+  const yLabel = new CSS2DObject(yTitle);
+  // Place Y axis title flush on the face opposite the Y-axis tick marks (ticks are at x=minX)
+  // Removed extra offsets so the label sits directly at the face.
+  yLabel.position.set(x1, (y0 + y1) / 2, z0);
+  axesGroup.add(yLabel);
+
+  const zLabel = new CSS2DObject(zTitle);
+  // Place Z axis title flush on the face opposite the Z-axis tick marks (ticks are at x=minX,y=minY)
+  // Removed extra offsets so the label sits directly at the face corner.
+  zLabel.position.set(x1, y1, (z0 + z1) / 2);
+  axesGroup.add(zLabel);
+    }
+
+    const currentState = { geometry:null, material:null, pointsMesh:null, points:[],
+      curve:null, movingMarker:null, markerLabel:null, animDuration:32000, animStartTime:performance.now(),
+      userControlled:false, userT:0, slider:markerSlider, controlsDiv:markerControls,
+      // playback state
+          playing:false, loopEnabled:true, stepSize:0, // stepSize set when curve is created
+    };
+
+  // playback helpers
+  function getCurrentT() {
+    if (currentState.userControlled && typeof currentState.userT === 'number') return currentState.userT;
+    if (!currentState.curve) return 0;
+    const now = performance.now();
+    const start = currentState.animStartTime || now;
+    const dur = currentState.animDuration || 8000;
+    return ((now - start) % dur) / dur;
+  }
+
+  // Return the active segments to use for animation/editor. Clip to first 16 segments
+  // as requested by the parent editor (exclude anything after segment 16).
+  function getActiveSegments() {
+    if (!currentState || !currentState.segments) return [];
+    return currentState.segments.slice(0, 16);
+  }
+
+  // segments now come from the repo JSON file `data/albatross_segments.json` when present; no local editor persistence.
+
+  function setT(t) {
+    t = Math.max(0, Math.min(1, t));
+    currentState.userT = t;
+    currentState.userControlled = true;
+    if (currentState.movingMarker && currentState.curve) {
+      currentState.movingMarker.position.copy(currentState.curve.getPoint(t));
+    }
+    try { if (currentState.slider) currentState.slider.value = Math.round(t * parseInt(currentState.slider.max || '1000', 10)); } catch(e){}
+    updateMarkerInfo(t);
+  }
+
+  function updateMarkerInfo(t) {
+    // Labels were removed per user request — no UI update here.
+    return;
+  }
+
+  function advanceStep() {
+    if (!currentState.curve) return;
+    const tNow = getCurrentT();
+    // If we have precomputed segments, jump to midpoint of the next segment
+    const segs = getActiveSegments();
+    if (segs && segs.length) {
+      // find current segment index
+      let idx = segs.findIndex(s => (tNow >= s.start && tNow <= s.end));
+      if (idx === -1) {
+        // if not found, pick the first segment with start > tNow
+        idx = segs.findIndex(s => s.start > tNow);
+        if (idx === -1) idx = segs.length - 1;
+        else idx = Math.max(0, idx - 1);
+      }
+      let nextIdx = idx + 1;
+      if (nextIdx >= segs.length) {
+        if (currentState.loopEnabled) nextIdx = 0; else nextIdx = segs.length - 1;
+      }
+      const target = segs[nextIdx];
+      if (target) {
+        const midT = (target.start + target.end) / 2;
+        setT(midT);
+        currentState.animStartTime = performance.now() - (midT * (currentState.animDuration || 8000));
+        return;
+      }
+    }
+    // Fallback: advance by fixed step
+    const step = (currentState.stepSize && currentState.stepSize > 0) ? currentState.stepSize : (1 / Math.max(1, (currentState.points ? currentState.points.length - 1 : 100)));
+    let newT = tNow + step;
+    if (newT > 1) newT = 1;
+    setT(newT);
+    // update animStartTime so if user resumes looping we continue from here
+    currentState.animStartTime = performance.now() - (newT * (currentState.animDuration || 8000));
+  }
+
+  // Compute contiguous segments of classification along the curve.
+  // Returns array of { start, end, box } where box is 0..3 corresponding to the same classification used in animate().
+  function computeClassificationSegments(curve, samples = 500) {
+    if (!curve) return [];
+    const segs = [];
+    const dtSample = 0.005; // same neighborhood used in animate
+    const s = Math.max(3, Math.floor(samples));
+    const cls = new Array(s);
+    const ts = new Array(s);
+    for (let i = 0; i < s; i++) {
+      const t = i / (s - 1);
+      ts[i] = t;
+      try {
+        const tPrev = Math.max(0, t - dtSample);
+        const tNext = Math.min(1, t + dtSample);
+        const zPrev = curve.getPoint(tPrev).z;
+        const zNext = curve.getPoint(tNext).z;
+        const z = curve.getPoint(t).z;
+        const eps = 1e-3 * (Math.abs(zPrev) + Math.abs(zNext) + Math.abs(z) + 1);
+        let box = -1;
+        if (z <= zPrev - eps && z <= zNext - eps) box = 0; // local min
+        else if (z >= zPrev + eps && z >= zNext + eps) box = 2; // local max
+        else if (zNext > z) box = 1; // increasing
+        else box = 3; // decreasing
+        cls[i] = box;
+      } catch (e) {
+        cls[i] = 1; // default to increasing on error
+      }
+    }
+    // compress into segments
+    let curBox = cls[0];
+    let start = ts[0];
+    for (let i = 1; i < s; i++) {
+      if (cls[i] !== curBox) {
+        segs.push({ start: start, end: ts[i - 1], box: curBox });
+        curBox = cls[i];
+        start = ts[i];
+      }
+    }
+    // push final
+    segs.push({ start: start, end: ts[s - 1], box: curBox });
+    return segs;
+  }
+
+  // segments editor removed — segments are taken from repository JSON or computed automatically
+
+  // wire controls
+  playBtn.onclick = () => {
+    // Toggle continuous playback. Default is paused; Next advances by segment/step.
+    if (currentState.playing) {
+      // pause
+      currentState.playing = false;
+      playBtn.textContent = 'Play';
+      playBtn.style.background = '#fff';
+      playBtn.style.color = '#0f172a';
+    } else {
+      // start/resume continuous playback
+      currentState.playing = true;
+      const curT = getCurrentT();
+      currentState.animStartTime = performance.now() - (curT * (currentState.animDuration || 8000));
+      playBtn.textContent = 'Pause';
+      playBtn.style.background = '#2563eb';
+      playBtn.style.color = '#fff';
+      currentState.userControlled = false;
+    }
+  };
+
+  nextBtn.onclick = () => {
+    advanceStep();
+  };
+
+  // loop checkbox removed — loopEnabled remains a constant runtime flag
+
+    // animation loop
+    function onWindowResize() {
+      camera.aspect = viewer.clientWidth / viewer.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+      // keep label renderer in sync
+      if (typeof labelRenderer !== 'undefined') labelRenderer.setSize(viewer.clientWidth, viewer.clientHeight);
+      // update LineMaterial resolution if present so linewidth stays consistent
+      if (currentState && currentState.material && typeof currentState.material.resolution !== 'undefined') {
+        try { currentState.material.resolution.set(viewer.clientWidth, viewer.clientHeight); } catch(e) {}
+      }
+    }
+    window.addEventListener('resize', onWindowResize);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      // update moving marker along the curve if present
+      if (currentState && currentState.curve && currentState.movingMarker) {
+        const now = performance.now();
+        let t;
+        if (currentState.userControlled && typeof currentState.userT === 'number') {
+          // user is scrubbing or we've set a frozen position (step)
+          t = currentState.userT;
+        } else if (currentState.playing && currentState.loopEnabled) {
+          // continuous autoplay (looping)
+          const start = currentState.animStartTime || now;
+          const dur = currentState.animDuration || 8000;
+          t = ((now - start) % dur) / dur;
+          // keep slider in sync when autoplaying
+          if (currentState.slider && !currentState.userControlled) {
+            try { currentState.slider.value = Math.round(t * parseInt(currentState.slider.max || '1000', 10)); } catch(e){}
+          }
+        } else {
+          // paused or step-mode without an explicit userT -> freeze at last known position
+          if (typeof currentState.userT === 'number') {
+            t = currentState.userT;
+          } else {
+            const start = currentState.animStartTime || now;
+            const dur = currentState.animDuration || 8000;
+            t = ((now - start) % dur) / dur;
+            // store frozen position so we don't continue moving
+            currentState.userT = t;
+            currentState.userControlled = true;
+          }
+        }
+        const pos = currentState.curve.getPoint(t);
+  currentState.movingMarker.position.copy(pos);
+  // remember last position t for freeze/step behavior
+  currentState.lastT = t;
+    // update percent label during autoplay / animation
+    try { updateMarkerInfo(t); } catch (e) {}
+        // Determine local altitude behavior and notify parent page to highlight text boxes.
+        try {
+          let newBox = -1;
+          // Use only the active (first 16) segments when present
+          const segsActive = getActiveSegments();
+          if (segsActive && segsActive.length) {
+            const seg = segsActive.find(s => t >= s.start && t <= s.end);
+            if (seg) newBox = seg.box;
+            else {
+              // if not inside any segment, pick the nearest segment by midpoint
+              let nearest = segsActive[0];
+              let minD = Math.abs(t - ((nearest.start + nearest.end) / 2));
+              for (let si = 1; si < segsActive.length; si++) {
+                const s2 = segsActive[si];
+                const d2 = Math.abs(t - ((s2.start + s2.end) / 2));
+                if (d2 < minD) { minD = d2; nearest = s2; }
+              }
+              newBox = nearest.box;
+            }
+          } else {
+            // fallback to automatic local-altitude detection
+            const dt = 0.005;
+            const tPrev = Math.max(0, t - dt);
+            const tNext = Math.min(1, t + dt);
+            const zPrev = currentState.curve.getPoint(tPrev).z;
+            const zNext = currentState.curve.getPoint(tNext).z;
+            const z = pos.z;
+            // relative threshold to avoid noise
+            const eps = 1e-3 * (Math.abs(zPrev) + Math.abs(zNext) + Math.abs(z) + 1);
+            if (z <= zPrev - eps && z <= zNext - eps) {
+              newBox = 0;
+            } else if (z >= zPrev + eps && z >= zNext + eps) {
+              newBox = 2;
+            } else if (zNext > z) {
+              newBox = 1;
+            } else {
+              newBox = 3;
+            }
+          }
+          if (currentState.activeBox !== newBox) {
+            currentState.activeBox = newBox;
+            try {
+              const boxNum = (newBox >= 0) ? (newBox + 1) : 0; // 1..4
+              if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'highlight-box', box: boxNum }, '*');
+              }
+            } catch (e) {}
+          }
+        } catch (e) {}
+      }
+      renderer.render(scene, camera);
+      if (typeof labelRenderer !== 'undefined') labelRenderer.render(scene, camera);
+    }
+    animate();
+
+    // Load the single CSV file (no upload allowed)
+    (async ()=>{
+      try {
+        const rows = await loadCSV(defaultPath);
+        try {
+          buildPoints(rows);
+        } catch (err) {
+          const em = document.createElement('div');
+          em.style.position = 'absolute';
+          em.style.left = '50%';
+          em.style.top = '50%';
+          em.style.transform = 'translate(-50%,-50%)';
+          em.style.background = 'rgba(255,255,255,0.95)';
+          em.style.padding = '12px 16px';
+          em.style.borderRadius = '8px';
+          em.style.border = '1px solid #e6eef6';
+          em.style.color = '#b91c1c';
+          em.textContent = 'Error rendering data: ' + (err && err.message ? err.message : String(err));
+          viewer.appendChild(em);
+          console.error(err);
+        }
+      } catch (err) {
+        // show a minimal message overlay in the viewer if the file isn't available
+        const msg = document.createElement('div');
+        msg.style.position = 'absolute';
+        msg.style.left = '50%';
+        msg.style.top = '50%';
+        msg.style.transform = 'translate(-50%,-50%)';
+        msg.style.background = 'rgba(255,255,255,0.95)';
+        msg.style.padding = '12px 16px';
+        msg.style.borderRadius = '8px';
+        msg.style.border = '1px solid #e6eef6';
+        msg.style.color = '#334155';
+        msg.textContent = `Could not load ${defaultPath}. Please ensure the file exists.`;
+        viewer.appendChild(msg);
+        console.error(err);
+      }
+    })();
+
+  </script>
+</body>
+</html>

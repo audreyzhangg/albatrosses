@@ -1,6 +1,6 @@
 const statusColors = {
-    'CR': '#d32f2f',  // Critical - Red
-    'EN': '#f57c00',  // Endangered - Orange
+    'CR': '#DD403A',  // Critical - Red
+    'EN': '#FF7B3D',  // Endangered - Orange
     'VU': '#FFC34B',  // Vulnerable - Yellow
     'NT': '#5AB361',  // Near Threatened - Green
     'LC': '#2F6690'   // Least Concern - Blue
