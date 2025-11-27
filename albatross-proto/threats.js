@@ -87,8 +87,41 @@ document.addEventListener('DOMContentLoaded', () => {
             if (row.Threat) threatSet.add(row.Threat);
         });
 
-        const species = Array.from(speciesSet).sort();
-        const threats = Array.from(threatSet).sort();
+        // Define conservation status priority (lower number = higher priority)
+        const statusPriority = {
+            'CR': 1,  // Critically Endangered
+            'EN': 2,  // Endangered
+            'VU': 3,  // Vulnerable
+            'NT': 4,  // Near Threatened
+            'LC': 5   // Least Concern
+        };
+
+        // Sort species by conservation status priority, then alphabetically
+        const species = Array.from(speciesSet).sort((a, b) => {
+            const statusA = speciesStatus[a] || 'LC';
+            const statusB = speciesStatus[b] || 'LC';
+            const priorityA = statusPriority[statusA] || 999;
+            const priorityB = statusPriority[statusB] || 999;
+            
+            const priorityDiff = priorityA - priorityB;
+            if (priorityDiff !== 0) return priorityDiff;
+            return a.localeCompare(b);
+        });
+        
+        // Count occurrences of each threat
+        const threatCounts = {};
+        data.forEach(row => {
+            if (row.Threat) {
+                threatCounts[row.Threat] = (threatCounts[row.Threat] || 0) + 1;
+            }
+        });
+        
+        // Sort threats by count (descending), then alphabetically
+        const threats = Array.from(threatSet).sort((a, b) => {
+            const countDiff = (threatCounts[b] || 0) - (threatCounts[a] || 0);
+            if (countDiff !== 0) return countDiff;
+            return a.localeCompare(b);
+        });
 
         // Create a mapping: species -> threat -> {impact, details}
         const matrix = {};
@@ -126,7 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 .attr('x1', leftMargin + i * cellWidth + cellWidth / 2)
                 .attr('y1', topMargin)
                 .attr('x2', leftMargin + i * cellWidth + cellWidth / 2)
-                .attr('y2', topMargin + species.length * cellHeight);
+                .attr('y2', topMargin + species.length * cellHeight)
+                .attr('stroke', '#e5e7eb')
+                .attr('stroke-width', 1);
         });
 
         // Draw horizontal grid lines
@@ -136,14 +171,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 .attr('x1', leftMargin)
                 .attr('y1', topMargin + i * cellHeight + cellHeight / 2)
                 .attr('x2', leftMargin + threats.length * cellWidth)
-                .attr('y2', topMargin + i * cellHeight + cellHeight / 2);
+                .attr('y2', topMargin + i * cellHeight + cellHeight / 2)
+                .attr('stroke', '#e5e7eb')
+                .attr('stroke-width', 1);
         });
 
         // Add species labels (rows) with click handlers and color coding by conservation status
         const speciesLabels = [];
         species.forEach((sp, i) => {
             const status = speciesStatus[sp] || 'LC'; // default to Least Concern if not found
-            const color = statusColors[status] || '#000000';
             
             const label = svg.append('text')
                 .attr('class', 'species-label')
@@ -152,8 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 .attr('y', topMargin + i * cellHeight + cellHeight / 2 + 4)
                 .text(sp)
                 .style('cursor', 'pointer')
-                .style('fill', color)
-                .style('font-weight', 'bold')
+                .style('fill', '#2c3e50')
+                .style('font-weight', 'normal')
                 .on('click', function(event) {
                     event.stopPropagation();
                     
@@ -190,19 +226,73 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Add threat labels (columns) - rotated
+        const threatLabels = [];
+        let selectedThreat = null;
         threats.forEach((threat, i) => {
-            svg.append('text')
+            const label = svg.append('text')
                 .attr('class', 'threat-label')
+                .attr('data-threat', threat)
                 .attr('x', leftMargin + i * cellWidth + cellWidth / 2)
                 .attr('y', topMargin - 10)
                 .attr('transform', `rotate(-45, ${leftMargin + i * cellWidth + cellWidth / 2}, ${topMargin - 10})`)
-                .text(threat);
+                .text(threat)
+                .style('cursor', 'pointer')
+                .on('click', function(event) {
+                    event.stopPropagation();
+                    
+                    // Toggle: if clicking the same threat, reset everything
+                    if (selectedThreat === threat) {
+                        selectedThreat = null;
+                        
+                        // Reset all threat labels
+                        threatLabels.forEach(lbl => {
+                            lbl.transition().duration(300).style('opacity', 1);
+                        });
+                        
+                        // Reset all circles to gray
+                        svg.selectAll('.matrix-circle')
+                            .transition()
+                            .duration(300)
+                            .attr('fill', '#d3d3d3')
+                            .style('opacity', 0.8);
+                    } else {
+                        // Select new threat
+                        selectedThreat = threat;
+                        
+                        // Gray out all other threats
+                        threatLabels.forEach(lbl => {
+                            const lblThreat = lbl.attr('data-threat');
+                            if (lblThreat !== threat) {
+                                lbl.transition().duration(300).style('opacity', 0.2);
+                            } else {
+                                lbl.transition().duration(300).style('opacity', 1);
+                            }
+                        });
+                        
+                        // Color circles by conservation status for this threat
+                        svg.selectAll('.matrix-circle').each(function() {
+                            const circle = d3.select(this);
+                            const circleThreat = circle.attr('data-threat');
+                            const circleSpecies = circle.attr('data-species');
+                            
+                            if (circleThreat !== threat) {
+                                circle.transition().duration(300).style('opacity', 0.1);
+                            } else {
+                                const status = speciesStatus[circleSpecies] || 'LC';
+                                const speciesColor = statusColors[status] || statusColors['LC'];
+                                circle.transition().duration(300)
+                                    .attr('fill', speciesColor)
+                                    .style('opacity', 0.8);
+                            }
+                        });
+                    }
+                });
+            
+            threatLabels.push(label);
         });
 
         // Draw circles for species-threat intersections
         species.forEach((sp, rowIdx) => {
-            const speciesColor = statusColors[speciesStatus[sp]] || statusColors['LC'];
-            
             threats.forEach((threat, colIdx) => {
                 const cellData = matrix[sp][threat];
                 if (cellData) {
@@ -213,10 +303,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     svg.append('circle')
                         .attr('class', 'matrix-circle')
                         .attr('data-species', sp)
+                        .attr('data-threat', threat)
                         .attr('cx', cx)
                         .attr('cy', cy)
                         .attr('r', radius)
-                        .attr('fill', speciesColor)
+                        .attr('fill', '#d3d3d3') // Start with light gray
                         .attr('opacity', 0.8)
                         .style('cursor', 'pointer')
                         .on('click', function(event) {
@@ -300,12 +391,17 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset on clicking SVG background
         svg.on('click', function(event) {
             if (event.target.tagName === 'svg' || event.target === this) {
+                selectedThreat = null;
                 speciesLabels.forEach(lbl => {
+                    lbl.transition().duration(300).style('opacity', 1);
+                });
+                threatLabels.forEach(lbl => {
                     lbl.transition().duration(300).style('opacity', 1);
                 });
                 svg.selectAll('.matrix-circle')
                     .transition()
                     .duration(300)
+                    .attr('fill', '#d3d3d3') // Reset to light gray
                     .style('opacity', 0.8);
             }
         });

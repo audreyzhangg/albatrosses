@@ -249,7 +249,7 @@
   .fact-card .stat strong { color: #2c3e50; }
 
   /* Threats section */
-  #threats-section { background: #dbf0fe; }
+  #threats-section { background: #ffffff; }
 
   #matrix-viz {
     overflow-x: auto;
@@ -264,7 +264,7 @@
   .species-label{ font-size:13px; fill:#2c3e50; text-anchor:end; }
   .threat-label{ font-size:12px; fill:#2c3e50; text-anchor:start; }
   .matrix-circle{ cursor:pointer; }
-  .grid-line{ stroke:none; }
+  .grid-line{ stroke:#e5e7eb; stroke-width:1; }
 
   .threats-legend {
     display: flex;
@@ -811,26 +811,29 @@
     <h1 style="font-size: 64px; color: #2c3e50; margin: 0;">Wings Over Water: The Albatross</h1>
   </section>
 
-
-  <!-- Intro Section -->
-  <section id="intro-section" class="section">
-    <h1>Anatomy of an Albatross</h1>
-    <p class="subtitle">Click the highlighted regions (wings, stomach, beak) to see information.</p>
-    <div id="intro-visual"></div>
+  <section id="welcome" class="section transition-section">
+    <div class="transition-content">
+      <h3> Albatrosses (Diomedeidae) are a family of large seabirds known for their incredibly flying skills. </h3>
+      <div style="display: flex; align-items: center; gap: 20px; justify-content: center; margin-top: 20px;">
+        <img src="images/albatross-clipart.png" alt="Albatross cursor guide" style="max-width: 200px; flex-shrink: 0;">
+        <h3 style="margin: 0; text-align: left;">This albatross will be your guide as we explore the data stories of the albatross! Use the tip of the left wing to point, click, and hover! </h3>
+      </div>
+    </div>
   </section>
 
   <!-- Quiz Section -->
   <section id="quiz-section" class="section">
     <div id="quiz-container">
+      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">Just how good are albatrosses at flying?</h2>
       <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">In Around the World in 80 Days, the main character Phileas Fogg attemps to circumnavigate the globe in 80 days.</h2>
-      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">Albatrosses regularly make this trip by wing, travelling over 13000 miles. Guess how many days this trip took:</p>
+      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">Albatrosses regularly make this trip by wing, travelling over 13,000 miles. Guess how many days this trip took:</p>
       <div id="quiz-input-container">
         <input type="text" id="quiz-input" placeholder="Enter your guess..." autocomplete="off">
         <button id="quiz-submit" type="button">Submit Answer</button>
       </div>
       <div id="quiz-answer">
         <h3>Just 46 days!</h3>
-        <p>Albatrosses are incredible long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land! </p>
+        <p>Albatrosses are skilled long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land! </p>
         <button id="quiz-continue" type="button">Continue Exploring →</button>
       </div>
     </div>
@@ -927,6 +930,13 @@
       });
     });
   </script>
+
+  <!-- Intro Section -->
+  <section id="intro-section" class="section">
+    <h1>Anatomy of an Albatross</h1>
+    <p class="subtitle">Click the highlighted regions (wings, stomach, beak) to see information.</p>
+    <div id="intro-visual"></div>
+  </section>
 
   <!-- Info: shared feats across the genus (between Distance and Species) -->
   <section id="info-genus-section" class="section transition-section">
