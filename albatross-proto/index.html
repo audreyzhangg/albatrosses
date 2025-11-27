@@ -24,10 +24,29 @@
     --panel-w: 900px;
   }
 
+  /* Global: prevent "peek-through" for every section */
+  section,
+  .section,
+  .transition-section {
+    /* Modern, faster than hidden */
+    overflow: clip;
+    /* Extra safety so shadows/absolutes don't spill outside */
+    contain: paint;
+  }
+
+  /* Safari/older fallback */
+  @supports not (overflow: clip) {
+    section,
+    .section,
+    .transition-section {
+      overflow: hidden;
+    }
+  }
+
   body{ 
     margin:0; 
     font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; 
-    background:#dbf0fe; 
+    background:#ffffff; 
     color:var(--ink); 
   }
 
@@ -767,6 +786,113 @@
     #conservation-section .cons-img { height: 80%; }
   }
 
+  /* ===== How You Can Help (blue card) ===== */
+  #how-to-help-section .help-stage{ max-width: var(--panel-w); margin: 0 auto; }
+
+  /* card matches myths size via --panel-h/--panel-w; now with blue background */
+  #how-to-help-section .help-card{
+    height: var(--panel-h);
+    border-radius: 14px;
+    background:#dbf0fe;                    /* <<< blue background */
+    box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 3fr;        /* left 1/4, right 3/4 */
+    border: 1px solid var(--chip-b);
+  }
+
+  /* left tabs live on a slightly lighter panel over the blue */
+  #how-to-help-section .help-tabs{
+    background:#f8fbff;
+    border-right:1px solid var(--chip-b);
+    padding: 10px;
+    display: grid;
+    grid-auto-rows: 1fr;
+    gap: 8px;
+  }
+
+  #how-to-help-section .help-tab{
+    all: unset;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center;
+    background:#fff;
+    border:1px solid var(--chip-b);
+    border-radius:10px;
+    padding: 10px;
+    font-weight: 700; color:#0f172a;       /* same site font colors */
+    cursor:pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+  }
+  #how-to-help-section .help-tab:hover{ background:#eef6ff; }
+  #how-to-help-section .help-tab.is-active{
+    background:#e8f0ff; border-color:#bfdbfe;
+    box-shadow: 0 4px 12px rgba(37,99,235,.15);
+  }
+
+  /* right content sits directly on the blue card; use a white sheet for readability */
+  #how-to-help-section .help-content{
+    padding: 22px;
+    overflow: auto;
+    display: grid; align-content: start; gap: 10px;
+    background:#d1e1f4;                    /* white content pane */
+    border-left:1px solid var(--chip-b);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+  }
+  #how-to-help-section .help-content h3{ font-size: 22px; margin:0; }
+  #how-to-help-section .help-content p{ font-size: 16px; line-height:1.55; margin:0; }
+  #how-to-help-section .help-content .bullets{
+    margin: 4px 0 0 0; padding-left: 18px; font-size: 15px; color:#334155;
+  }
+  #how-to-help-section .help-content .bullets li{ margin: 6px 0; }
+
+  /* ===== Donate / Adopt screen ===== */
+  #give-section .give-stage{
+    max-width: var(--panel-w);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;     /* equal cards */
+    gap: 16px;
+  }
+
+  #give-section .give-card{
+    display: flex;
+    flex-direction: column;
+    height: var(--panel-h);             /* same height as your help card/myths */
+    background:#fff;
+    border:1px solid var(--chip-b);
+    border-radius:12px;
+    box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    text-decoration:none;
+    color: inherit;
+    overflow: hidden;
+    transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
+  }
+  #give-section .give-card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(0,0,0,.10);
+    border-color:#bfdbfe;
+  }
+
+  #give-section .give-title{
+    font-size: 22px;
+    font-weight: 800;
+    margin: 16px 16px 8px 16px;
+  }
+
+  #give-section .give-media{
+    flex: 1 1 auto;
+    margin: 0 16px 16px 16px;
+    border-radius:10px;
+    overflow:hidden;
+    background: linear-gradient(135deg,#eef2ff,#e0e7ff); /* placeholder look */
+    display: grid; place-items: center;
+    font-weight: 700; color:#334155;
+  }
+
+  #give-section .give-media img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+
 </style>
 
 </head>
@@ -804,6 +930,88 @@
   });
 </script>
 
+<script>
+  const HELP_COPY = {
+    plastic: {
+      title: "Avoid Plastic",
+      body: `
+        Plastic doesn’t break down—it fragments, drifts at sea, and enters food webs.
+        Small choices at home keep debris out of albatross habitat.`,
+      bullets: [
+        "Carry reusables; skip single-use bags, bottles, and utensils.",
+        "Secure trash & fishing line so it can’t blow to waterways.",
+        "Check out Surfrider’s “Rise Above Plastics” for easy swaps."
+      ]
+    },
+    acap: {
+      title: "Support ACAP (Albatrosses & Petrels)",
+      body: `
+        The Agreement on the Conservation of Albatrosses and Petrels coordinates
+        international science and policy for 30 seabird species. Backing ACAP helps
+        keep proven bycatch solutions on the water.`,
+      bullets: [
+        "Learn from ACAP’s species pages and bycatch resources.",
+        "Share why ACAP matters; encourage U.S. support and participation.",
+        "Sign action alerts from conservation groups."
+      ]
+    },
+    kids: {
+      title: "Read Kids’ Books",
+      body: `
+        Albatross lives—long-term partners, devoted parents—make great stories.
+        Children’s books spark empathy and stewardship early.`,
+      bullets: [
+        "Pick a conservation-minded title from ACAP’s book list.",
+        "Read together; talk about ocean wildlife and threats.",
+        "Donate a book to a classroom or library."
+      ]
+    },
+    colony: {
+      title: "Visit a Nesting Colony",
+      body: `
+        Seeing albatrosses up close is unforgettable. On Hawai‘i’s O‘ahu and Kaua‘i,
+        you can view Laysan Albatrosses responsibly during nesting season.`,
+      bullets: [
+        "Ka‘ena Point (O‘ahu) & Kīlauea Point NWR (Kaua‘i) Nov–Jul.",
+        "Watch from marked trails; give birds plenty of space.",
+        "Explore archived highlights from the Laysan Albatross cam."
+      ]
+    },
+    pelagic: {
+      title: "See Them at Sea",
+      body: `
+        Pelagic trips off the West Coast often spot Black-footed—and sometimes Laysan—albatrosses.
+        Even short whale-watching outings in Monterey Bay can deliver great looks.`,
+      bullets: [
+        "Book reputable operators (e.g., SF Bay/Monterey area).",
+        "Dress warm, bring binoculars, follow crew guidance.",
+        "Share photos and what you learn to inspire others."
+      ]
+    }
+  };
+
+  function renderHelp(key){
+    const data = HELP_COPY[key] || HELP_COPY.plastic;
+    const pane = document.querySelector('#how-to-help-section .help-content');
+    pane.innerHTML = `
+      <h3>${data.title}</h3>
+      <p>${data.body}</p>
+      <ul class="bullets">${data.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>
+    `;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabs = document.querySelectorAll('#how-to-help-section .help-tab');
+    tabs.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        tabs.forEach(b=>b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        renderHelp(btn.dataset.key);
+      });
+    });
+    renderHelp('plastic'); // initial tab
+  });
+</script>
 
 <body>
   <!-- Landing Section -->
@@ -1190,6 +1398,58 @@
     </div>
   </section>
 
+  <!-- How to Help Section -->
+  <section id="how-to-help-section" class="section">
+  <h1>How You Can Help</h1>
+  <p class="subtitle">Here are 5 practical ways that YOU can support albatross conservation.</p>
+
+  <div class="help-stage">
+    <div class="help-card">
+      <aside class="help-tabs" role="tablist" aria-label="Ways to help">
+        <button class="help-tab is-active" role="tab" aria-selected="true" data-key="plastic">Avoid Plastic</button>
+        <button class="help-tab" role="tab" aria-selected="false" data-key="acap">Support ACAP</button>
+        <button class="help-tab" role="tab" aria-selected="false" data-key="kids">Read Kids’ Books</button>
+        <button class="help-tab" role="tab" aria-selected="false" data-key="colony">Visit a Colony</button>
+        <button class="help-tab" role="tab" aria-selected="false" data-key="pelagic">See Them at Sea</button>
+      </aside>
+
+      <article class="help-content" aria-live="polite"></article>
+    </div>
+
+  </div>
+  </section>
+
+  <!-- Donate / Adopt Screen -->
+  <section id="give-section" class="section">
+    <h1>Make a Difference Today!</h1>
+    <p class="subtitle">Here are two quick ways to give to this cause from the comfort of your home.</p>
+
+    <div class="give-stage">
+      <!-- Donate card -->
+      <a class="give-card" target="_blank" rel="noopener"
+        href="https://www.birdlife.org/campaigns-appeals/albatross-sos/#donate-form">
+        <div class="give-title">Donate</div>
+        <div class="give-media">
+          <img src="images/give-donate.jpg" alt="Donate to Albatross" />
+        </div>
+      </a>
+
+      <!-- Adopt card -->
+      <a class="give-card" target="_blank" rel="noopener"
+        href="https://www.oceanicsociety.org/adopt/adopt-an-albatross/">
+        <div class="give-title">Adopt an Albatross</div>
+        <div class="give-media">
+          <img src="images/give-adopt.jpg" alt="Adopt an albatross" />
+        </div>
+      </a>
+    </div>
+  </section>
+
+
+  <!-- Sources -->
+  <section id="sources-section" class="section">
+    <h1>Sources & Further Reading</h1>
+  </section>
 
   <!-- Navigation Dots -->
   <div class="nav-dots">
@@ -1207,6 +1467,9 @@
     <div class="nav-dot"        data-section="threats"       data-label="Threats"></div>                  <!-- 12 -->
     <div class="nav-dot"        data-section="info-help"     data-label="Info"></div>                     <!-- 13 -->
     <div class="nav-dot"        data-section="conservation"  data-label="Conservation Efforts"></div>     <!-- 14 -->
+    <div class="nav-dot"        data-section="how-to-help"   data-label="How to Help"></div>              <!-- 15 -->
+    <div class="nav-dot"        data-section="give"          data-label="Donate / Adopt"></div>           <!-- 16 -->
+    <div class="nav-dot"        data-section="source"        data-label="Sources"></div>                  <!-- 17 -->
   </div>
 
 
@@ -1435,14 +1698,17 @@
         'map'          : document.getElementById('distance-section'),
         'info-genus'   : document.getElementById('info-genus-section'),
         'species'      : document.getElementById('species-section'),
-        'info-wind'    : document.getElementById('transition-4-section'),   // “the wind is their highway”
-        'flight'       : document.getElementById('flight-section'),          // blank
+        'info-wind'    : document.getElementById('transition-4-section'),
+        'flight'       : document.getElementById('flight-section'), 
         'info-folk'    : document.getElementById('info-folklore-section'),
         'myths'        : document.getElementById('myths-section'),
-        'info-hazards' : document.getElementById('transition-1-section'),    // “new hazards”
+        'info-hazards' : document.getElementById('transition-1-section'),
         'threats'      : document.getElementById('threats-section'),
-        'info-help'    : document.getElementById('transition-2-section'),    // “here’s how to help”
-        'conservation' : document.getElementById('conservation-section')     // blank
+        'info-help'    : document.getElementById('transition-2-section'),
+        'conservation' : document.getElementById('conservation-section'),
+        'how-to-help'  : document.getElementById('how-to-help-section'),
+        'give'         : document.getElementById('give-section'),
+        'sources'      : document.getElementById('sources') 
       };
 
       // Handle dot clicks (unchanged)
