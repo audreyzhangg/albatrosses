@@ -150,12 +150,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const svg = d3.select('#matrix-viz')
             .append('svg')
             .attr('width', width)
-            .attr('height', height);
+            .attr('height', height)
+            .style('transition', 'transform 0.3s ease');
+
+        // Listen for panel open/close to shift diagram
+        window.addEventListener('openSpeciesPanelByName', function() {
+            svg.style('transform', 'translateX(-225px)'); // Shift left by half the panel width
+        });
+        
+        window.addEventListener('speciesPanelClosed', function() {
+            svg.style('transform', 'translateX(0)'); // Reset position
+        });
 
         // Draw vertical grid lines
         threats.forEach((threat, i) => {
             svg.append('line')
-                .attr('class', 'grid-line')
+                .attr('class', 'grid-line vertical')
                 .attr('x1', leftMargin + i * cellWidth + cellWidth / 2)
                 .attr('y1', topMargin)
                 .attr('x2', leftMargin + i * cellWidth + cellWidth / 2)
@@ -203,14 +213,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
                     
-                    // Gray out circles
+                    // Color/gray out circles
                     svg.selectAll('.matrix-circle').each(function() {
                         const circle = d3.select(this);
                         const circleSpecies = circle.attr('data-species');
                         if (circleSpecies !== sp) {
-                            circle.transition().duration(300).style('opacity', 0.1);
+                            circle
+                                .attr('fill', '#d3d3d3')
+                                .transition()
+                                .duration(300)
+                                .style('opacity', 0.1);
                         } else {
-                            circle.transition().duration(300).style('opacity', 0.8);
+                            // Color by conservation status for this species
+                            const status = speciesStatus[sp] || 'LC';
+                            const speciesColor = statusColors[status] || statusColors['LC'];
+                            circle
+                                .attr('fill', speciesColor)
+                                .transition()
+                                .duration(300)
+                                .style('opacity', 0.8);
                         }
                     });
                     
@@ -220,6 +241,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         window.dispatchEvent(new CustomEvent('openSpeciesPanelByName', { detail: { speciesName: sp } }));
                     }
+                    
+                    // Shift diagram left when panel opens
+                    svg.style('transform', 'translateX(-225px)');
                 });
             
             speciesLabels.push(label);
@@ -227,7 +251,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add threat labels (columns) - rotated
         const threatLabels = [];
-        let selectedThreat = null;
+        const selectedThreats = new Set();
+        const selectionOrder = []; // Track order of selection
+        let threatOrder = [...threats]; // Keep track of current order
+        
+        function updateThreatPositions() {
+            // Move selected threats to the front in their selection order
+            const selected = selectionOrder.filter(t => selectedThreats.has(t));
+            const unselected = threats.filter(t => !selectedThreats.has(t));
+            threatOrder = [...selected, ...unselected];
+            
+            // Update label positions with animation
+            threatLabels.forEach(labelObj => {
+                const threat = labelObj.label.attr('data-threat');
+                const newIndex = threatOrder.indexOf(threat);
+                const newX = leftMargin + newIndex * cellWidth + cellWidth / 2;
+                
+                labelObj.label
+                    .transition()
+                    .duration(500)
+                    .attr('x', newX)
+                    .attr('transform', `rotate(-45, ${newX}, ${topMargin - 10})`);
+            });
+            
+            // Update circle positions with animation
+            svg.selectAll('.matrix-circle').each(function() {
+                const circle = d3.select(this);
+                const threat = circle.attr('data-threat');
+                const newIndex = threatOrder.indexOf(threat);
+                const newCx = leftMargin + newIndex * cellWidth + cellWidth / 2;
+                
+                circle.transition().duration(500).attr('cx', newCx);
+            });
+            
+            // Update grid line positions
+            svg.selectAll('.grid-line.vertical').each(function(d, i) {
+                const line = d3.select(this);
+                const newX = leftMargin + i * cellWidth + cellWidth / 2;
+                line.transition().duration(500)
+                    .attr('x1', newX)
+                    .attr('x2', newX);
+            });
+        }
+        
         threats.forEach((threat, i) => {
             const label = svg.append('text')
                 .attr('class', 'threat-label')
@@ -240,55 +306,99 @@ document.addEventListener('DOMContentLoaded', () => {
                 .on('click', function(event) {
                     event.stopPropagation();
                     
-                    // Toggle: if clicking the same threat, reset everything
-                    if (selectedThreat === threat) {
-                        selectedThreat = null;
+                    // Toggle: if clicking a selected threat, deselect it
+                    if (selectedThreats.has(threat)) {
+                        selectedThreats.delete(threat);
+                        // Remove from selection order
+                        const index = selectionOrder.indexOf(threat);
+                        if (index > -1) {
+                            selectionOrder.splice(index, 1);
+                        }
                         
-                        // Reset all threat labels
-                        threatLabels.forEach(lbl => {
-                            lbl.transition().duration(300).style('opacity', 1);
-                        });
+                        // If no threats selected, reset all
+                        if (selectedThreats.size === 0) {
+                            threatLabels.forEach(lbl => {
+                                lbl.label.transition().duration(300).style('opacity', 1);
+                            });
+                            svg.selectAll('.matrix-circle')
+                                .attr('fill', '#d3d3d3')
+                                .transition()
+                                .duration(300)
+                                .style('opacity', 0.8);
+                        } else {
+                            // Update opacity for this threat label
+                            d3.select(this).transition().duration(300).style('opacity', 0.2);
+                            
+                            // Update all circles to reflect remaining selections
+                            svg.selectAll('.matrix-circle').each(function() {
+                                const circle = d3.select(this);
+                                const circleThreat = circle.attr('data-threat');
+                                const circleSpecies = circle.attr('data-species');
+                                const status = speciesStatus[circleSpecies] || 'LC';
+                                const speciesColor = statusColors[status] || statusColors['LC'];
+                                
+                                if (selectedThreats.has(circleThreat)) {
+                                    // Still selected threats: keep colored
+                                    circle
+                                        .attr('fill', speciesColor)
+                                        .style('opacity', 0.8);
+                                } else {
+                                    // Deselected threats: gray and faded
+                                    circle
+                                        .attr('fill', '#d3d3d3')
+                                        .style('opacity', 0.1);
+                                }
+                            });
+                        }
                         
-                        // Reset all circles to gray
-                        svg.selectAll('.matrix-circle')
-                            .transition()
-                            .duration(300)
-                            .attr('fill', '#d3d3d3')
-                            .style('opacity', 0.8);
+                        // Update positions after colors are set
+                        updateThreatPositions();
+                        
                     } else {
-                        // Select new threat
-                        selectedThreat = threat;
+                        // Select this threat - ADD it first
+                        selectedThreats.add(threat);
+                        // Add to selection order
+                        if (!selectionOrder.includes(threat)) {
+                            selectionOrder.push(threat);
+                        }
                         
-                        // Gray out all other threats
+                        // Keep selected threats at full opacity, gray out others
                         threatLabels.forEach(lbl => {
-                            const lblThreat = lbl.attr('data-threat');
-                            if (lblThreat !== threat) {
-                                lbl.transition().duration(300).style('opacity', 0.2);
+                            const lblThreat = lbl.label.attr('data-threat');
+                            if (selectedThreats.has(lblThreat)) {
+                                lbl.label.transition().duration(300).style('opacity', 1);
                             } else {
-                                lbl.transition().duration(300).style('opacity', 1);
+                                lbl.label.transition().duration(300).style('opacity', 0.2);
                             }
                         });
                         
-                        // Color circles by conservation status for this threat
+                        // Update all circles based on current selection state
                         svg.selectAll('.matrix-circle').each(function() {
                             const circle = d3.select(this);
                             const circleThreat = circle.attr('data-threat');
                             const circleSpecies = circle.attr('data-species');
+                            const status = speciesStatus[circleSpecies] || 'LC';
+                            const speciesColor = statusColors[status] || statusColors['LC'];
                             
-                            if (circleThreat !== threat) {
-                                circle.transition().duration(300).style('opacity', 0.1);
-                            } else {
-                                const status = speciesStatus[circleSpecies] || 'LC';
-                                const speciesColor = statusColors[status] || statusColors['LC'];
-                                circle.transition().duration(300)
+                            if (selectedThreats.has(circleThreat)) {
+                                // Selected threats: color by conservation status
+                                circle
                                     .attr('fill', speciesColor)
                                     .style('opacity', 0.8);
+                            } else {
+                                // Unselected threats: gray and faded
+                                circle
+                                    .attr('fill', '#d3d3d3')
+                                    .style('opacity', 0.1);
                             }
                         });
+                        
+                        // Update positions after colors are set
+                        updateThreatPositions();
                     }
                 });
             
-            threatLabels.push(label);
+            threatLabels.push({ label, threat });
         });
 
         // Draw circles for species-threat intersections
@@ -323,14 +433,25 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                             });
                             
-                            // Gray out circles
+                            // Color/gray out circles
                             svg.selectAll('.matrix-circle').each(function() {
                                 const circle = d3.select(this);
                                 const circleSpecies = circle.attr('data-species');
                                 if (circleSpecies !== sp) {
-                                    circle.transition().duration(300).style('opacity', 0.1);
+                                    circle
+                                        .attr('fill', '#d3d3d3')
+                                        .transition()
+                                        .duration(300)
+                                        .style('opacity', 0.1);
                                 } else {
-                                    circle.transition().duration(300).style('opacity', 0.8);
+                                    // Color by conservation status for this species
+                                    const status = speciesStatus[sp] || 'LC';
+                                    const speciesColor = statusColors[status] || statusColors['LC'];
+                                    circle
+                                        .attr('fill', speciesColor)
+                                        .transition()
+                                        .duration(300)
+                                        .style('opacity', 0.8);
                                 }
                             });
                             
@@ -340,6 +461,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             } else {
                                 window.dispatchEvent(new CustomEvent('openSpeciesPanelByName', { detail: { speciesName: sp } }));
                             }
+                            
+                            // Shift diagram left when panel opens
+                            svg.style('transform', 'translateX(-225px)');
                         })
                         .on('mouseover', function(event) {
                             d3.select(this)
@@ -379,30 +503,60 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Listen for panel close event to reset all elements
         window.addEventListener('speciesPanelClosed', function() {
+            // Reset opacity
             speciesLabels.forEach(lbl => {
                 lbl.transition().duration(300).style('opacity', 1);
             });
             svg.selectAll('.matrix-circle')
+                .attr('fill', '#d3d3d3')
                 .transition()
                 .duration(300)
                 .style('opacity', 0.8);
+            
+            // Reset diagram position
+            svg.style('transform', 'translateX(0)');
         });
         
         // Reset on clicking SVG background
         svg.on('click', function(event) {
             if (event.target.tagName === 'svg' || event.target === this) {
-                selectedThreat = null;
+                selectedThreats.clear();
+                selectionOrder.length = 0; // Clear selection order
+                threatOrder = [...threats]; // Reset to original order
+                
                 speciesLabels.forEach(lbl => {
                     lbl.transition().duration(300).style('opacity', 1);
                 });
                 threatLabels.forEach(lbl => {
-                    lbl.transition().duration(300).style('opacity', 1);
+                    lbl.label.transition().duration(300).style('opacity', 1);
                 });
                 svg.selectAll('.matrix-circle')
                     .transition()
                     .duration(300)
                     .attr('fill', '#d3d3d3') // Reset to light gray
                     .style('opacity', 0.8);
+                
+                // Reset positions
+                threatLabels.forEach(labelObj => {
+                    const threat = labelObj.threat;
+                    const originalIndex = threats.indexOf(threat);
+                    const originalX = leftMargin + originalIndex * cellWidth + cellWidth / 2;
+                    
+                    labelObj.label
+                        .transition()
+                        .duration(500)
+                        .attr('x', originalX)
+                        .attr('transform', `rotate(-45, ${originalX}, ${topMargin - 10})`);
+                });
+                
+                svg.selectAll('.matrix-circle').each(function() {
+                    const circle = d3.select(this);
+                    const threat = circle.attr('data-threat');
+                    const originalIndex = threats.indexOf(threat);
+                    const originalCx = leftMargin + originalIndex * cellWidth + cellWidth / 2;
+                    
+                    circle.transition().duration(500).attr('cx', originalCx);
+                });
             }
         });
     }

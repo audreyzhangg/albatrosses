@@ -16,40 +16,39 @@ Tristan Albatross,,Fishing bycatch,High
 Wandering Albatross,,Fishing bycatch,Medium
 Waved Albatross,,Fishing bycatch,Low
 White-capped Albatross,,Fishing bycatch,Low
-Wandering Albatross,,Habitat loss or destruction,Medium
-Antipodean Albatross,,Habitat loss or destruction,Medium
-Black-browed Albatross,,Habitat loss or destruction,Low
-Black-footed Albatross,,Habitat loss or destruction,Low
-Shy Albatross,,Habitat loss or destruction,High
+Wandering Albatross,,Habitat loss,Medium
+Antipodean Albatross,,Habitat loss,Medium
+Black-browed Albatross,,Habitat loss,Low
+Black-footed Albatross,,Habitat loss,Low
+Shy Albatross,,Habitat loss,High
 Waved Albatross,Recreation/tourism,Human disturbance,High
 Laysan Albatross,Military action,Human disturbance,High
-Amsterdam Albatross,"Erysipelothrix rhusiopathiae (bacteria), Pasteurella multocida (bacteria)",Invasive diseases ,Medium
-Indian Yellow-nosed Albatross,"Erysipelothrix rhusiopathiae (bacteria), Pasteurella multocida (bacteria)",Invasive diseases ,High
-Sooty Albatross,House mouse,Predation by invasive species,
-Sooty Albatross,"Erysipelothrix rhusiopathiae (bacteria), Pasteurella multocida (bacteria)",Invasive diseases ,Low
-Tristan Albatross,House mouse,Predation by invasive species,Medium
+Amsterdam Albatross,"Erysipelothrix rhusiopathiae (bacteria), Pasteurella multocida (bacteria)",Invasive species,Medium
+Indian Yellow-nosed Albatross,"Erysipelothrix rhusiopathiae (bacteria), Pasteurella multocida (bacteria)",Invasive species,High
+Sooty Albatross,House mouse,Invasive species,
+Sooty Albatross,"Erysipelothrix rhusiopathiae (bacteria), Pasteurella multocida (bacteria)",Invasive species,Low
+Tristan Albatross,House mouse,Invasive species,Medium
 Indian Yellow-nosed Albatross,Avian cholera,Parasite or pathogen,High
 Shy Albatross,Avian pox virus,Parasite or pathogen,Low
 Waved Albatross,Mosquito,Parasite or pathogen,Low
 Sooty Albatross,Avian cholera,Parasite or pathogen,High
 Wandering Albatross,Avian Influenza ,Parasite or pathogen,Low
-Antipodean Albatross,Pig,Predation by invasive species,Low
-Atlantic Yellow-nosed Albatross,House mouse,Predation by invasive species,Low
-Black-browed Albatross,American mink,Predation by invasive species,Low
-Grey-headed Albatross,House mouse,Predation by invasive species,Low
-Laysan Albatross,"Polynesian rat, House mouse",Predation by invasive species,Low
-Light-mantled Albatross,"House mouse, Pig",Predation by invasive species,Low
-Southern Royal Albatross,"Cat, Pig",Predation by invasive species,Low
-Tristan Albatross,House mouse,Predation by invasive species,High
-Wandering Albatross,Cat,Predation by invasive species,Low
-White-capped Albatross,"Cat, Pig",Predation by invasive species,Low
+Antipodean Albatross,Pig,Invasive species,Low
+Atlantic Yellow-nosed Albatross,House mouse,Invasive species,Low
+Black-browed Albatross,American mink,Invasive species,Low
+Grey-headed Albatross,House mouse,Invasive species,Low
+Laysan Albatross,"Polynesian rat, House mouse",Invasive species,Low
+Light-mantled Albatross,"House mouse, Pig",Invasive species,Low
+Southern Royal Albatross,"Cat, Pig",Invasive species,Low
+Tristan Albatross,House mouse,Invasive species,High
+Wandering Albatross,Cat,Invasive species,Low
+White-capped Albatross,"Cat, Pig",Invasive species,Low
 Black-footed Albatross,,Sea-level rise,High
 Laysan Albatross,,Sea-level rise,High
 Northern Royal Albatross,,Sea-level rise,High
 Shy Albatross,,Sea-level rise,Low
-Waved Albatross,Nest desertation,Stress by alien species ,High
-Grey-headed Albatross,,Temperature Extremes,Medium
-Waved Albatross,,Temperature Extremes,Medium
+Grey-headed Albatross,,Climate change,Medium
+Waved Albatross,,Climate change,Medium
 Black-browed Albatross,,Volcanic activity,High
 Black-footed Albatross,,Volcanic activity,High
 Light-mantled Albatross,,Volcanic activity,High

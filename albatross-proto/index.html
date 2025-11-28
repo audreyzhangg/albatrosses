@@ -268,13 +268,47 @@
   .fact-card .stat strong { color: #2c3e50; }
 
   /* Threats section */
-  #threats-section { background: #ffffff; }
+  #threats-section { 
+    background: #ffffff; 
+    padding-left: 100px;
+  }
 
-  #matrix-viz {
+  .threats-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 40px;
+    align-items: start;
+    padding-top: 0;
+  }
+
+  .threats-left {
+    padding-top: 180px;
+  }
+
+  .threats-left h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    margin-top: 0;
+    color: #2c3e50;
+    text-align: left;
+  }
+
+  .threats-left .subtitle {
+    text-align: left;
+    color: var(--muted);
+    margin-bottom: 30px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .threats-right {
     overflow-x: auto;
     overflow-y: visible;
+  }
+
+  #matrix-viz {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
   }
 
@@ -294,8 +328,48 @@
     align-items: center;
   }
 
+  .threats-legend-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
   .threats-legend-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
   .threats-legend-circle { border-radius: 50%; background: #888; }
+
+  /* Responsive: stack on smaller screens */
+  @media (max-width: 1200px) {
+    #threats-section {
+      padding-left: 20px;
+    }
+    
+    .threats-layout {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    
+    .threats-left {
+      padding-top: 0;
+    }
+    
+    .threats-left h1 {
+      text-align: center;
+    }
+    
+    .threats-left .subtitle {
+      text-align: center;
+    }
+    
+    .threats-legend-vertical {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    #matrix-viz {
+      justify-content: center;
+    }
+  }
 
   /* ===================== Myths section (updated) ===================== */
   #myths-section { background: #dbf0fe; }
@@ -1229,56 +1303,64 @@
   </section>
 
   <section id="threats-section" class="section">
-    <h1>Threats</h1>
-    <p class="subtitle">Each circle represents a threat affecting a species. Hover for details.</p>
-    
-    <!-- Conservation Status Legend -->
-    <div style="margin-bottom: 15px;">
-      <div style="text-align: center; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Conservation Status</div>
-      <div class="threats-legend">
-        <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#DD403A;"></div>
-          <span>Critically Endangered</span>
+    <div class="threats-layout">
+      <!-- Left side: Title and Legends -->
+      <div class="threats-left">
+        <h1>Threats</h1>
+        <p class="subtitle">Each circle represents a threat affecting a species. Hover for details.</p>
+        
+        <!-- Conservation Status Legend -->
+        <div style="margin-bottom: 25px;">
+          <div style="font-weight: 600; margin-bottom: 10px; color: #2c3e50; font-size: 16px;">Conservation Status</div>
+          <div class="threats-legend-vertical">
+            <div class="threats-legend-item">
+              <div class="threats-legend-circle" style="width:12px; height:12px; background:#DD403A;"></div>
+              <span>Critically Endangered</span>
+            </div>
+            <div class="threats-legend-item">
+              <div class="threats-legend-circle" style="width:12px; height:12px; background:#FF7B3D;"></div>
+              <span>Endangered</span>
+            </div>
+            <div class="threats-legend-item">
+              <div class="threats-legend-circle" style="width:12px; height:12px; background:#FFC34B;"></div>
+              <span>Vulnerable</span>
+            </div>
+            <div class="threats-legend-item">
+              <div class="threats-legend-circle" style="width:12px; height:12px; background:#5AB361;"></div>
+              <span>Near Threatened</span>
+            </div>
+            <div class="threats-legend-item">
+              <div class="threats-legend-circle" style="width:12px; height:12px; background:#2F6690;"></div>
+              <span>Least Concern</span>
+            </div>
+          </div>
         </div>
-        <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#FF7B3D;"></div>
-          <span>Endangered</span>
-        </div>
-        <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#FFC34B;"></div>
-          <span>Vulnerable</span>
-        </div>
-        <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#5AB361;"></div>
-          <span>Near Threatened</span>
-        </div>
-        <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px; background:#2F6690;"></div>
-          <span>Least Concern</span>
+        
+        <!-- Threat Impact Legend -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-weight: 600; margin-bottom: 10px; color: #2c3e50; font-size: 16px;">Threat Impact</div>
+          <div class="threats-legend-vertical">
+            <div class="threats-legend-item">
+              <div class="threats-legend-circle" style="width:24px; height:24px;"></div>
+              <span>High Impact</span>
+            </div>
+            <div class="threats-legend-item">
+              <div class="threats-legend-circle" style="width:18px; height:18px;"></div>
+              <span>Medium Impact</span>
+            </div>
+            <div class="threats-legend-item">
+              <div class="threats-legend-circle" style="width:12px; height:12px;"></div>
+              <span>Low Impact</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    
-    <!-- Threat Impact Legend -->
-    <div style="margin-bottom: 20px;">
-      <div style="text-align: center; font-weight: 600; margin-bottom: 10px; color: #2c3e50;">Threat Impact</div>
-      <div class="threats-legend">
-        <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:24px; height:24px;"></div>
-          <span>High Impact</span>
-        </div>
-        <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:18px; height:18px;"></div>
-          <span>Medium Impact</span>
-        </div>
-        <div class="threats-legend-item">
-          <div class="threats-legend-circle" style="width:12px; height:12px;"></div>
-          <span>Low Impact</span>
-        </div>
+      
+      <!-- Right side: Diagram -->
+      <div class="threats-right">
+        <div id="matrix-viz"></div>
       </div>
     </div>
-    
-    <div id="matrix-viz"></div>
   </section>
 
   <!-- Transition Section 2 -->
