@@ -49,7 +49,7 @@ function createVisualization(data) {
     const container = document.getElementById('species-visualization') || document.getElementById('visualization');
     if (!container) return;
     const width = container.clientWidth;
-    const height = 1000;
+    const height = 650;
 
     // Clear any existing SVG
     d3.select(container).selectAll('svg').remove();
@@ -62,11 +62,11 @@ function createVisualization(data) {
     // <defs> for clipPaths
     const defs = svg.append('defs');
 
-    // Grid layout: 6 columns, 4 rows with padding
-    const cols = 6;
+    // Grid layout: 7 columns, 4 rows with padding
+    const cols = 7;
     const rows = 4;
-    const paddingx = 150; // Horizontal padding
-    const paddingy = 20; // Vertical padding
+    const paddingx = 100; // Horizontal padding (reduced)
+    const paddingy = 10; // Vertical padding (reduced)
     const gridWidth = width - (paddingx * 2);
     const gridHeight = height - (paddingy * 2);
     const cellWidth = gridWidth / cols;
@@ -131,7 +131,7 @@ function createVisualization(data) {
     // Add status ring
     birdGroups.append('circle')
         .attr('class', 'status-ring')
-        .attr('r', 60)
+        .attr('r', 50)
         .style('stroke', d => statusColors[d['RL Category']])
         .style('cursor', 'pointer');
 
@@ -140,7 +140,7 @@ function createVisualization(data) {
     birdGroups.append('path')
         .attr('class', 'bird-icon')
         .attr('d', 'M-8,-2 Q-8,-6 -4,-8 L0,-10 L4,-8 Q8,-6 8,-2 L6,0 Q8,2 6,6 L2,4 L0,6 L-2,4 L-6,6 Q-8,2 -6,0 Z')
-        .attr('transform', 'scale(3)');
+        .attr('transform', 'scale(2.5)');
 
     // Append an <image> element for each bird only after verifying the file exists.
     // Try multiple filename variants and .jpg then .png. If none exist, keep the silhouette.
@@ -189,14 +189,14 @@ function createVisualization(data) {
                             .attr('href', url)
                             .attr('x', 0)
                             .attr('y', 0)
-                            .attr('width', 120)
-                            .attr('height', 120)
+                            .attr('width', 100)
+                            .attr('height', 100)
                             .attr('preserveAspectRatio', 'xMidYMid slice');
 
                         // append a circle in the group filled by the pattern so it appears circular
                         group.append('circle')
                             .attr('class', 'bird-img-circle')
-                            .attr('r', 60)
+                            .attr('r', 50)
                             .attr('fill', `url(#${patternId})`)
                             .style('cursor', 'pointer');
 
@@ -219,7 +219,7 @@ function createVisualization(data) {
     // Add labels with common name, wrapping long names into two lines using tspans
     birdGroups.append('text')
         .attr('class', 'bird-label')
-        .attr('y', 90)
+        .attr('y', 75)
         .style('cursor', 'pointer')
         .each(function(d) {
             const name = (d['Common name'] || '').toString();
@@ -239,7 +239,7 @@ function createVisualization(data) {
 
             const text = d3.select(this);
             // Slightly reduce font size for wrapped (two-line) labels to avoid overlap
-            if (lines.length > 1) text.style('font-size', '16px');
+            if (lines.length > 1) text.style('font-size', '13px');
 
             lines.forEach((line, i) => {
                 text.append('tspan')
