@@ -1681,20 +1681,26 @@
         shadowSize: [41, 41]
       });
 
-      // Add Boston marker with red icon
-      const bostonMarker = L.marker(bostonCoords, {icon: redIcon})
+      // Add Boston marker with red icon (make it draggable)
+      const bostonMarker = L.marker(bostonCoords, {
+        icon: redIcon,
+        draggable: true
+      })
         .addTo(map)
-        .bindPopup('<b>Boston, MA</b>')
+        .bindPopup('<b>Boston, MA</b><br><i>Drag me to change location!</i>')
         .openPopup();
 
       // Add 560-mile radius circle (560 miles = ~901 km)
-      const radiusCircle = L.circle(bostonCoords, {
+      let radiusCircle = L.circle(bostonCoords, {
         color: '#ef4444',
         fillColor: '#ef4444',
         fillOpacity: 0.1,
         radius: 901000, // 560 miles in meters
         dashArray: '10, 10'
       }).addTo(map);
+
+      // Store city markers for updates
+      let cityMarkers = [];
 
       // Function to calculate distance between two points (Haversine formula)
       function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -1720,7 +1726,120 @@
         { name: 'Richmond, VA', coords: [37.5407, -77.4360] }
       ];
 
-      // Add city markers with flight time calculations
+      // All major cities in North America for dynamic calculation
+      const allCities = [
+        { name: 'New York, NY', coords: [40.7128, -74.0060] },
+        { name: 'Philadelphia, PA', coords: [39.9526, -75.1652] },
+        { name: 'Washington, DC', coords: [38.9072, -77.0369] },
+        { name: 'Montreal, Canada', coords: [45.5017, -73.5673] },
+        { name: 'Portland, ME', coords: [43.6591, -70.2553] },
+        { name: 'Buffalo, NY', coords: [42.8864, -78.8784] },
+        { name: 'Pittsburgh, PA', coords: [40.4406, -79.9959] },
+        { name: 'Richmond, VA', coords: [37.5407, -77.4360] },
+        { name: 'Atlanta, GA', coords: [33.7490, -84.3880] },
+        { name: 'Chicago, IL', coords: [41.8781, -87.6298] },
+        { name: 'Detroit, MI', coords: [42.3314, -83.0458] },
+        { name: 'Toronto, Canada', coords: [43.6532, -79.3832] },
+        { name: 'Miami, FL', coords: [25.7617, -80.1918] },
+        { name: 'Charlotte, NC', coords: [35.2271, -80.8431] },
+        { name: 'Nashville, TN', coords: [36.1627, -86.7816] },
+        { name: 'Cleveland, OH', coords: [41.4993, -81.6944] },
+        { name: 'Columbus, OH', coords: [39.9612, -82.9988] },
+        { name: 'Indianapolis, IN', coords: [39.7684, -86.1581] },
+        { name: 'Milwaukee, WI', coords: [43.0389, -87.9065] },
+        { name: 'Cincinnati, OH', coords: [39.1031, -84.5120] },
+        { name: 'Kansas City, MO', coords: [39.0997, -94.5786] },
+        { name: 'St. Louis, MO', coords: [38.6270, -90.1994] },
+        { name: 'Minneapolis, MN', coords: [44.9778, -93.2650] },
+        { name: 'Denver, CO', coords: [39.7392, -104.9903] },
+        { name: 'Dallas, TX', coords: [32.7767, -96.7970] },
+        { name: 'Houston, TX', coords: [29.7604, -95.3698] },
+        { name: 'Phoenix, AZ', coords: [33.4484, -112.0740] },
+        { name: 'Los Angeles, CA', coords: [34.0522, -118.2437] },
+        { name: 'San Francisco, CA', coords: [37.7749, -122.4194] },
+        { name: 'Seattle, WA', coords: [47.6062, -122.3321] },
+        { name: 'Portland, OR', coords: [45.5152, -122.6784] },
+        { name: 'Las Vegas, NV', coords: [36.1699, -115.1398] },
+        { name: 'San Diego, CA', coords: [32.7157, -117.1611] },
+        { name: 'Halifax, Canada', coords: [44.6488, -63.5752] },
+        { name: 'Quebec City, Canada', coords: [46.8139, -71.2080] },
+        { name: 'Ottawa, Canada', coords: [45.4215, -75.6972] },
+        { name: 'Winnipeg, Canada', coords: [49.8951, -97.1384] },
+        { name: 'Calgary, Canada', coords: [51.0447, -114.0719] },
+        { name: 'Vancouver, Canada', coords: [49.2827, -123.1207] }
+      ];
+
+      // Function to update city markers based on center location
+      function updateCityMarkers(centerCoords) {
+        // Remove existing city markers
+        cityMarkers.forEach(marker => map.removeLayer(marker));
+        cityMarkers = [];
+
+        // Find cities within 560 miles and add markers
+        allCities.forEach(city => {
+          const distance = calculateDistance(
+            centerCoords[0], centerCoords[1],
+            city.coords[0], city.coords[1]
+          );
+          
+          if (distance <= 560) {
+            // Calculate flight time
+            const flightTimeHours = distance / 45;
+            const hours = Math.floor(flightTimeHours);
+            const minutes = Math.round((flightTimeHours - hours) * 60);
+            
+            let timeText;
+            if (hours === 0) {
+              timeText = `${minutes} minutes`;
+            } else if (minutes === 0) {
+              timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
+            } else {
+              timeText = `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minutes`;
+            }
+
+            const marker = L.marker(city.coords)
+              .addTo(map)
+              .bindPopup(`<b>${city.name}</b><br>Distance: ${Math.round(distance)} miles<br>Flight time: ${timeText}`)
+              .on('mouseover', function(e) {
+                this.openPopup();
+              });
+            
+            cityMarkers.push(marker);
+          }
+        });
+      }
+
+      // Initial city markers
+      updateCityMarkers(bostonCoords);
+
+      // Handle marker drag
+      bostonMarker.on('dragend', function(event) {
+        const newPosition = event.target.getLatLng();
+        const newCoords = [newPosition.lat, newPosition.lng];
+        
+        // Update the circle position
+        map.removeLayer(radiusCircle);
+        radiusCircle = L.circle(newCoords, {
+          color: '#ef4444',
+          fillColor: '#ef4444',
+          fillOpacity: 0.1,
+          radius: 901000,
+          dashArray: '10, 10'
+        }).addTo(map);
+        
+        // Update city markers
+        updateCityMarkers(newCoords);
+        
+        // Update popup
+        bostonMarker.setPopupContent('<b>Custom Location</b><br><i>Drag me to change location!</i>');
+        
+        // Update info control
+        document.querySelector('.distance-info-control').innerHTML = 
+          '<b>Albatross Daily Range</b><br>560 miles from selected location';
+      });
+
+      // Add city markers with flight time calculations (remove old implementation)
+      /*
       citiesInRange.forEach(city => {
         // Calculate distance from Boston to this city
         const distance = calculateDistance(
@@ -1750,6 +1869,7 @@
             this.openPopup();
           });
       });
+      */
 
       // Custom control for distance info
       const distanceInfo = L.control({position: 'topright'});
@@ -1764,9 +1884,8 @@
       };
       distanceInfo.addTo(map);
 
-      // Fit map to show the circle and all cities
-      const group = new L.featureGroup([radiusCircle, bostonMarker, ...citiesInRange.map(city => L.marker(city.coords))]);
-      map.fitBounds(group.getBounds().pad(0.1));
+      // Fit map to show the circle and marker
+      map.fitBounds(radiusCircle.getBounds().pad(0.1));
     });
 
     // Navigation dots functionality
