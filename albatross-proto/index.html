@@ -26,10 +26,10 @@
 
   /* Global: prevent any “peek-through” */
   section, .section, .transition-section {
-    overflow: clip;
-    contain: paint;
+    /* overflow: clip;
+    contain: paint; */
     background:#ffffff;
-    isolation:isolate;
+    /* isolation:isolate; */
   }
   @supports not (overflow: clip) {
     section, .section, .transition-section { overflow: hidden; }
@@ -75,7 +75,7 @@
     align-items: center;
     justify-content: center;
 
-    background-image: url('images/ocean5.png');
+    background-image: url('images/ocean7.png');
     background-size: cover;               /* fill the screen */
     background-position: center;
     background-repeat: no-repeat;
@@ -109,9 +109,9 @@
     align-items: center;        /* vertical center */
     justify-content: center;    /* horizontal center */
     min-height: 100vh;          /* full-screen hero */
-    padding: 0 20px;            /* override .section vertical padding */
+    /* padding: 0 40px;            override .section vertical padding */
 
-    background: url('images/topocean.png') top center / cover no-repeat;
+    background: url('images/top3.png') top center / cover no-repeat;
   }
 
   /* Layout: bird left, text right */
@@ -189,13 +189,21 @@
 
   /* Quiz */
   #quiz-section {
-    background: #ffffff;
+    background: linear-gradient(
+      to bottom,
+      #ffffff 0%,
+      #d9ecfb 12%,
+      #d9ecfb 88%,
+      #ffffff 100%
+    );
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding: 140px 20px 60px;
+    justify-content: center;
+    /* padding: 0 20px;     remove the big top padding from .section */
+    min-height: 100vh;   /* use full viewport height so flex centering is true center */
   }
+
   #quiz-container { max-width: 600px; text-align: center; padding: 40px; }
   #quiz-question { font-size: 22px; font-weight: 600; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; }
   #quiz-input-container { margin: 30px 0; position: relative; }
@@ -619,56 +627,241 @@
     .pc-right { padding: 10px; }
   }
 
-  /* ---------- Transition pages: white background + uniform square blue box ---------- */
-  .transition-section{
-    background:#ffffff;
+/* ---------- Transition pages: centered white card “textbox” ---------- */
+  .transition-section {
+    background: #ffffff;          /* plain white page */
     padding: 60px 20px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height: 85vh;
+    display: flex;
+    align-items: center;          /* vertical center */
+    justify-content: center;      /* horizontal center */
+    min-height: 85vh;             /* keeps one “page” in view */
   }
 
-  .transition-section .transition-content{
-    --tcard-w: 500px;
-    --tcard-h: 400px;
-    --tcard-font: clamp(16px, 2.2vw, 26px);
+  /* The card / textbox itself */
+  .transition-section .transition-content {
+    --tcard-w: 520px;
+    --tcard-h: 320px;
+    --tcard-font: clamp(18px, 2.1vw, 22px);
 
     width: min(var(--tcard-w), calc(100vw - 40px));
     height: min(var(--tcard-h), 60vh);
-    background:#d9ecfb;
-    border:2px solid #000;
-    border-radius:0;
-    box-shadow:0 14px 34px rgba(0,0,0,.18);
-    padding:28px 36px;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-    overflow:hidden;
+    background: #d9ecfb;          /* no blue background */
+    border: 1px solid #d1d5db;    /* subtle light gray border (no black) */
+    border-radius: 13px;          /* rounded corners */
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    padding: 28px 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
   }
 
+  /* Typography inside the card */
   .transition-section .transition-content h1,
   .transition-section .transition-content h2,
   .transition-section .transition-content h3,
-  .transition-section .transition-content p{
-    margin:0;
+  .transition-section .transition-content p {
+    margin: 0;
     font-size: var(--tcard-font);
-    line-height:1.25;
-    font-weight:500;
-    color:#0f172a;
+    line-height: 1.3;
+    font-weight: 500;
+    color: #0f172a;
   }
-  .transition-section .transition-content strong { font-weight:800; }
 
-  @media (max-width: 640px){
-    .transition-section{ padding:40px 14px; min-height: 90vh; }
-    .transition-section .transition-content{
+  .transition-section .transition-content strong {
+    font-weight: 800;
+  }
+
+  /* Mobile tweaks */
+  @media (max-width: 640px) {
+    .transition-section {
+      padding: 40px 14px;
+      min-height: 90vh;
+    }
+
+    .transition-section .transition-content {
       width: calc(100vw - 28px);
-      height: 56vh;
-      padding:22px 20px;
+      height: auto;              /* let the card grow with text on small screens */
+      padding: 22px 18px;
+    }
+
+    .transition-section .transition-content h1,
+    .transition-section .transition-content h2,
+    .transition-section .transition-content h3,
+    .transition-section .transition-content p {
+      font-size: 18px;
     }
   }
+
+
+  .tooltip {
+    position: absolute;
+    pointer-events: none;
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.4;
+    display: none;
+    z-index: 9999;
+    max-width: 260px;
+  }
+
+  /* Sources / Further reading */
+/* Sources / Further reading */
+#sources-section {
+  background: #ffffff;
+}
+
+/* Make room for 4 cards per row on desktop */
+.sources-grid {
+  max-width: 1200px;  /* was var(--panel-w); */
+  margin: 20px auto 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 columns on wide screens */
+  gap: 16px; /* slightly tighter gap */
+}
+
+.source-card {
+  background: #f8fafc;
+  border-radius: 14px;
+  border: 1px solid var(--chip-b);
+  box-shadow: 0 8px 18px rgba(15,23,42,0.06);
+  padding: 14px 16px 16px; /* a bit smaller */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography inside cards */
+  .source-card h3 {
+    margin: 0 0 6px 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+
+  .source-card p {
+    margin: 0 0 6px 0;
+    font-size: 12px;
+    color: #64748b;
+  }
+
+  .source-card ul {
+    margin: 0;
+    padding-left: 16px;
+    font-size: 13px;
+  }
+
+  .source-card li {
+    margin: 3px 0;
+  }
+
+  .source-card a {
+    color: #1d4ed8;
+    text-decoration: none;
+    font-size: 11px;
+  }
+
+  .source-card a:hover {
+    text-decoration: underline;
+  }
+
+  /* Responsive breakpoints so it still looks good on smaller screens */
+  @media (max-width: 1100px) {
+    .sources-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 840px) {
+    .sources-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 520px) {
+    .sources-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Credits page */
+  #credits-section {
+    background: linear-gradient(
+      to bottom,
+      #ffffff 0%,
+      #d9ecfb 12%
+    );
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 85vh;
+    padding: 200px 20px 40px;
+  }
+
+  #credits-inner {
+    text-align: center;
+  }
+
+  #credits-inner img {
+    display: block;
+    margin: 0 auto 8px;
+    /* adjust size so we don't blow it up too much */
+    width: 140px;      /* try 100–160px; smaller = crisper */
+    height: auto;
+  }
+
+  .credits-names div {
+    font-size: 13px;
+    line-height: 1.3;
+    color: #111827;
+  }
+
+
+
+
+
+
+  /* --- Final overrides for Credits layout --- */
+  #credits-section {
+    /* make the page taller so Sources never peeks in */
+    min-height: 105vh;      /* you can bump to 115–120vh if you want even more */
+    display: flex;
+    align-items: flex-start; /* no vertical centering */
+    justify-content: center;
+    padding: 64vh 20px 40px; /* big top padding pushes content down */
+    /* background: #d9ecfb;     solid blue, no bottom fade */
+    background: linear-gradient(
+      to bottom,
+      #ffffff 0%,
+      #d9ecfb 12%
+    );
+  }
+
+  #credits-inner {
+    text-align: center;
+  }
+
+  /* keep image + names the same, just here in case earlier rules conflict */
+  #credits-inner img {
+    display: block;
+    /* margin: 0 auto 8px; */
+    width: 140px;
+    height: auto;
+  }
+
+  .credits-names div,
+  #credits-inner .credit-name {
+    font-size: 15px;
+    line-height: 1.3;
+    color: #111827;
+  }
+
+
   </style>
 </head>
 
@@ -1201,7 +1394,158 @@
   <!-- 12. Sources -->
   <section id="sources-section" class="section">
     <h1>Sources & Further Reading</h1>
+    <p class="subtitle">
+      Key datasets, scientific papers, and accessible articles that informed this project.
+    </p>
+
+    <div class="sources-grid">
+      <div class="source-card">
+        <h3>Seabird Tracking Database</h3>
+        <p>Global tracking data for albatrosses and other seabirds</p>
+        <ul>
+          <li>
+            <a href="https://www.seabirdtracking.org/species/albatrosses/" target="_blank" rel="noopener">
+              Seabird Tracking – Albatrosses
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <h3>ACAP (Agreement on the Conservation of Albatrosses and Petrels)</h3>
+        <p>International collaboration focused on conserving albatrosses and petrels</p>
+        <ul>
+          <li>
+            <a href="https://data.acap.aq/" target="_blank" rel="noopener">
+              ACAP Data Portal
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <h3>BirdLife International</h3>
+        <p>Global partnership of conservation organizations tracking seabird status and threats</p>
+        <ul>
+          <li>
+            <a href="https://datazone.birdlife.org/species/factsheet" target="_blank" rel="noopener">
+              BirdLife Data Zone – Species Factsheets
+            </a>
+          </li>
+          <li>
+            <a href="https://www.birdlife.org/news/2023/06/19/albatrosses-inspiring-legends-myths/" target="_blank" rel="noopener">
+              Albatrosses Inspiring Legends & Myths
+            </a>
+          </li>
+          <li>
+            <a href="https://www.birdlife.org/campaigns-appeals/albatross-sos/#donate-form" target="_blank" rel="noopener">
+              Albatross SOS Campaign
+            </a>
+          </li>
+          <li>
+            <a href="https://www.birdlife.org/news/2022/11/03/taking-action-for-albatrosses/" target="_blank" rel="noopener">
+              Taking Action for Albatrosses
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <h3>Cornell Lab of Ornithology – All About Birds</h3>
+        <p>Accessible species accounts and conservation actions for bird enthusiasts</p>
+        <ul>
+          <li>
+            <a href="https://www.allaboutbirds.org/guide/Laysan_Albatross/id" target="_blank" rel="noopener">
+              Laysan Albatross Species Account
+            </a>
+          </li>
+          <li>
+            <a href="https://www.allaboutbirds.org/news/7-ways-you-can-help-albatrosses/" target="_blank" rel="noopener">
+              7 Ways You Can Help Albatrosses
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <h3>Scientific Research & Reviews</h3>
+        <p>Primary literature on albatross flight, ecology, and conservation</p>
+        <ul>
+          <li>
+            <a href="https://www.sciencedirect.com/science/article/pii/S0006320725000023" target="_blank" rel="noopener">
+              ScienceDirect – Albatross Conservation Paper
+            </a>
+          </li>
+          <li>
+            <a href="https://www.int-res.com/articles/meps_oa/m672p205.pdf" target="_blank" rel="noopener">
+              Marine Ecology Progress Series – Albatross Study
+            </a>
+          </li>
+          <li>
+            <a href="https://www.whoi.edu/press-room/news-release/new-research-unlocks-clues-about-the-iconic-flight-of-the-wandering-albatross/" target="_blank" rel="noopener">
+              WHOI – Flight of the Wandering Albatross
+            </a>
+          </li>
+          <li>
+            <a href="https://spectrum.ieee.org/the-nearly-effortless-flight-of-the-albatross" target="_blank" rel="noopener">
+              IEEE Spectrum – Nearly Effortless Flight of the Albatross
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <h3>NOAA Fisheries</h3>
+        <p>Policy and gear innovations that reduce albatross bycatch in US fisheries</p>
+        <ul>
+          <li>
+            <a href="https://www.fisheries.noaa.gov/feature-story/6-ways-us-fisheries-reduce-albatross-bycatch" target="_blank" rel="noopener">
+              6 Ways U.S. Fisheries Reduce Albatross Bycatch
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <h3>Oceanic Society</h3>
+        <p>Conservation programs and other ways to help</p>
+        <ul>
+          <li>
+            <a href="https://www.oceanicsociety.org/adopt/adopt-an-albatross/" target="_blank" rel="noopener">
+              Adopt an Albatross
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="source-card">
+        <h3>Expeditions & Wildlife Guides</h3>
+        <p>Natural history and travel-oriented perspectives on albatrosses</p>
+        <ul>
+          <li>
+            <a href="https://poseidonexpeditions.com/about/articles/wandering-albatross/" target="_blank" rel="noopener">
+              Poseidon Expeditions – Wandering Albatross
+            </a>
+          </li>
+          <li>
+            <a href="https://www.nathab.com/know-before-you-go/antarctica/wildlife-guide/albatrosses" target="_blank" rel="noopener">
+              Natural Habitat Adventures – Albatross Wildlife Guide
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </section>
+
+  <!-- 13. Credits -->
+  <section id="credits-section" class="section">
+    <div id="credits-inner">
+      <img src="images/albatross-clipart.png" alt="Albatross illustration">
+      <p class="credit-name">Robin Pan</p>
+      <p class="credit-name">Audrey Zhang</p>
+    </div>
+  </section>
+
 
   <!-- Side Navigation Dots -->
   <div class="nav-dots">
@@ -1217,6 +1561,7 @@
     <div class="nav-dot"        data-section="conserv"  data-label="Conservation"></div>
     <div class="nav-dot"        data-section="help"     data-label="How to Help"></div>
     <div class="nav-dot"        data-section="sources"  data-label="Sources"></div>
+    <div class="nav-dot"        data-section="credits"  data-label="Credits"></div>
   </div>
 
   <!-- Right Panel for Species Info -->
@@ -1367,7 +1712,6 @@
           .bindPopup(`<b>${city.name}</b><br>Distance: ${Math.round(distance)} miles<br>Flight time: ${timeText}`)
           .on('mouseover', function(){ this.openPopup(); });
       });
-      */
 
       const distanceInfo = L.control({position: 'topright'});
       distanceInfo.onAdd = function() {
@@ -1401,7 +1745,8 @@
         threats : document.getElementById('threats-section'),
         conserv : document.getElementById('conservation-section'),
         help    : document.getElementById('how-to-help-section'),
-        sources : document.getElementById('sources-section')
+        sources : document.getElementById('sources-section'),
+        credits : document.getElementById('credits-section')
       };
 
       navDots.forEach(dot => {
