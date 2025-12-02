@@ -1702,10 +1702,14 @@
         iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
       });
 
-      // Add Boston marker with red icon
-      const bostonMarker = L.marker(bostonCoords, {icon: redIcon})
+      // Add Boston marker with red icon (make it draggable)
+      const bostonMarker = L.marker(bostonCoords, {
+        icon: redIcon,
+        draggable: true,
+        zIndexOffset: 1000  // Make sure red pin is always on top
+      })
         .addTo(map)
-        .bindPopup('<b>Boston, MA</b>')
+        .bindPopup('<b>Drag me!</b>')
         .openPopup();
 
       // Add 560-mile radius circle (560 miles = ~901 km)
@@ -1731,31 +1735,120 @@
         return R * c;
       }
 
-      const citiesInRange = [
+      // Large list of major US and Canadian cities
+      const allCities = [
         { name: 'New York, NY', coords: [40.7128, -74.0060] },
+        { name: 'Los Angeles, CA', coords: [34.0522, -118.2437] },
+        { name: 'Chicago, IL', coords: [41.8781, -87.6298] },
+        { name: 'Houston, TX', coords: [29.7604, -95.3698] },
+        { name: 'Phoenix, AZ', coords: [33.4484, -112.0740] },
         { name: 'Philadelphia, PA', coords: [39.9526, -75.1652] },
+        { name: 'San Antonio, TX', coords: [29.4241, -98.4936] },
+        { name: 'San Diego, CA', coords: [32.7157, -117.1611] },
+        { name: 'Dallas, TX', coords: [32.7767, -96.7970] },
+        { name: 'San Jose, CA', coords: [37.3382, -121.8863] },
+        { name: 'Austin, TX', coords: [30.2672, -97.7431] },
+        { name: 'Jacksonville, FL', coords: [30.3322, -81.6557] },
+        { name: 'Fort Worth, TX', coords: [32.7555, -97.3308] },
+        { name: 'Columbus, OH', coords: [39.9612, -82.9988] },
+        { name: 'Charlotte, NC', coords: [35.2271, -80.8431] },
+        { name: 'San Francisco, CA', coords: [37.7749, -122.4194] },
+        { name: 'Indianapolis, IN', coords: [39.7684, -86.1581] },
+        { name: 'Seattle, WA', coords: [47.6062, -122.3321] },
+        { name: 'Denver, CO', coords: [39.7392, -104.9903] },
         { name: 'Washington, DC', coords: [38.9072, -77.0369] },
+        { name: 'Boston, MA', coords: [42.3601, -71.0589] },
+        { name: 'Nashville, TN', coords: [36.1627, -86.7816] },
+        { name: 'Detroit, MI', coords: [42.3314, -83.0458] },
+        { name: 'Oklahoma City, OK', coords: [35.4676, -97.5164] },
+        { name: 'Portland, OR', coords: [45.5152, -122.6784] },
+        { name: 'Las Vegas, NV', coords: [36.1699, -115.1398] },
+        { name: 'Memphis, TN', coords: [35.1495, -90.0490] },
+        { name: 'Louisville, KY', coords: [38.2527, -85.7585] },
+        { name: 'Baltimore, MD', coords: [39.2904, -76.6122] },
+        { name: 'Milwaukee, WI', coords: [43.0389, -87.9065] },
+        { name: 'Albuquerque, NM', coords: [35.0844, -106.6504] },
+        { name: 'Tucson, AZ', coords: [32.2226, -110.9747] },
+        { name: 'Fresno, CA', coords: [36.7378, -119.7871] },
+        { name: 'Mesa, AZ', coords: [33.4152, -111.8315] },
+        { name: 'Sacramento, CA', coords: [38.5816, -121.4944] },
+        { name: 'Atlanta, GA', coords: [33.7490, -84.3880] },
+        { name: 'Kansas City, MO', coords: [39.0997, -94.5786] },
+        { name: 'Colorado Springs, CO', coords: [38.8339, -104.8214] },
+        { name: 'Miami, FL', coords: [25.7617, -80.1918] },
+        { name: 'Raleigh, NC', coords: [35.7796, -78.6382] },
+        { name: 'Omaha, NE', coords: [41.2565, -95.9345] },
+        { name: 'Long Beach, CA', coords: [33.7701, -118.1937] },
+        { name: 'Virginia Beach, VA', coords: [36.8529, -75.9780] },
+        { name: 'Oakland, CA', coords: [37.8044, -122.2712] },
+        { name: 'Minneapolis, MN', coords: [44.9778, -93.2650] },
+        { name: 'Tulsa, OK', coords: [36.1540, -95.9928] },
+        { name: 'Tampa, FL', coords: [27.9506, -82.4572] },
+        { name: 'Arlington, TX', coords: [32.7357, -97.1081] },
+        { name: 'New Orleans, LA', coords: [29.9511, -90.0715] },
         { name: 'Montreal, Canada', coords: [45.5017, -73.5673] },
+        { name: 'Toronto, Canada', coords: [43.6532, -79.3832] },
+        { name: 'Vancouver, Canada', coords: [49.2827, -123.1207] },
+        { name: 'Calgary, Canada', coords: [51.0447, -114.0719] },
+        { name: 'Ottawa, Canada', coords: [45.4215, -75.6972] },
+        { name: 'Edmonton, Canada', coords: [53.5461, -113.4938] },
+        { name: 'Quebec City, Canada', coords: [46.8139, -71.2080] },
+        { name: 'Winnipeg, Canada', coords: [49.8951, -97.1384] },
         { name: 'Portland, ME', coords: [43.6591, -70.2553] },
         { name: 'Buffalo, NY', coords: [42.8864, -78.8784] },
         { name: 'Pittsburgh, PA', coords: [40.4406, -79.9959] },
-        { name: 'Richmond, VA', coords: [37.5407, -77.4360] }
+        { name: 'Richmond, VA', coords: [37.5407, -77.4360] },
+        { name: 'Cleveland, OH', coords: [41.4993, -81.6944] },
+        { name: 'Cincinnati, OH', coords: [39.1031, -84.5120] },
+        { name: 'St. Louis, MO', coords: [38.6270, -90.1994] }
       ];
 
-      // Add city markers with flight time calculations
-      citiesInRange.forEach(city => {
-        const distance = calculateDistance(bostonCoords[0], bostonCoords[1], city.coords[0], city.coords[1]);
-        const flightTimeHours = distance / 45;
-        const hours = Math.floor(flightTimeHours);
-        const minutes = Math.round((flightTimeHours - hours) * 60);
-        let timeText;
-        if (hours === 0) timeText = `${minutes} minutes`;
-        else if (minutes === 0) timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
-        else timeText = `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minutes`;
+      // Function to create/update city markers based on center position
+      function updateCityMarkers(centerLat, centerLng) {
+        // Remove existing city markers
+        cityMarkers.forEach(marker => {
+          map.removeLayer(marker);
+        });
+        cityMarkers = [];
 
-        L.marker(city.coords).addTo(map)
-          .bindPopup(`<b>${city.name}</b><br>Distance: ${Math.round(distance)} miles<br>Flight time: ${timeText}`)
-          .on('mouseover', function(){ this.openPopup(); });
+        // Find cities within 560 miles
+        const citiesInRange = allCities.filter(city => {
+          const distance = calculateDistance(centerLat, centerLng, city.coords[0], city.coords[1]);
+          return distance <= 560;
+        });
+
+        // Add city markers with updated distances
+        citiesInRange.forEach(city => {
+          const distance = calculateDistance(centerLat, centerLng, city.coords[0], city.coords[1]);
+          const flightTimeHours = distance / 45;
+          const hours = Math.floor(flightTimeHours);
+          const minutes = Math.round((flightTimeHours - hours) * 60);
+          let timeText;
+          if (hours === 0) timeText = `${minutes} minutes`;
+          else if (minutes === 0) timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
+          else timeText = `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minutes`;
+
+          const marker = L.marker(city.coords).addTo(map)
+            .bindPopup(`<b>${city.name}</b><br>Distance: ${Math.round(distance)} miles<br>Flight time: ${timeText}`)
+            .on('mouseover', function(){ this.openPopup(); });
+          
+          cityMarkers.push(marker);
+        });
+      }
+
+      // Initialize city markers
+      updateCityMarkers(bostonCoords[0], bostonCoords[1]);
+
+      // Handle marker dragging - update circle position in real-time
+      bostonMarker.on('drag', function(e) {
+        const newPos = e.target.getLatLng();
+        radiusCircle.setLatLng(newPos);
+      });
+
+      // Handle drag end - recalculate distances
+      bostonMarker.on('dragend', function(e) {
+        const newPos = e.target.getLatLng();
+        updateCityMarkers(newPos.lat, newPos.lng);
       });
 
       const distanceInfo = L.control({position: 'topright'});
@@ -1770,8 +1863,8 @@
       };
       distanceInfo.addTo(map);
 
-      // Fit map to show the circle and all cities
-      const group = new L.featureGroup([radiusCircle, bostonMarker, ...citiesInRange.map(city => L.marker(city.coords))]);
+      // Fit map to show the circle and all cities (use existing cityMarkers, not creating new ones)
+      const group = new L.featureGroup([radiusCircle, bostonMarker, ...cityMarkers]);
       map.fitBounds(group.getBounds().pad(0.1));
     });
 
