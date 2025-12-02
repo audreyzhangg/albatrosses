@@ -49,7 +49,7 @@ function createVisualization(data) {
     const container = document.getElementById('species-visualization') || document.getElementById('visualization');
     if (!container) return;
     const width = container.clientWidth;
-    const height = 650;
+    const height = 550;
 
     // Clear any existing SVG
     d3.select(container).selectAll('svg').remove();
@@ -62,11 +62,11 @@ function createVisualization(data) {
     // <defs> for clipPaths
     const defs = svg.append('defs');
 
-    // Grid layout: 7 columns, 4 rows with padding
-    const cols = 6;
-    const rows = 4;
-    const paddingx = 100; // Horizontal padding (reduced)
-    const paddingy = 10; // Vertical padding (reduced)
+    // Grid layout: 8 columns, 3 rows with padding
+    const cols = 8;
+    const rows = 3;
+    const paddingx = 100; // Horizontal padding
+    const paddingy = 0; // Vertical padding (reduced further)
     const gridWidth = width - (paddingx * 2);
     const gridHeight = height - (paddingy * 2);
     const cellWidth = gridWidth / cols;
@@ -119,19 +119,19 @@ function createVisualization(data) {
             window.dispatchEvent(new CustomEvent('openSpeciesPanel', { detail: { speciesData: d } }));
         })
         .on('mouseover', function(event, d) {
-            // Highlight the bird on hover
+            // Highlight the bird on hover (adjusted for radius 45)
             d3.select(this).select('.status-ring')
-                .style('stroke-width', 15);
+                .style('stroke-width', 12);
         })
         .on('mouseout', function() {
             d3.select(this).select('.status-ring')
-                .style('stroke-width', 10);
+                .style('stroke-width', 8);
         });
 
-    // Add status ring
+    // Add status ring (adjusted to match bird image circle radius of 45)
     birdGroups.append('circle')
         .attr('class', 'status-ring')
-        .attr('r', 50)
+        .attr('r', 45)
         .style('stroke', d => statusColors[d['RL Category']])
         .style('cursor', 'pointer');
 
@@ -189,14 +189,14 @@ function createVisualization(data) {
                             .attr('href', url)
                             .attr('x', 0)
                             .attr('y', 0)
-                            .attr('width', 100)
-                            .attr('height', 100)
+                            .attr('width', 90)
+                            .attr('height', 90)
                             .attr('preserveAspectRatio', 'xMidYMid slice');
 
                         // append a circle in the group filled by the pattern so it appears circular
                         group.append('circle')
                             .attr('class', 'bird-img-circle')
-                            .attr('r', 50)
+                            .attr('r', 45)
                             .attr('fill', `url(#${patternId})`)
                             .style('cursor', 'pointer');
 
@@ -219,7 +219,7 @@ function createVisualization(data) {
     // Add labels with common name, wrapping long names into two lines using tspans
     birdGroups.append('text')
         .attr('class', 'bird-label')
-        .attr('y', 75)
+        .attr('y', 70)
         .style('cursor', 'pointer')
         .each(function(d) {
             const name = (d['Common name'] || '').toString();
