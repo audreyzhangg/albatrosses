@@ -63,7 +63,7 @@ function createVisualization(data) {
     const defs = svg.append('defs');
 
     // Grid layout: 7 columns, 4 rows with padding
-    const cols = 7;
+    const cols = 6;
     const rows = 4;
     const paddingx = 100; // Horizontal padding (reduced)
     const paddingy = 10; // Vertical padding (reduced)

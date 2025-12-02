@@ -24,37 +24,34 @@
     --panel-w: 900px;
   }
 
-  /* Global: prevent "peek-through" for every section */
-  section,
-  .section,
-  .transition-section {
-    /* Modern, faster than hidden */
+  /* Global: prevent any “peek-through” */
+  section, .section, .transition-section {
     overflow: clip;
-    /* Extra safety so shadows/absolutes don't spill outside */
     contain: paint;
+    background:#ffffff;
+    isolation:isolate;
   }
-
-  /* Safari/older fallback */
   @supports not (overflow: clip) {
-    section,
-    .section,
-    .transition-section {
-      overflow: hidden;
-    }
+    section, .section, .transition-section { overflow: hidden; }
   }
 
-  body{ 
-    margin:0; 
-    font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; 
-    background:#ffffff; 
-    color:var(--ink); 
+  html, body{ height:auto; }
+  /* Smooth + snap scrolling for page sections */
+  html { scroll-behavior: smooth; }
+  body{
+    margin:0;
+    font-family: ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:#ffffff;
+    color:var(--ink);
   }
+
 
   /* Section styling */
   .section {
     padding: 60px 20px;
     max-width: 1400px;
     margin: 0 auto;
+    min-height: 85vh; /* keeps one “page” in view */
   }
 
   .section h1 {
@@ -71,8 +68,104 @@
     font-size: 18px;
   }
 
-  /* Intro section */
-  #intro-section { background: #dbf0fe; }
+  /* Landing */
+    #landing-section {
+    min-height: 100vh;                    /* full screen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-image: url('images/ocean5.png');
+    background-size: cover;               /* fill the screen */
+    background-position: center;
+    background-repeat: no-repeat;
+
+    color: #ffffff;                       /* make title readable */
+  }
+  /* Landing title: move up a bit and make white */
+  #landing-section .landing-title {
+    color: #ffffff;                          /* override the dark .section h1 color */
+    font-size: 64px;                         /* same size you had inline */
+    margin: 0;
+    transform: translateY(-60px);            /* lift the text above the horizon */
+  }
+
+  #landing-section h1 {
+    color: #ffffff; /* you already changed this, but just to be safe */
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+  }
+
+  /* Make the shift a bit smaller on narrow screens */
+  @media (max-width: 768px) {
+    #landing-section .landing-title {
+      font-size: 40px;
+      transform: translateY(-40px);
+    }
+  }
+
+/* Intro / welcome hero section */
+  #welcome {
+    display: flex;
+    align-items: center;        /* vertical center */
+    justify-content: center;    /* horizontal center */
+    min-height: 100vh;          /* full-screen hero */
+    padding: 0 20px;            /* override .section vertical padding */
+
+    background: url('images/topocean.png') top center / cover no-repeat;
+  }
+
+  /* Layout: bird left, text right */
+  .welcome-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+
+  /* Bird image column */
+  .welcome-image {
+    max-width: 220px;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  /* Text column */
+  .welcome-text {
+    max-width: 520px;
+  }
+
+  /* Make intro text black with no shadow */
+  .welcome-text h2,
+  .welcome-text p {
+    color: #111827;       /* or #0f172a if you want it a bit darker */
+    text-shadow: none;
+  }
+
+  .welcome-text h2 {
+    margin: 0 0 12px 0;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .welcome-text p {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  /* Stack on small screens */
+  @media (max-width: 768px) {
+    .welcome-inner {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+
+
+  /* Intro (anatomy visual page uses same id as before) */
+  #intro-section { background: #ffffff; }
 
   #intro-visual {
     display: flex;
@@ -94,498 +187,174 @@
   .beak-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
   .beak-hotspot:hover{ fill: rgba(255,99,71,0.12); }
 
-    /* Quiz section */
-    #quiz-section {
-      background: #dbf0fe;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      /* Place content toward the top of the section and add extra top padding
-         so the quiz appears lower on the page visually. */
-      justify-content: flex-start;
-      min-height: 80vh;
-      padding: 140px 20px 60px;
-    }
-
-  #quiz-container {
-    max-width: 600px;
-    text-align: center;
-    padding: 40px;
+  /* Quiz */
+  #quiz-section {
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 140px 20px 60px;
   }
-
-  #quiz-question {
-    font-size: 22px;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 30px;
-    line-height: 1.4;
-  }
-
+  #quiz-container { max-width: 600px; text-align: center; padding: 40px; }
+  #quiz-question { font-size: 22px; font-weight: 600; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; }
   #quiz-input-container { margin: 30px 0; position: relative; }
-
   #quiz-input {
-    width: 100%;
-    padding: 15px 20px;
-    font-size: 18px;
-    border: 3px solid #e5e7eb;
-    border-radius: 12px;
-    outline: none;
-    transition: border-color 0.3s ease;
-    font-family: inherit;
+    width: 100%; padding: 15px 20px; font-size: 18px; border: 3px solid #e5e7eb;
+    border-radius: 12px; outline: none; transition: border-color 0.3s ease; font-family: inherit;
   }
-
-  #quiz-input:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-  }
-
+  #quiz-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
   #quiz-submit {
-    margin-top: 20px;
-    padding: 12px 30px;
-    font-size: 18px;
-    font-weight: 600;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    margin-top: 20px; padding: 12px 30px; font-size: 18px; font-weight: 600; background: #2563eb;
+    color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.3s ease;
   }
-
   #quiz-submit:hover { background: #1d4ed8; transform: translateY(-2px); }
   #quiz-submit:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
 
   #quiz-answer {
-    margin-top: 30px;
-    padding: 20px;
-    background: #ecfdf5;
-    border: 2px solid #10b981;
-    border-radius: 12px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: all 0.5s ease;
+    margin-top: 30px; padding: 20px; background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px;
+    opacity: 0; transform: translateY(20px); transition: all 0.5s ease;
   }
-
   #quiz-answer.correct { background: #ecfdf5; border-color: #10b981; }
   #quiz-answer.incorrect { background: #fef2f2; border-color: #ef4444; }
   #quiz-answer.visible { opacity: 1; transform: translateY(0); }
-
   #quiz-answer h3 { color: #047857; font-size: 24px; margin: 0 0 10px 0; }
   #quiz-answer.incorrect h3 { color: #dc2626; }
-
   #quiz-answer p { color: #065f46; font-size: 16px; margin: 0; line-height: 1.6; }
   #quiz-answer.incorrect p { color: #991b1b; }
-
   #quiz-continue {
-    margin-top: 25px;
-    padding: 12px 25px;
-    font-size: 16px;
-    font-weight: 600;
-    background: #047857;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    opacity: 0;
-    transform: translateY(10px);
+    margin-top: 25px; padding: 12px 25px; font-size: 16px; font-weight: 600; background: #047857;
+    color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
+    opacity: 0; transform: translateY(10px);
   }
-
   #quiz-continue.visible { opacity: 1; transform: translateY(0); }
   #quiz-continue:hover { background: #065f46; transform: translateY(-1px); }
   #quiz-answer.incorrect #quiz-continue { background: #dc2626; }
   #quiz-answer.incorrect #quiz-continue:hover { background: #b91c1c; transform: translateY(-1px); }
 
-  /* Distance section */
-  #distance-section { background: #dbf0fe; }
-
-  #distance-container {
-    max-width: var(--panel-w);
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  #distance-info {
-    font-size: 24px;
-    color: #2c3e50;
-    margin-bottom: 30px;
-    font-weight: 600;
-  }
-
+  /* Distance (Map) */
+  #distance-section { background: #ffffff; }
+  #distance-container { max-width: var(--panel-w); margin: 0 auto; text-align: center; }
+  #distance-info { font-size: 24px; color: #2c3e50; margin-bottom: 30px; font-weight: 600; }
   #distance-map {
-    width: 100%;
-    height: var(--panel-h) !important;
-    border: 2px solid #dbf0fe;
-    border-radius: 12px;
-    margin: 20px 0;
-    z-index: 1;
+    width: 100%; height: var(--panel-h) !important; border: 2px solid #dbf0fe;
+    border-radius: 12px; margin: 20px 0; z-index: 1;
   }
-
-  /* Leaflet map custom styles */
   .distance-info-control { font-family: inherit; font-size: 14px; line-height: 1.4; }
   .leaflet-popup-content { font-family: inherit; font-size: 13px; }
 
-  /* Species section */
-  #species-section { background: #dbf0fe; }
-
+  /* Species */
+  #species-section { background: #ffffff; }
   #species-legend {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding: 10px;
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; padding: 10px;
   }
-
   .legend-item { display: flex; align-items: center; gap: 8px; font-size: 16px; color: #2c3e50; }
   .legend-circle { width: 20px; height: 20px; border-radius: 50%; border: 10px solid; }
-
   #species-visualization { position: relative; width: 100%; min-height: 650px; }
-
-  .bird-icon { fill: #34495e; }
-  .status-ring { fill: none; stroke-width: 10; }
+  .bird-icon { fill: #34495e; } .status-ring { fill: none; stroke-width: 10; }
   .bird-label { font-size: 14px; fill: #2c3e50; text-anchor: middle; font-weight: 500; }
-
   .fact-card {
-    position: absolute;
-    background: white;
-    border: 2px solid #2c3e50;
-    border-radius: 8px;
-    padding: 15px;
-    max-width: 350px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-    z-index: 1000;
-    font-size: 14px;
+    position: absolute; background: white; border: 2px solid #2c3e50; border-radius: 8px; padding: 15px;
+    max-width: 350px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); pointer-events: none; opacity: 0;
+    transition: opacity 0.2s; z-index: 1000; font-size: 14px;
   }
-
   .fact-card.visible { opacity: 1; }
   .fact-card h3 { margin: 0 0 10px 0; color: #2c3e50; font-size: 18px; }
   .fact-card .fun-fact { background: #f0f8ff; padding: 10px; border-radius: 4px; margin-bottom: 10px; font-style: italic; color: #34495e; }
   .fact-card .stat { margin: 5px 0; color: #555; }
   .fact-card .stat strong { color: #2c3e50; }
 
-  /* Threats section */
-  #threats-section { 
-    background: #ffffff; 
-    padding-left: 100px;
-  }
-
+  /* Threats */
+  #threats-section { background: #ffffff; padding-left: 100px; }
   .threats-layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 40px;
-    align-items: start;
-    padding-top: 0;
+    display: grid; grid-template-columns: 300px 1fr; gap: 40px; align-items: start; padding-top: 0;
   }
-
-  .threats-left {
-    padding-top: 180px;
-  }
-
-  .threats-left h1 {
-    font-size: 32px;
-    margin-bottom: 10px;
-    margin-top: 0;
-    color: #2c3e50;
-    text-align: left;
-  }
-
-  .threats-left .subtitle {
-    text-align: left;
-    color: var(--muted);
-    margin-bottom: 30px;
-    font-size: 16px;
-    line-height: 1.5;
-  }
-
-  .threats-right {
-    overflow-x: auto;
-    overflow-y: visible;
-  }
-
-  #matrix-viz {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-  }
-
+  .threats-left { padding-top: 180px; }
+  .threats-left h1 { font-size: 32px; margin-bottom: 10px; margin-top: 0; color: #2c3e50; text-align: left; }
+  .threats-left .subtitle { text-align: left; color: var(--muted); margin-bottom: 30px; font-size: 16px; line-height: 1.5; }
+  .threats-right { overflow-x: auto; overflow-y: visible; }
+  #matrix-viz { display: flex; justify-content: flex-start; width: 100%; }
   #matrix-viz svg { max-width: 100%; }
-
   .species-label{ font-size:13px; fill:#2c3e50; text-anchor:end; }
   .threat-label{ font-size:12px; fill:#2c3e50; text-anchor:start; }
   .matrix-circle{ cursor:pointer; }
   .grid-line{ stroke:#e5e7eb; stroke-width:1; }
-
-  .threats-legend {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-
-  .threats-legend-vertical {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
+  .threats-legend { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .threats-legend-vertical { display: flex; flex-direction: column; gap: 12px; }
   .threats-legend-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
   .threats-legend-circle { border-radius: 50%; background: #888; }
 
-  /* Responsive: stack on smaller screens */
   @media (max-width: 1200px) {
-    #threats-section {
-      padding-left: 20px;
-    }
-    
-    .threats-layout {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-    
-    .threats-left {
-      padding-top: 0;
-    }
-    
-    .threats-left h1 {
-      text-align: center;
-    }
-    
-    .threats-left .subtitle {
-      text-align: center;
-    }
-    
-    .threats-legend-vertical {
-      flex-direction: row;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    #matrix-viz {
-      justify-content: center;
-    }
+    #threats-section { padding-left: 20px; }
+    .threats-layout { grid-template-columns: 1fr; gap: 20px; }
+    .threats-left { padding-top: 0; }
+    .threats-left h1, .threats-left .subtitle { text-align: center; }
+    .threats-legend-vertical { flex-direction: row; flex-wrap: wrap; justify-content: center; }
+    #matrix-viz { justify-content: center; }
   }
 
-  /* ===================== Myths section (updated) ===================== */
-  #myths-section { background: #dbf0fe; }
-
-  /* base postcard shell (general) */
+  /* Myths carousel styles (scoped) */
+  #myths-section { background: #ffffff; }
   .pc-stage {
-    position: relative;
-    border: 1px solid var(--chip-b);
-    border-radius: 14px;
-    background: #fff;
-    overflow: hidden;
+    position: relative; border: 1px solid var(--chip-b); border-radius: 14px; background: #fff; overflow: hidden;
     box-shadow: 0 8px 24px rgba(0,0,0,.05);
   }
-  .pc-viewport {
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-  }
+  .pc-viewport { overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scroll-behavior: smooth; scrollbar-width: none; }
   .pc-viewport::-webkit-scrollbar { display: none; }
   .pc-track { display: flex; gap: 18px; padding: 18px; }
-
   .pc-card {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-    border: 2px solid #0f172a;
-    border-radius: 12px;
-    background: #fff;
-    box-shadow: 0 10px 24px rgba(0,0,0,.06);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    width: 100%;
-    height: var(--panel-h);
-    overflow: hidden;
+    flex: 0 0 100%; scroll-snap-align: start; border: 2px solid #0f172a; border-radius: 12px; background: #fff;
+    box-shadow: 0 10px 24px rgba(0,0,0,.06); display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    width: 100%; height: var(--panel-h); overflow: hidden;
   }
-
   .pc-left, .pc-right { min-height: 0; overflow-y: auto; }
-
   .pc-lines { display: none; }
-
-  .pc-kicker {
-    margin: 0 0 16px 0;
-    font-size: 14px;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-  }
-
-  .pc-text p {
-    margin: 0 0 12px 0;
-    font-size: 18px;
-    line-height: 1.6;
-    color: #0b1220;
-  }
+  .pc-kicker { margin: 0 0 16px 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .pc-text p { margin: 0 0 12px 0; font-size: 18px; line-height: 1.6; color: #0b1220; }
   .pc-text p:last-child { margin-bottom: 16px; }
-
   .pc-divider { display: none; }
-
-  .pc-right {
-    position: relative;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    border-left: 1px solid #e5e7eb;
-    flex: 1;
-  }
-
-  .pc-meta {
-    align-self: start;
-    margin-top: 0;
-    flex-shrink: 0;
-    margin-bottom: 12px;
-  }
-
+  .pc-right { position: relative; padding: 20px; display: flex; flex-direction: column; gap: 8px; border-left: 1px solid #e5e7eb; flex: 1; }
+  .pc-meta { align-self: start; margin-top: 0; flex-shrink: 0; margin-bottom: 12px; }
   .pc-title { font-weight: 800; font-size: 24px; margin-bottom: 8px; line-height: 1.2; }
   .pc-country { font-weight: 700; color: #334155; margin-bottom: 6px; font-size: 15px; }
   .pc-source { font-size: 13px; color: #94a3b8; }
-
-  .pc-hero {
-    width: 100%;
-    height: auto;
-    max-height: 400px;
-    background-size: cover;
-    background-position: center;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    flex: 1;
-  }
+  .pc-hero { width: 100%; height: auto; max-height: 400px; background-size: cover; background-position: center; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); flex: 1; }
   .pc-hero.pc-hero-ph { background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
-
-  .pc-quote {
-    margin: 16px 0 0 0;
-    padding: 8px;
-    background: #f1f5f9;
-    border-left: 2px solid #64748b;
-    font-style: italic;
-    color: #334155;
-    font-size: 16px;
-    line-height: 1.5;
-  }
-  .pc-quote-attr { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+  .pc-quote { margin: 16px 0 0 0; padding: 8px; background: #f1f5f9; border-left: 2px solid #64748b; font-style: italic; color: #334155; font-size: 16px; line-height: 1.5; }
+  .pc-quote-attr { font-size: 12px; color: #94a3b8; }
 
   .carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
-    width: 46px;
-    height: 46px;
-    border-radius: 999px;
-    border: 1px solid var(--chip-b);
-    background: #fff;
-    box-shadow: 0 6px 16px rgba(0,0,0,.12);
-    font-size: 28px;
-    line-height: 1;
-    color: #0f172a;
-    cursor: pointer;
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 5; width: 46px; height: 46px; border-radius: 999px;
+    border: 1px solid var(--chip-b); background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,.12);
+    font-size: 28px; line-height: 1; color: #0f172a; cursor: pointer;
   }
   .carousel-btn:hover { background: var(--chip-act); cursor: pointer; }
   .carousel-btn.prev { left: -56px; }
   .carousel-btn.next { right: -56px; }
 
-  /* .pc-footer {
-    margin-top: 10px;
-    margin-bottom: 40px;
-    display: flex;
-    gap: 12px;
-    align-items: center;
-    justify-content: center;
-  } */
-
   #myths-section .pc-footer,
   #myths-section #pcCounter,
   #myths-section .hint,
-  #myths-section .pc-dots {
-    display: none !important;
-  }
-  /* .pc-counter { font-weight: 600; color: #334155; } */
+  #myths-section .pc-dots { display: none !important; }
 
-  /* ---------- Myths overrides (scoped) ---------- */
-  /* match distance map width/height, hide next-card peek, smaller type */
   #myths-section .pc-stage{
-    max-width: var(--panel-w);
-    width: 100%;
-    margin: 0 auto;
-    padding: 18px;
-    height: var(--panel-h) !important;
-    overflow: visible !important;
+    max-width: var(--panel-w); width: 100%; margin: 0 auto; padding: 18px; height: var(--panel-h) !important; overflow: visible !important;
   }
-
-  #myths-section .pc-viewport{
-    width: 100%;
-    height: 100% !important;
-    overflow-x: hidden;   /* hide next card completely */
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
-    scroll-padding: 0;
-    border-radius: 12px;
-  }
+  #myths-section .pc-viewport{ width: 100%; height: 100% !important; overflow-x: hidden; overflow-y: hidden; scroll-snap-type: x mandatory; scroll-padding: 0; border-radius: 12px; }
   #myths-section .pc-viewport::-webkit-scrollbar{ display:none; }
-
-  #myths-section .pc-track{
-    height: 100% !important;
-    width: 100%;
-    gap: 0 !important;    /* remove inter-card sliver */
-    padding: 0 !important;
-  }
-
+  #myths-section .pc-track{ height: 100% !important; width: 100%; gap: 0 !important; padding: 0 !important; }
   #myths-section .pc-card{
-    flex: 0 0 100%;
-    width: 100%;
-    height: 100% !important;
-    border: none !important;
-    box-shadow: 0 10px 24px rgba(0,0,0,.06);
-    /*box-sizing: border-box;*/
-    margin: 0;
-    overflow: hidden;
-    /* smaller typography just for myths */
-    --pc-body: 15px;
-    --pc-kicker: 12px;
-    --pc-title: 20px;
-    --pc-country: 13px;
-    --pc-source: 12px;
-    --pc-quote: 14px;
+    flex: 0 0 100%; width: 100%; height: 100% !important; border: none !important; box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    margin: 0; overflow: hidden; --pc-body: 15px; --pc-kicker: 12px; --pc-title: 20px; --pc-country: 13px; --pc-source: 12px; --pc-quote: 14px;
   }
-
-  #myths-section .pc-left,
-  #myths-section .pc-right{ min-height: 0; overflow-y: auto; }
-
   #myths-section .pc-right{ display:flex; flex-direction:column; }
-
   #myths-section .pc-meta,
   #myths-section .pc-title,
   #myths-section .pc-country,
   #myths-section .pc-source,
   #myths-section .pc-quote{ flex-shrink:0; }
-
-  #myths-section .pc-hero{
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: 100%;
-    background-size: cover;
-    background-position: center;
-  }
-  #myths-section .pc-hero img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  /* smaller text application */
+  #myths-section .pc-hero{ flex: 1 1 auto; min-height: 0; max-height: 100%; background-size: cover; background-position: center; }
+  #myths-section .pc-hero img{ width: 100%; height: 100%; object-fit: cover; display: block; }
   #myths-section .pc-text p{ font-size: var(--pc-body) !important; line-height: 1.55 !important; }
   #myths-section .pc-kicker{ font-size: var(--pc-kicker) !important; letter-spacing: .4px; }
   #myths-section .pc-title{ font-size: var(--pc-title) !important; }
@@ -596,162 +365,48 @@
   #myths-section .pc-left, 
   #myths-section .pc-right{ padding: 14px !important; }
 
-  /* Tooltip */
-  .tooltip {
-    position: absolute;
-    background: rgba(0,0,0,.85);
-    color: #fff;
-    padding: 6px 8px;
-    border-radius: 4px;
-    font-size: 14px;
-    pointer-events: none;
-    z-index: 9999;
-    display: none;
-  }
-
-  /* Right Panel */
+  /* Right Panel (species popup) */
   #species-panel {
-    position: fixed;
-    top: 0;
-    right: -450px;
-    width: 450px;
-    height: 100vh;
-    background: white;
-    box-shadow: -4px 0 20px rgba(0,0,0,0.15);
-    transition: right 0.3s ease;
-    z-index: 1000;
-    overflow-y: auto;
-    padding: 20px;
+    position: fixed; top: 0; right: -450px; width: 450px; height: 100vh; background: white;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; z-index: 1000; overflow-y: auto; padding: 20px;
   }
-
   #species-panel.open { right: 0; }
-
   #species-panel-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 28px;
-    cursor: pointer;
-    color: var(--ink);
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background 0.2s;
+    position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 28px; cursor: pointer; color: var(--ink);
+    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s;
   }
   #species-panel-close:hover { background: #f3f4f6; }
-
   #species-panel-content h2 { margin-top: 0; margin-bottom: 10px; color: #2c3e50; font-size: 24px; }
   #species-panel-content h3 { margin: 15px 0 5px 0; color: #2c3e50; font-size: 18px; }
-
-  #species-panel-image {
-    width: 100%;
-    max-width: 400px;
-    height: auto;
-    border-radius: 8px;
-    margin: 15px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-
-  #species-panel-info { margin: 20px 0; }
-  #species-panel-info p { margin: 8px 0; line-height: 1.6; }
-  #species-panel-info .info-label { font-weight: 600; color: #2c3e50; }
-
-  #species-panel-map-container {
-    margin-top: 30px;
-    border-top: 2px solid #e5e7eb;
-    padding-top: 20px;
-  }
-
-  #species-panel-map {
-    width: 100%;
-    height: 350px;
-    border: 1px solid var(--chip-b);
-    border-radius: 8px;
-    background: #e6f3ff;
-  }
-
-  .colony {
-    fill: #2563eb;
-    fill-opacity: 0.88;
-    stroke: #0f172a;
-    stroke-width: 0.5;
-    stroke-opacity: 0.25;
-    cursor: pointer;
-  }
-
-  .colony.highlight {
-    stroke-width: 2;
-    stroke-opacity: 0.8;
-    filter: drop-shadow(0 0 4px rgba(37,99,235,0.6));
-  }
-
+  #species-panel-image { width: 100%; max-width: 400px; height: auto; border-radius: 8px; margin: 15px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+  #species-panel-info { margin: 20px 0; } #species-panel-info p { margin: 8px 0; line-height: 1.6; } #species-panel-info .info-label { font-weight: 600; color: #2c3e50; }
+  #species-panel-map-container { margin-top: 30px; border-top: 2px solid #e5e7eb; padding-top: 20px; }
+  #species-panel-map { width: 100%; height: 350px; border: 1px solid var(--chip-b); border-radius: 8px; background: #e6f3ff; }
+  .colony { fill: #2563eb; fill-opacity: 0.88; stroke: #0f172a; stroke-width: 0.5; stroke-opacity: 0.25; cursor: pointer; }
+  .colony.highlight { stroke-width: 2; stroke-opacity: 0.8; filter: drop-shadow(0 0 4px rgba(37,99,235,0.6)); }
   .country { fill: #f1efe8; stroke: #94a3b8; stroke-width: 0.6; }
   .graticule { fill: none; stroke: #bfdbfe; stroke-width: 0.5; opacity: 0.6; }
 
-  /* Navigation Dots */
+  /* Side navigation dots */
   .nav-dots {
-    position: fixed;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    position: fixed; right: 20px; top: 50%; transform: translateY(-50%); z-index: 1000;
+    display: flex; flex-direction: column; gap: 12px;
   }
-
   .nav-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: rgba(44, 62, 80, 0.3);
-    border: 2px solid rgba(44, 62, 80, 0.5);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
+    width: 12px; height: 12px; border-radius: 50%; background: rgba(44,62,80,.3); border: 2px solid rgba(44,62,80,.5);
+    cursor: pointer; transition: all .3s ease; position: relative;
   }
-
-  .nav-dot:hover { background: rgba(44, 62, 80, 0.6); transform: scale(1.2); }
+  .nav-dot:hover { background: rgba(44,62,80,.6); transform: scale(1.2); }
   .nav-dot.active { background: #2c3e50; border-color: #2c3e50; transform: scale(1.3); }
-
-  .nav-dot::after {
-    content: attr(data-label);
-    position: absolute;
-    right: 25px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(44, 62, 80, 0.9);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
+  .nav-dot::after{
+    content: attr(data-label); position: absolute; right: 25px; top: 50%; transform: translateY(-50%);
+    background: rgba(44,62,80,.9); color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 12px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
   }
-  .nav-dot:hover::after { opacity: 1; }
+  .nav-dot:hover::after{ opacity: 1; }
+  @media (max-width: 768px){ .nav-dots{ display:none; } }
 
-  /* Hide nav dots on mobile */
-  @media (max-width: 768px) { .nav-dots { display: none; } }
-
-  /* Responsive */
-  @media (max-width: 980px) { .pc-card { min-height: auto; } }
-
-  @media (max-width: 760px) {
-    .pc-card { grid-template-columns: 1fr; }
-    .pc-right { border-left: none; border-top: 1px solid #e5e7eb; }
-    .pc-hero { max-height: 200px; }
-    .pc-left { padding: 10px; }
-    .pc-right { padding: 10px; }
-  }
-
-  /* ===== Conservation Efforts grid (updated image/text ratio) ===== */
+  /* Conservation cards */
   #conservation-section .cons-grid {
     max-width: var(--panel-w);
     margin: 0 auto;
@@ -763,7 +418,7 @@
   #conservation-section .cons-card {
     position: relative;
     width: 100%;
-    height: 280px;                 /* keep overall height the same */
+    height: 280px;
     border-radius: 12px;
     background: #fff;
     box-shadow: 0 6px 16px rgba(0,0,0,.08);
@@ -771,11 +426,17 @@
     padding: 0;
     outline: none;
     perspective: 1000px;
-    border: none;
+    border: none; /* if you still want a black border, change this to: border: 2px solid #000; */
     transition: box-shadow .2s ease, transform .06s ease;
   }
-  #conservation-section .cons-card:hover { box-shadow: 0 10px 24px rgba(0,0,0,.12); }
-  #conservation-section .cons-card:active { transform: translateY(1px); }
+
+  #conservation-section .cons-card:hover {
+    box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  }
+
+  #conservation-section .cons-card:active {
+    transform: translateY(1px);
+  }
 
   #conservation-section .cons-card-inner {
     position: absolute;
@@ -785,7 +446,6 @@
     transition: transform .55s ease;
   }
 
-  /* faces */
   #conservation-section .cons-face {
     position: absolute;
     inset: 0;
@@ -796,38 +456,36 @@
     flex-direction: column;
   }
 
-  /* FRONT — make image big, label strip small */
-  #conservation-section .cons-front { background: #fff; }
+  #conservation-section .cons-front {
+    background: #fff;
+  }
 
-  /* bigger image: ~85% of card height */
   #conservation-section .cons-img {
     width: 100%;
     height: 85%;
     object-fit: cover;
-    object-position: center;        /* good crop */
+    object-position: center;
     display: block;
   }
 
-  /* slimmer label area */
   #conservation-section .cons-title {
-    margin: 6px 12px 0 12px;        /* tighter margins */
-    font-size: 15px;                /* a touch smaller */
+    margin: 6px 12px 0 12px;
+    font-size: 15px;
     line-height: 1.2;
     font-weight: 800;
     text-align: center;
     flex: 1 0 auto;
   }
 
-  /* BACK (flip) */
   #conservation-section .cons-back {
     background: #fff;
     transform: rotateY(180deg);
     padding: 16px;
     display: flex;
     flex-direction: column;
-    align-items: center;       /* horizontal centering */
-    justify-content: center;   /* vertical centering */
-    text-align: center;        /* center text lines */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     gap: 8px;
   }
 
@@ -842,133 +500,176 @@
     font-size: 13px;
     line-height: 1.45;
     color: #334155;
-    max-width: 90%;            /* optional: keep lines tidy */
+    max-width: 90%;
   }
 
-  /* flip state */
-  #conservation-section .cons-card.is-flipped .cons-card-inner { transform: rotateY(180deg); }
+  #conservation-section .cons-card.is-flipped .cons-card-inner {
+    transform: rotateY(180deg);
+  }
 
-  /* responsive: keep the image dominant */
   @media (max-width: 980px) {
-    #conservation-section .cons-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    #conservation-section .cons-card { height: 260px; }
-    #conservation-section .cons-img { height: 82%; }
+    #conservation-section .cons-grid {
+      grid-template-columns: repeat(2, minmax(0,1fr));
+    }
+    #conservation-section .cons-card {
+      height: 260px;
+    }
+    #conservation-section .cons-img {
+      height: 82%;
+    }
   }
+
   @media (max-width: 640px) {
-    #conservation-section .cons-grid { grid-template-columns: 1fr; }
-    #conservation-section .cons-card { height: 250px; }
-    #conservation-section .cons-img { height: 80%; }
+    #conservation-section .cons-grid {
+      grid-template-columns: 1fr;
+    }
+    #conservation-section .cons-card {
+      height: 250px;
+    }
+    #conservation-section .cons-img {
+      height: 80%;
+    }
   }
 
-  /* ===== How You Can Help (blue card) ===== */
+
+  /* How You Can Help */
   #how-to-help-section .help-stage{ max-width: var(--panel-w); margin: 0 auto; }
-
-  /* card matches myths size via --panel-h/--panel-w; now with blue background */
   #how-to-help-section .help-card{
-    height: var(--panel-h);
-    border-radius: 14px;
-    background:#dbf0fe;                    /* <<< blue background */
-    box-shadow: 0 10px 24px rgba(0,0,0,.06);
-    overflow: hidden;
-    display: grid;
-    grid-template-columns: 1fr 3fr;        /* left 1/4, right 3/4 */
-    border: 1px solid var(--chip-b);
+    height: var(--panel-h); border-radius: 14px; background:#dbf0fe; box-shadow: 0 10px 24px rgba(0,0,0,.06);
+    overflow: hidden; display: grid; grid-template-columns: 1fr 3fr; border: 1px solid var(--chip-b);
   }
-
-  /* left tabs live on a slightly lighter panel over the blue */
   #how-to-help-section .help-tabs{
-    background:#f8fbff;
-    border-right:1px solid var(--chip-b);
-    padding: 10px;
-    display: grid;
-    grid-auto-rows: 1fr;
-    gap: 8px;
+    background:#f8fbff; border-right:1px solid var(--chip-b); padding: 10px; display: grid; grid-auto-rows: 1fr; gap: 8px;
   }
-
   #how-to-help-section .help-tab{
-    all: unset;
-    display: flex; align-items: center; justify-content: center;
-    text-align: center;
-    background:#fff;
-    border:1px solid var(--chip-b);
-    border-radius:10px;
-    padding: 10px;
-    font-weight: 700; color:#0f172a;       /* same site font colors */
-    cursor:pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+    all: unset; display: flex; align-items: center; justify-content: center; text-align: center; background:#fff; border:1px solid var(--chip-b);
+    border-radius:10px; padding: 10px; font-weight: 700; color:#0f172a; cursor:pointer; box-shadow: 0 2px 6px rgba(0,0,0,.04);
   }
   #how-to-help-section .help-tab:hover{ background:#eef6ff; }
-  #how-to-help-section .help-tab.is-active{
-    background:#e8f0ff; border-color:#bfdbfe;
-    box-shadow: 0 4px 12px rgba(37,99,235,.15);
-  }
-
-  /* right content sits directly on the blue card; use a white sheet for readability */
+  #how-to-help-section .help-tab.is-active{ background:#e8f0ff; border-color:#bfdbfe; box-shadow: 0 4px 12px rgba(37,99,235,.15); }
   #how-to-help-section .help-content{
-    padding: 22px;
-    overflow: auto;
-    display: grid; align-content: start; gap: 10px;
-    background:#d1e1f4;                    /* white content pane */
-    border-left:1px solid var(--chip-b);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+    padding: 22px; overflow: auto; display: grid; align-content: start; gap: 10px; background:#d1e1f4;
+    border-left:1px solid var(--chip-b); box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
   }
   #how-to-help-section .help-content h3{ font-size: 22px; margin:0; }
   #how-to-help-section .help-content p{ font-size: 16px; line-height:1.55; margin:0; }
-  #how-to-help-section .help-content .bullets{
-    margin: 4px 0 0 0; padding-left: 18px; font-size: 15px; color:#334155;
-  }
+  #how-to-help-section .help-content .bullets{ margin: 4px 0 0 0; padding-left: 18px; font-size: 15px; color:#334155; }
   #how-to-help-section .help-content .bullets li{ margin: 6px 0; }
 
-  /* ===== Donate / Adopt screen ===== */
-  #give-section .give-stage{
-    max-width: var(--panel-w);
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr 1fr;     /* equal cards */
+  /* Donate / Adopt cards */
+  #how-to-help-section .give-grid{
+    display: flex;
+    flex-wrap: wrap;
     gap: 16px;
+    margin-top: 12px;
   }
 
-  #give-section .give-card{
-    display: flex;
-    flex-direction: column;
-    height: var(--panel-h);             /* same height as your help card/myths */
-    background:#fff;
-    border:1px solid var(--chip-b);
-    border-radius:12px;
-    box-shadow: 0 10px 24px rgba(0,0,0,.06);
-    text-decoration:none;
+  #how-to-help-section .give-card{
+    flex: 1 1 220px;
+    max-width: 260px;
+    background: #f8fafc;
+    border-radius: 14px;
+    border: 1px solid var(--chip-b);
+    box-shadow: 0 4px 10px rgba(15,23,42,0.08);
+    text-decoration: none;
     color: inherit;
     overflow: hidden;
-    transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease;
+    display: flex;
+    flex-direction: column;
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
   }
-  #give-section .give-card:hover{
+
+  #how-to-help-section .give-card:hover{
     transform: translateY(-2px);
-    box-shadow: 0 14px 30px rgba(0,0,0,.10);
-    border-color:#bfdbfe;
+    box-shadow: 0 8px 18px rgba(15,23,42,0.14);
+    border-color: #93c5fd;
   }
 
-  #give-section .give-title{
-    font-size: 22px;
-    font-weight: 800;
-    margin: 16px 16px 8px 16px;
+  #how-to-help-section .give-card img{
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
   }
 
-  #give-section .give-media{
-    flex: 1 1 auto;
-    margin: 0 16px 16px 16px;
-    border-radius:10px;
+  #how-to-help-section .give-card-body{
+    padding: 10px 14px 12px;
+  }
+
+  #how-to-help-section .give-card-title{
+    margin: 0 0 4px 0;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  #how-to-help-section .give-card-text{
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #4b5563;
+  }
+
+
+  /* Responsive adjustments */
+  @media (max-width: 980px) { .pc-card { min-height: auto; } }
+  @media (max-width: 760px) {
+    .pc-card { grid-template-columns: 1fr; }
+    .pc-right { border-left: none; border-top: 1px solid #e5e7eb; }
+    .pc-hero { max-height: 200px; }
+    .pc-left { padding: 10px; }
+    .pc-right { padding: 10px; }
+  }
+
+  /* ---------- Transition pages: white background + uniform square blue box ---------- */
+  .transition-section{
+    background:#ffffff;
+    padding: 60px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: 85vh;
+  }
+
+  .transition-section .transition-content{
+    --tcard-w: 500px;
+    --tcard-h: 400px;
+    --tcard-font: clamp(16px, 2.2vw, 26px);
+
+    width: min(var(--tcard-w), calc(100vw - 40px));
+    height: min(var(--tcard-h), 60vh);
+    background:#d9ecfb;
+    border:2px solid #000;
+    border-radius:0;
+    box-shadow:0 14px 34px rgba(0,0,0,.18);
+    padding:28px 36px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
     overflow:hidden;
-    background: linear-gradient(135deg,#eef2ff,#e0e7ff); /* placeholder look */
-    display: grid; place-items: center;
-    font-weight: 700; color:#334155;
   }
 
-  #give-section .give-media img{
-    width:100%; height:100%; object-fit:cover; display:block;
+  .transition-section .transition-content h1,
+  .transition-section .transition-content h2,
+  .transition-section .transition-content h3,
+  .transition-section .transition-content p{
+    margin:0;
+    font-size: var(--tcard-font);
+    line-height:1.25;
+    font-weight:500;
+    color:#0f172a;
   }
+  .transition-section .transition-content strong { font-weight:800; }
 
-</style>
-
+  @media (max-width: 640px){
+    .transition-section{ padding:40px 14px; min-height: 90vh; }
+    .transition-section .transition-content{
+      width: calc(100vw - 28px);
+      height: 56vh;
+      padding:22px 20px;
+    }
+  }
+  </style>
 </head>
 
 <script>
@@ -981,39 +682,32 @@
   }
   window.addEventListener('load', syncPanelHeightToMap);
   window.addEventListener('resize', syncPanelHeightToMap);
-
-  // If your myths are rendered after the page loads, re-sync once more soon after
   setTimeout(syncPanelHeightToMap, 300);
 </script>
 
 <script>
+  // Flip cards in Conservation Efforts
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('#conservation-section .cons-card').forEach(card => {
-      // Make button act like a toggle
-      card.addEventListener('click', () => {
-        card.classList.toggle('is-flipped');
-      });
-      // Keyboard support
+      card.addEventListener('click', () => { card.classList.toggle('is-flipped'); });
       card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          card.classList.toggle('is-flipped');
-        }
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.classList.toggle('is-flipped'); }
       });
     });
   });
 </script>
 
+<!-- UPDATED HELP COPY -->
 <script>
   const HELP_COPY = {
     plastic: {
       title: "Avoid Plastic",
       body: `
-        Plastic doesn’t break down—it fragments, drifts at sea, and enters food webs.
-        Small choices at home keep debris out of albatross habitat.`,
+        Plastic doesn’t break down. Rather, it fragments, drifts at sea, and enters food webs.
+        Small choices at home can keep debris out of albatross habitat.`,
       bullets: [
         "Carry reusables; skip single-use bags, bottles, and utensils.",
-        "Secure trash & fishing line so it can’t blow to waterways.",
+        "Secure trash and fishing line so it can’t blow to waterways.",
         "Check out Surfrider’s “Rise Above Plastics” for easy swaps."
       ]
     },
@@ -1025,14 +719,14 @@
         keep proven bycatch solutions on the water.`,
       bullets: [
         "Learn from ACAP’s species pages and bycatch resources.",
-        "Share why ACAP matters; encourage U.S. support and participation.",
+        "Share why ACAP matters; encourage US support and participation.",
         "Sign action alerts from conservation groups."
       ]
     },
     kids: {
       title: "Read Kids’ Books",
       body: `
-        Albatross lives—long-term partners, devoted parents—make great stories.
+        Albatross lives (long-term partners, devoted parents, etc.) make great stories.
         Children’s books spark empathy and stewardship early.`,
       bullets: [
         "Pick a conservation-minded title from ACAP’s book list.",
@@ -1040,21 +734,20 @@
         "Donate a book to a classroom or library."
       ]
     },
-    colony: {
-      title: "Visit a Nesting Colony",
+    donate: {
+      title: "Donate or Adopt",
       body: `
-        Seeing albatrosses up close is unforgettable. On Hawai‘i’s O‘ahu and Kaua‘i,
-        you can view Laysan Albatrosses responsibly during nesting season.`,
+        If you prefer a direct impact, two trusted options support research and bycatch
+        reduction and even let you “adopt” an albatross to fund monitoring and protection.`,
       bullets: [
-        "Ka‘ena Point (O‘ahu) & Kīlauea Point NWR (Kaua‘i) Nov–Jul.",
-        "Watch from marked trails; give birds plenty of space.",
-        "Explore archived highlights from the Laysan Albatross cam."
+        `Donate: <a href="https://www.birdlife.org/campaigns-appeals/albatross-sos/#donate-form" target="_blank" rel="noopener">BirdLife International – Albatross SOS</a>`,
+        `Adopt: <a href="https://www.oceanicsociety.org/adopt/adopt-an-albatross/" target="_blank" rel="noopener">Oceanic Society – Adopt an Albatross</a>`
       ]
     },
     pelagic: {
       title: "See Them at Sea",
       body: `
-        Pelagic trips off the West Coast often spot Black-footed—and sometimes Laysan—albatrosses.
+        Pelagic trips off the West Coast often spot Black-footed and sometimes Laysan albatrosses.
         Even short whale-watching outings in Monterey Bay can deliver great looks.`,
       bullets: [
         "Book reputable operators (e.g., SF Bay/Monterey area).",
@@ -1064,15 +757,67 @@
     }
   };
 
+  // function renderHelp(key){
+  //   const data = HELP_COPY[key] || HELP_COPY.plastic;
+  //   const pane = document.querySelector('#how-to-help-section .help-content');
+  //   pane.innerHTML = `
+  //     <h3>${data.title}</h3>
+  //     <p>${data.body}</p>
+  //     <ul class="bullets">${data.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>
+  //   `;
+  // }
+
   function renderHelp(key){
-    const data = HELP_COPY[key] || HELP_COPY.plastic;
     const pane = document.querySelector('#how-to-help-section .help-content');
+
+    // Special layout for Donate / Adopt
+    if (key === 'donate') {
+      pane.innerHTML = `
+        <h3>Donate or Adopt</h3>
+        <p>
+          If you prefer a direct impact, two trusted options support research and bycatch
+          reduction and even let you “adopt” an albatross to fund monitoring and protection.
+        </p>
+        <div class="give-grid">
+          <a class="give-card"
+            href="https://www.birdlife.org/campaigns-appeals/albatross-sos/#donate-form"
+            target="_blank" rel="noopener">
+            <img src="images/give-donate.jpg" alt="Donate to support albatross conservation">
+            <div class="give-card-body">
+              <h4 class="give-card-title">Donate</h4>
+              <p class="give-card-text">
+                Give to BirdLife International’s Albatross SOS campaign to fund
+                bycatch reduction and research.
+              </p>
+            </div>
+          </a>
+
+          <a class="give-card"
+            href="https://www.oceanicsociety.org/adopt/adopt-an-albatross/"
+            target="_blank" rel="noopener">
+            <img src="images/give-adopt.jpg" alt="Adopt an albatross illustration">
+            <div class="give-card-body">
+              <h4 class="give-card-title">Adopt</h4>
+              <p class="give-card-text">
+                Symbolically adopt an albatross through Oceanic Society and support
+                long-term monitoring and protection.
+              </p>
+            </div>
+          </a>
+        </div>
+      `;
+      return;
+    }
+
+    // Default layout for the other tabs
+    const data = HELP_COPY[key] || HELP_COPY.plastic;
     pane.innerHTML = `
       <h3>${data.title}</h3>
       <p>${data.body}</p>
       <ul class="bullets">${data.bullets.map(b=>`<li>${b}</li>`).join('')}</ul>
     `;
   }
+
 
   document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.querySelectorAll('#how-to-help-section .help-tab');
@@ -1088,26 +833,35 @@
 </script>
 
 <body>
-  <!-- Landing Section -->
-  <section id="landing-section" class="section" style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #dbf0fe;">
-    <h1 style="font-size: 64px; color: #2c3e50; margin: 0;">Wings Over Water: The Albatross</h1>
+  <!-- 1. Home -->
+  <section id="landing-section" class="section">
+    <!-- <h1 style="font-size: 64px; margin: 0;">Wings Over Water: The Albatross</h1> -->
+     <h1 class="landing-title">Wings Over Water: The Albatross</h1>
   </section>
 
-  <section id="welcome" class="section transition-section">
-    <div class="transition-content">
-      <h3> Albatrosses (Diomedeidae) are a family of large seabirds known for their incredibly flying skills. </h3>
-      <div style="display: flex; align-items: center; gap: 20px; justify-content: center; margin-top: 20px;">
-        <img src="images/albatross-clipart.png" alt="Albatross cursor guide" style="max-width: 200px; flex-shrink: 0;">
-        <h3 style="margin: 0; text-align: left;">This albatross will be your guide as we explore the data stories of the albatross! Use the tip of the left wing to point, click, and hover! </h3>
+
+  <!-- 2. Intro – NOT a transition page -->
+  <section id="welcome" class="section">
+    <div class="welcome-inner">
+      <img src="images/albatross-clipart.png"
+          alt="Albatross cursor guide"
+          class="welcome-image">
+      <div class="welcome-text">
+        <h2>Albatrosses (Diomedeidae) are a family of large seabirds known for their incredibly flying skills.</h2>
+        <p>
+          This albatross will be your guide as we explore the data stories of the albatross!
+          Use the tip of the left wing to point, click, and hover!
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- Quiz Section -->
+
+  <!-- 3. Quiz -->
   <section id="quiz-section" class="section">
     <div id="quiz-container">
-      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">Just how good are albatrosses at flying?</h2>
-      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">In Around the World in 80 Days, the main character Phileas Fogg attemps to circumnavigate the globe in 80 days.</h2>
+      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;"><strong>So... just how good are albatrosses at flying?</strong></p>
+      <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">In <em>Around the World in 80 Days</em>, the main character Phileas Fogg attempts to circumnavigate the globe in 80 days.</p>
       <p style="font-size: 20px; color: #2c3e50; margin-bottom: 30px; line-height: 1.4; text-align: center;">Albatrosses regularly make this trip by wing, travelling over 13,000 miles. Guess how many days this trip took:</p>
       <div id="quiz-input-container">
         <input type="text" id="quiz-input" placeholder="Enter your guess..." autocomplete="off">
@@ -1121,64 +875,63 @@
     </div>
   </section>
 
-  <!-- Distance Section -->
+  <!-- 4. Map -->
   <section id="distance-section" class="section">
     <div id="distance-container">
       <h1>All in a Day's Work</h1>
       <p class="subtitle">Albatrosses can travel up to 560 miles in a single day, traveling on average at 45 miles per hour. </p>
-      <p class="subtitle">
-        From Boston, this would reach as far as:
-      <p>
-      <div id="distance-map"></div>
+      <p class="subtitle">From Boston, this would reach as far as:</p>
+      <div id="distance-map" data-nosnap></div>
     </div>
   </section>
 
-  <!-- Inline 3D Scatter Visualization (embedded directly below "All in a Day's Work") -->
+  <!-- Transition: Map -> Flight -->
+  <section id="transition-map-to-flight" class="section transition-section">
+    <div class="transition-content">
+      <h2>To cover such distances, albatrosses cleverly harness wind patterns to maintain efficiency. Meet <strong>dynamic soaring</strong>.</h2>
+    </div>
+  </section>
+
+  <!-- 5. Flight -->
   <section id="scatter-section" class="section">
     <h1>Dynamic Soaring</h1>
     <p class="subtitle">Albatrosses are one of very few families of birds that utilize dynamic soaring, a special flying technique that takes advantage of ocean winds to fly without using much energy. The wind right above the waves is slow due to drag from the water and faster a few meters up. An albatross loops up and down through this wind gradient to grab free energy from the wind. One loop has four steps:</p>
     <div style="width:100%; display:flex; justify-content:center;">
       <div style="display:flex; gap:24px; width:100%; max-width:1200px; align-items:flex-start;">
-        <!-- Left column: iframe occupying half the available width -->
         <div style="flex:1; min-width:0;">
-          <iframe src="3d-scatter.html?zoom=2.7" style="width:100%;height:540px;border-radius:8px;border:1px solid rgba(0,0,0,0.12);background:#fff;box-shadow:0 6px 18px rgba(15,23,42,0.08);" allowfullscreen></iframe>
+          <iframe src="3d-scatter.html?zoom=2.7" style="width:100%;height:540px;border-radius:8px;border:1px solid rgba(0,0,0,0.12);background:#fff;box-shadow:0 6px 18px rgba(15,23,42,0.08);" allowfullscreen data-nosnap></iframe>
         </div>
-
-        <!-- Right column: explanatory/context content -->
         <div id="scatter-text-col" style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
           <div id="box-1" class="scatter-info" style="background:#fff;padding:16px;border-radius:8px;border:1px solid #eef2ff; width:100%;">
             <h3 style="margin:0 0 8px 0; font-size:18px; color:#2c3e50;">1. Prepare to climb:</h3>
             <p class="small" style="margin:0 0 8px 0;"> The bird stays just a meter or two above the water, where the air moves more slowly. This lets it line up the next turn with very little effort.</p>
-        </div>
+          </div>
 
-        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
           <div id="box-2" class="scatter-info" style="background:#fff;padding:16px;border-radius:8px;border:1px solid #eef2ff; width:100%;">
             <h3 style="margin:0 0 8px 0; font-size:18px; color:#2c3e50;">2. Climb into the wind:</h3>
-            <p class="small" style="margin:0 0 8px 0;"> The albatrosses faces the wind while climbing a few to ~20 meters. As it crosses into the faster-moving air aloft, its airspeed through the air increases.</p>
-        </div>
+            <p class="small" style="margin:0 0 8px 0;"> The albatross faces the wind while climbing a few to ~20 meters. As it crosses into the faster-moving air aloft, its airspeed through the air increases.</p>
+          </div>
 
-        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
           <div id="box-3" class="scatter-info scatter-jump" data-jump-t="0.66" style="background:#fff;padding:16px;border-radius:8px;border:1px solid #eef2ff; width:100%; cursor:pointer;">
             <h3 style="margin:0 0 8px 0; font-size:18px; color:#2c3e50;">3. Turn back down:</h3>
-            <p class="small" style="margin:0 0 8px 0;"> Once at the top, the albatross turns down against the wind in preperation for its descent downwards.</p>
-        </div>
+            <p class="small" style="margin:0 0 8px 0;"> Once at the top, the albatross turns down against the wind in preparation for its descent.</p>
+          </div>
 
-        <div style="flex:1; min-width:0; display:flex; flex-direction:column; gap:12px; align-items:flex-start;">
           <div id="box-4" class="scatter-info scatter-jump" data-jump-t="1.0" style="background:#fff;padding:16px;border-radius:8px;border:1px solid #eef2ff; width:100%; cursor:pointer;">
             <h3 style="margin:0 0 8px 0; font-size:18px; color:#2c3e50;">4. Glide down with the wind:</h3>
-            <p class="small" style="margin:0 0 8px 0;"> The albatross glides downwards, facing away from the wind, and converts the potential energy gained from its upward climb into kinetic energy.<p>
+            <p class="small" style="margin:0 0 8px 0;"> The albatross glides downward, converting potential energy from the climb into speed as it returns to the surface layer.</p>
+          </div>
+        </div>
       </div>
-    </div>
-  </section>
     </div>
   </section>
 
   <script>
-    // Listen for highlight messages from the embedded scatter iframe
+    // highlight boxes from iframe
     window.addEventListener('message', (ev) => {
       if (!ev.data || typeof ev.data !== 'object') return;
       if (ev.data.type === 'highlight-box') {
-        const box = Number(ev.data.box) || 0; // 1..4 expected
+        const box = Number(ev.data.box) || 0;
         const boxes = [document.getElementById('box-1'), document.getElementById('box-2'), document.getElementById('box-3'), document.getElementById('box-4')];
         for (let i = 0; i < boxes.length; i++) {
           const el = boxes[i];
@@ -1199,7 +952,7 @@
       }
     }, false);
 
-    // Wire clicks on the .scatter-jump elements to postMessage to the iframe (jump-to)
+    // jump-to from text
     window.addEventListener('DOMContentLoaded', () => {
       const iframe = document.querySelector('iframe[src^="3d-scatter.html"]');
       if (!iframe) return;
@@ -1213,52 +966,47 @@
     });
   </script>
 
-  <!-- Intro Section -->
-  <section id="intro-section" class="section">
-    <h1>Anatomy of an Albatross</h1>
-    <p class="subtitle">Click the highlighted regions (wings, stomach, beak) to see information.</p>
-    <div id="intro-visual"></div>
-  </section>
-
-  <!-- Info: shared feats across the genus (between Distance and Species) -->
-  <section id="info-genus-section" class="section transition-section">
+  <!-- Transition: Flight -> Anatomy -->
+  <section id="transition-flight-to-anatomy" class="section transition-section">
     <div class="transition-content">
-      <h2>These flight feats are shared across the genus — but the albatross isn’t just one bird. <strong>22 recognized species</strong> share the same winds of flight but ride them in their own ways.</h2>
+      <h2>That elegance is engineered; let’s look at the albatross’s <strong>anatomy</strong>.</h2>
     </div>
   </section>
 
-  <!-- Species Section -->
+  <!-- 6. Anatomy -->
+  <section id="intro-section" class="section">
+    <h1>Anatomy of an Albatross</h1>
+    <p class="subtitle">Click the highlighted regions (wings, stomach, beak) to see information.</p>
+    <div id="intro-visual" data-nosnap></div>
+  </section>
+
+  <!-- Transition: Anatomy -> Species -->
+  <section id="transition-anatomy-to-species" class="section transition-section">
+    <div class="transition-content">
+      <h2>Across the world’s oceans, <strong>22 species</strong> take these traits in different directions.</h2>
+    </div>
+  </section>
+
+  <!-- 7. Species -->
   <section id="species-section" class="section">
     <h1>Exploring By The Species</h1>
     <p class="subtitle">Click on each species for more information!</p>
     <div id="species-legend"></div>
-    <div id="species-visualization"></div>
+    <div id="species-visualization" data-nosnap></div>
   </section>
 
-  <!-- Transition Section 4 -->
-  <section id="transition-4-section" class="section transition-section">
-    <div class="transition-content">
-      <h2>Where distance is the albatross' shared trademark, <strong>the wind</strong> is their highway.</h2>
-    </div>
-  </section>
-
-  <!-- Blank: An Albatross in Flight (content to come) -->
-  <section id="flight-section" class="section" style="min-height: 80vh; display:flex; align-items:center; justify-content:center;">
-    <h1>An Albatross in Flight</h1>
-  </section>
-
-  <!-- Info: folklore intro (before Myths) -->
+  <!-- Transition: Species -> Folklore -->
   <section id="info-folklore-section" class="section transition-section">
     <div class="transition-content">
       <h2>For millennia, the same winds that guided albatrosses also guided sailors and inspired stories. Indeed, albatrosses soon became <strong>an omen, a muse, and a myth.</strong></h2>
     </div>
   </section>
 
-  <!-- Myths Section -->
+  <!-- 8. Folklore -->
   <section id="myths-section" class="section">
     <h1>Folklore & Superstitions</h1>
     <p class="subtitle">Flip through famous appearances of the albatross in literature and history.</p>
-    <div class="pc-stage">
+    <div class="pc-stage" data-nosnap>
       <button id="prevBtn" class="carousel-btn prev" aria-label="Previous story" title="Previous">‹</button>
       <div id="pcViewport" class="pc-viewport" aria-label="Postcard viewport">
         <div id="pcTrack" class="pc-track" role="list"></div>
@@ -1281,12 +1029,8 @@
       if(stage && h){ stage.style.height = h + 'px'; }
       cards.forEach(c => { c.style.height = (h || getComputedStyle(stage).height) ; });
     }
-
-    // run after load and on resize
     window.addEventListener('load', lockMythsHeight);
     window.addEventListener('resize', lockMythsHeight);
-
-    // if myths.js injects cards later, re-apply
     const track = document.getElementById('pcTrack');
     if(track){
       const mo = new MutationObserver(lockMythsHeight);
@@ -1295,88 +1039,59 @@
   })();
   </script>
 
-  <!-- Transition Section 1 -->
+  <!-- Transition: Folklore -> Threats -->
   <section id="transition-1-section" class="section transition-section">
     <div class="transition-content">
       <h2>Unfortunately, the winds that albatrosses follow now carry <strong>new hazards</strong>.</h2>
     </div>
   </section>
 
+  <!-- 9. Threats -->
   <section id="threats-section" class="section">
     <div class="threats-layout">
-      <!-- Left side: Title and Legends -->
       <div class="threats-left">
         <h1>Threats</h1>
-        <p class="subtitle">Each circle represents a threat affecting a species. Click on a threat or a species to learn more!</p>
+        <p class="subtitle">Each circle represents a threat affecting a species. Hover for details.</p>
         
-        <!-- Conservation Status Legend -->
         <div style="margin-bottom: 25px;">
           <div style="font-weight: 600; margin-bottom: 10px; color: #2c3e50; font-size: 16px;">Conservation Status</div>
           <div class="threats-legend-vertical">
-            <div class="threats-legend-item">
-              <div class="threats-legend-circle" style="width:12px; height:12px; background:#DD403A;"></div>
-              <span>Critically Endangered</span>
-            </div>
-            <div class="threats-legend-item">
-              <div class="threats-legend-circle" style="width:12px; height:12px; background:#FF7B3D;"></div>
-              <span>Endangered</span>
-            </div>
-            <div class="threats-legend-item">
-              <div class="threats-legend-circle" style="width:12px; height:12px; background:#FFC34B;"></div>
-              <span>Vulnerable</span>
-            </div>
-            <div class="threats-legend-item">
-              <div class="threats-legend-circle" style="width:12px; height:12px; background:#5AB361;"></div>
-              <span>Near Threatened</span>
-            </div>
-            <div class="threats-legend-item">
-              <div class="threats-legend-circle" style="width:12px; height:12px; background:#2F6690;"></div>
-              <span>Least Concern</span>
-            </div>
+            <div class="threats-legend-item"><div class="threats-legend-circle" style="width:12px; height:12px; background:#DD403A;"></div><span>Critically Endangered</span></div>
+            <div class="threats-legend-item"><div class="threats-legend-circle" style="width:12px; height:12px; background:#FF7B3D;"></div><span>Endangered</span></div>
+            <div class="threats-legend-item"><div class="threats-legend-circle" style="width:12px; height:12px; background:#FFC34B;"></div><span>Vulnerable</span></div>
+            <div class="threats-legend-item"><div class="threats-legend-circle" style="width:12px; height:12px; background:#5AB361;"></div><span>Near Threatened</span></div>
+            <div class="threats-legend-item"><div class="threats-legend-circle" style="width:12px; height:12px; background:#2F6690;"></div><span>Least Concern</span></div>
           </div>
         </div>
         
-        <!-- Threat Impact Legend -->
         <div style="margin-bottom: 20px;">
           <div style="font-weight: 600; margin-bottom: 10px; color: #2c3e50; font-size: 16px;">Threat Impact</div>
           <div class="threats-legend-vertical">
-            <div class="threats-legend-item">
-              <div class="threats-legend-circle" style="width:24px; height:24px;"></div>
-              <span>High Impact</span>
-            </div>
-            <div class="threats-legend-item">
-              <div class="threats-legend-circle" style="width:18px; height:18px;"></div>
-              <span>Medium Impact</span>
-            </div>
-            <div class="threats-legend-item">
-              <div class="threats-legend-circle" style="width:12px; height:12px;"></div>
-              <span>Low Impact</span>
-            </div>
+            <div class="threats-legend-item"><div class="threats-legend-circle" style="width:24px; height:24px;"></div><span>High Impact</span></div>
+            <div class="threats-legend-item"><div class="threats-legend-circle" style="width:18px; height:18px;"></div><span>Medium Impact</span></div>
+            <div class="threats-legend-item"><div class="threats-legend-circle" style="width:12px; height:12px;"></div><span>Low Impact</span></div>
           </div>
         </div>
       </div>
-      
-      <!-- Right side: Diagram -->
-      <div class="threats-right">
+      <div class="threats-right" data-nosnap>
         <div id="matrix-viz"></div>
       </div>
     </div>
   </section>
 
-  <!-- Transition Section 2 -->
+  <!-- Transition: Threats -> Conservation -->
   <section id="transition-2-section" class="section transition-section">
     <div class="transition-content">
       <h2>Fortunately, fishermen, scientists, and policymakers have been banding together to <strong>take a stance</strong> for the albatrosses.</h2>
     </div>
   </section>
 
-  <!-- Conservation Efforts -->
+  <!-- 10. Conservation -->
   <section id="conservation-section" class="section">
     <h1>Conservation Efforts</h1>
     <p class="subtitle">The following displays 6 major ways advocates have been working to prevent albatrosses' further demise to bycatch.</p>
 
-    <div class="cons-grid">
-      <!-- 1. Streamer Lines -->
+    <div class="cons-grid" data-nosnap>
       <button class="cons-card" aria-label="Streamer Lines (flip for details)">
         <div class="cons-card-inner">
           <div class="cons-face cons-front">
@@ -1385,15 +1100,11 @@
           </div>
           <div class="cons-face cons-back">
             <h3>Streamer Lines</h3>
-            <p>
-              Colorful “tori” streamers flap behind longline boats and keep birds off baited hooks.  
-              Widely adopted, these lines have slashed seabird bycatch—often by 80%+—in places like Alaska.
-            </p>
+            <p>Colorful “tori” streamers flap behind longline boats and keep birds off baited hooks. Widely adopted, these lines have slashed seabird bycatch - often by more than 80% — in places like Alaska.</p>
           </div>
         </div>
       </button>
 
-      <!-- 2. Set Gear at Night -->
       <button class="cons-card" aria-label="Set Gear at Night (flip for details)">
         <div class="cons-card-inner">
           <div class="cons-face cons-front">
@@ -1402,15 +1113,11 @@
           </div>
           <div class="cons-face cons-back">
             <h3>Set Gear at Night</h3>
-            <p>
-              Albatrosses feed mostly by day. Setting lines in darkness—and keeping deck lights low and inboard—
-              drops encounters dramatically in West Coast and Western Pacific fisheries.
-            </p>
+            <p>Albatrosses feed mostly by day. Setting lines in darkness and keeping deck lights low and inboard drops encounters dramatically in West Coast and Western Pacific fisheries.</p>
           </div>
         </div>
       </button>
 
-      <!-- 3. Weighted Hooks -->
       <button class="cons-card" aria-label="Weighted Hooks (flip for details)">
         <div class="cons-card-inner">
           <div class="cons-face cons-front">
@@ -1419,15 +1126,11 @@
           </div>
           <div class="cons-face cons-back">
             <h3>Weighted Hooks</h3>
-            <p>
-              Adding weights makes baited hooks sink fast—beyond the 1–2&nbsp;m depths where most albatrosses grab food—
-              reducing the chance birds reach the gear.
-            </p>
+            <p>Adding weights makes baited hooks sink fast—beyond the 1–2&nbsp;m depths where most albatrosses grab food, reducing the chance birds reach the gear.</p>
           </div>
         </div>
       </button>
 
-      <!-- 4. Dyeing Bait -->
       <button class="cons-card" aria-label="Dyeing Bait (flip for details)">
         <div class="cons-card-inner">
           <div class="cons-face cons-front">
@@ -1436,15 +1139,11 @@
           </div>
           <div class="cons-face cons-back">
             <h3>Dyeing Bait</h3>
-            <p>
-              Blue-dyed bait is harder for birds to spot against seawater.  
-              The approach began with fishers, was tested, and is now required in certain U.S. HMS longline fisheries.
-            </p>
+            <p>Blue-dyed bait is harder for birds to spot against seawater. The approach began with fishers, was tested, and is now required in certain US HMS longline fisheries.</p>
           </div>
         </div>
       </button>
 
-      <!-- 5. Discharge Fish Waste -->
       <button class="cons-card" aria-label="Discharge Fish Waste (flip for details)">
         <div class="cons-card-inner">
           <div class="cons-face cons-front">
@@ -1453,15 +1152,11 @@
           </div>
           <div class="cons-face cons-back">
             <h3>Discharge Fish Waste</h3>
-            <p>
-              Dump offal on the side opposite the baited line so scavenging birds stay away from hooks.  
-              This is required across parts of the western/central Pacific; NOAA is studying results in Hawai‘i.
-            </p>
+            <p>Dump offal on the side opposite the baited line so scavenging birds stay away from hooks. This is required across parts of the western/central Pacific; the NOAA is studying results in Hawaii.</p>
           </div>
         </div>
       </button>
 
-      <!-- 6. Side-Setting -->
       <button class="cons-card" aria-label="Side-Setting (flip for details)">
         <div class="cons-card-inner">
           <div class="cons-face cons-front">
@@ -1470,93 +1165,62 @@
           </div>
           <div class="cons-face cons-back">
             <h3>Side-Setting</h3>
-            <p>
-              Set hooks from the vessel’s side near the bow and add weights close to hooks so they sink quickly.  
-              Paired with “bird curtains,” this setup sharply reduces seabird interactions.
-            </p>
+            <p>Set hooks from the vessel’s side near the bow and add weights close to hooks so they sink quickly. Paired with “bird curtains”, this setup sharply reduces seabird interactions.</p>
           </div>
         </div>
       </button>
     </div>
   </section>
 
-  <!-- How to Help Section -->
+  <!-- Transition: Conservation -> How to Help -->
+  <section id="transition-cons-to-help" class="section transition-section">
+    <div class="transition-content">
+      <h2>Here’s how you can <strong>join in</strong> — small actions add up at sea.</h2>
+    </div>
+  </section>
+
+  <!-- 11. How to Help -->
   <section id="how-to-help-section" class="section">
-  <h1>How You Can Help</h1>
-  <p class="subtitle">Here are 5 practical ways that YOU can support albatross conservation.</p>
+    <h1>How You Can Help</h1>
+    <p class="subtitle">Here are 5 practical ways that YOU can support albatross conservation.</p>
 
-  <div class="help-stage">
-    <div class="help-card">
-      <aside class="help-tabs" role="tablist" aria-label="Ways to help">
-        <button class="help-tab is-active" role="tab" aria-selected="true" data-key="plastic">Avoid Plastic</button>
-        <button class="help-tab" role="tab" aria-selected="false" data-key="acap">Support ACAP</button>
-        <button class="help-tab" role="tab" aria-selected="false" data-key="kids">Read Kids’ Books</button>
-        <button class="help-tab" role="tab" aria-selected="false" data-key="colony">Visit a Colony</button>
-        <button class="help-tab" role="tab" aria-selected="false" data-key="pelagic">See Them at Sea</button>
-      </aside>
-
-      <article class="help-content" aria-live="polite"></article>
-    </div>
-
-  </div>
-  </section>
-
-  <!-- Donate / Adopt Screen -->
-  <section id="give-section" class="section">
-    <h1>Make a Difference Today!</h1>
-    <p class="subtitle">Here are two quick ways to give to this cause from the comfort of your home.</p>
-
-    <div class="give-stage">
-      <!-- Donate card -->
-      <a class="give-card" target="_blank" rel="noopener"
-        href="https://www.birdlife.org/campaigns-appeals/albatross-sos/#donate-form">
-        <div class="give-title">Donate</div>
-        <div class="give-media">
-          <img src="images/give-donate.jpg" alt="Donate to Albatross" />
-        </div>
-      </a>
-
-      <!-- Adopt card -->
-      <a class="give-card" target="_blank" rel="noopener"
-        href="https://www.oceanicsociety.org/adopt/adopt-an-albatross/">
-        <div class="give-title">Adopt an Albatross</div>
-        <div class="give-media">
-          <img src="images/give-adopt.jpg" alt="Adopt an albatross" />
-        </div>
-      </a>
+    <div class="help-stage" data-nosnap>
+      <div class="help-card">
+        <aside class="help-tabs" role="tablist" aria-label="Ways to help">
+          <button class="help-tab is-active" role="tab" aria-selected="true"  data-key="plastic">Avoid Plastic</button>
+          <button class="help-tab"          role="tab" aria-selected="false" data-key="acap">Support ACAP</button>
+          <button class="help-tab"          role="tab" aria-selected="false" data-key="kids">Read Kids’ Books</button>
+          <button class="help-tab"          role="tab" aria-selected="false" data-key="donate">Donate or Adopt</button>
+          <button class="help-tab"          role="tab" aria-selected="false" data-key="pelagic">See Them at Sea</button>
+        </aside>
+        <article class="help-content" aria-live="polite"></article>
+      </div>
     </div>
   </section>
 
-
-  <!-- Sources -->
+  <!-- 12. Sources -->
   <section id="sources-section" class="section">
     <h1>Sources & Further Reading</h1>
   </section>
 
-  <!-- Navigation Dots -->
+  <!-- Side Navigation Dots -->
   <div class="nav-dots">
-    <div class="nav-dot active" data-section="home"          data-label="Home"></div>                     <!-- 1 -->
-    <div class="nav-dot"        data-section="anatomy"       data-label="Anatomy"></div>                  <!-- 2 -->
-    <div class="nav-dot"        data-section="quiz"          data-label="Quiz"></div>                     <!-- 3 -->
-    <div class="nav-dot"        data-section="map"           data-label="Interactive Map"></div>          <!-- 4 -->
-    <div class="nav-dot"        data-section="info-genus"    data-label="Info"></div>                     <!-- 5 -->
-    <div class="nav-dot"        data-section="species"       data-label="The Species"></div>              <!-- 6 -->
-    <div class="nav-dot"        data-section="info-wind"     data-label="Info"></div>                     <!-- 7 -->
-    <div class="nav-dot"        data-section="flight"        data-label="An Albatross in Flight"></div>   <!-- 8 -->
-    <div class="nav-dot"        data-section="info-folk"     data-label="Info"></div>                     <!-- 9 -->
-    <div class="nav-dot"        data-section="myths"         data-label="Folklore"></div>                 <!-- 10 -->
-    <div class="nav-dot"        data-section="info-hazards"  data-label="Info"></div>                     <!-- 11 -->
-    <div class="nav-dot"        data-section="threats"       data-label="Threats"></div>                  <!-- 12 -->
-    <div class="nav-dot"        data-section="info-help"     data-label="Info"></div>                     <!-- 13 -->
-    <div class="nav-dot"        data-section="conservation"  data-label="Conservation Efforts"></div>     <!-- 14 -->
-    <div class="nav-dot"        data-section="how-to-help"   data-label="How to Help"></div>              <!-- 15 -->
-    <div class="nav-dot"        data-section="give"          data-label="Donate / Adopt"></div>           <!-- 16 -->
-    <div class="nav-dot"        data-section="source"        data-label="Sources"></div>                  <!-- 17 -->
+    <div class="nav-dot active" data-section="home"     data-label="Home"></div>
+    <div class="nav-dot"        data-section="intro"    data-label="Intro"></div>
+    <div class="nav-dot"        data-section="quiz"     data-label="Quiz"></div>
+    <div class="nav-dot"        data-section="map"      data-label="Map"></div>
+    <div class="nav-dot"        data-section="flight"   data-label="Flight"></div>
+    <div class="nav-dot"        data-section="anatomy"  data-label="Anatomy"></div>
+    <div class="nav-dot"        data-section="species"  data-label="Species"></div>
+    <div class="nav-dot"        data-section="folklore" data-label="Folklore"></div>
+    <div class="nav-dot"        data-section="threats"  data-label="Threats"></div>
+    <div class="nav-dot"        data-section="conserv"  data-label="Conservation"></div>
+    <div class="nav-dot"        data-section="help"     data-label="How to Help"></div>
+    <div class="nav-dot"        data-section="sources"  data-label="Sources"></div>
   </div>
 
-
   <!-- Right Panel for Species Info -->
-  <div id="species-panel">
+  <div id="species-panel" data-nosnap>
     <button id="species-panel-close">×</button>
     <div id="species-panel-content">
       <h2 id="species-panel-title">Select a species</h2>
@@ -1576,14 +1240,15 @@
   <script type="module" src="js/myths.js"></script>
   <script type="module" src="js/species-panel.js"></script>
   
-  <!-- Quiz functionality -->
+  <!-- Quiz functionality, distance map, nav dots, AND smart snap scroll -->
   <script>
+    /* ---------- Quiz ---------- */
     document.addEventListener('DOMContentLoaded', function() {
       const quizInput = document.getElementById('quiz-input');
       const quizSubmit = document.getElementById('quiz-submit');
       const quizAnswer = document.getElementById('quiz-answer');
       const quizContinue = document.getElementById('quiz-continue');
-      const speciesSection = document.getElementById('species-section');
+      const speciesSection = document.getElementById('distance-section');
 
       function showAnswer() {
         const userAnswer = parseInt(quizInput.value.trim());
@@ -1593,105 +1258,68 @@
         quizSubmit.disabled = true;
         quizInput.disabled = true;
         
-        // Update content based on correctness
         const answerTitle = quizAnswer.querySelector('h3');
         const answerText = quizAnswer.querySelector('p');
         
         if (isExact) {
-          quizAnswer.classList.add('correct');
-          quizAnswer.classList.remove('incorrect');
+          quizAnswer.classList.add('correct'); quizAnswer.classList.remove('incorrect');
           answerTitle.textContent = 'Correct! Just 46 days!';
           answerText.textContent = 'Albatrosses are incredible long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land!';
         } else if (isClose) {
-          quizAnswer.classList.add('correct');
-          quizAnswer.classList.remove('incorrect');
+          quizAnswer.classList.add('correct'); quizAnswer.classList.remove('incorrect');
           answerTitle.textContent = 'Close guess! The answer is 46 days.';
           answerText.textContent = 'Albatrosses are incredible long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land!';
         } else {
-          quizAnswer.classList.add('incorrect');
-          quizAnswer.classList.remove('correct');
+          quizAnswer.classList.add('incorrect'); quizAnswer.classList.remove('correct');
           answerTitle.textContent = 'Not quite! The answer is 46 days.';
           answerText.textContent = 'Albatrosses are incredible long-distance fliers, covering thousands of miles with minimal energy expenditure. They can spend months at sea without touching land!';
         }
         
         quizAnswer.classList.add('visible');
-        
-        // Show continue button after a short delay
-        setTimeout(() => {
-          quizContinue.classList.add('visible');
-        }, 500);
+        setTimeout(() => { quizContinue.classList.add('visible'); }, 500);
       }
 
-      // Handle submit button click
       quizSubmit.addEventListener('click', function() {
-        if (quizInput.value.trim() !== '') {
-          showAnswer();
-        }
+        if (quizInput.value.trim() !== '') showAnswer();
       });
-
-      // Handle Enter key press
       quizInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && quizInput.value.trim() !== '') {
-          showAnswer();
-        }
+        if (e.key === 'Enter' && quizInput.value.trim() !== '') showAnswer();
       });
-
-      // Handle continue button click - scroll to species section
       quizContinue.addEventListener('click', function() {
-        speciesSection.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
+        speciesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
-
-      // Enable/disable submit button based on input
       quizInput.addEventListener('input', function() {
         quizSubmit.disabled = quizInput.value.trim() === '';
       });
-
-      // Initially disable submit button
       quizSubmit.disabled = true;
     });
 
-    // NOTE: 3D scatter is embedded inline now; overlay/button handlers removed.
-
-    // Distance map functionality with Leaflet
+    /* ---------- Distance map (Leaflet) ---------- */
     document.addEventListener('DOMContentLoaded', function() {
       const mapContainer = document.getElementById('distance-map');
       if (!mapContainer) return;
 
-      // Boston coordinates (latitude, longitude)
       const bostonCoords = [42.3601, -71.0589];
-      
-      // Initialize the map
       const map = L.map('distance-map').setView(bostonCoords, 6);
 
-      // Add OpenStreetMap tiles
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
       }).addTo(map);
 
-      // Create custom red marker icon for Boston
       const redIcon = L.icon({
         iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
         shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34], shadowSize: [41, 41]
       });
 
-      // Add Boston marker with red icon (make it draggable)
-      const bostonMarker = L.marker(bostonCoords, {
-        icon: redIcon,
-        draggable: true
-      })
+      // Add Boston marker with red icon
+      const bostonMarker = L.marker(bostonCoords, {icon: redIcon})
         .addTo(map)
-        .bindPopup('<b>Boston, MA</b><br><i>Drag me to change location!</i>')
+        .bindPopup('<b>Boston, MA</b>')
         .openPopup();
 
       // Add 560-mile radius circle (560 miles = ~901 km)
-      let radiusCircle = L.circle(bostonCoords, {
+      const radiusCircle = L.circle(bostonCoords, {
         color: '#ef4444',
         fillColor: '#ef4444',
         fillOpacity: 0.1,
@@ -1702,19 +1330,17 @@
       // Store city markers for updates
       let cityMarkers = [];
 
-      // Function to calculate distance between two points (Haversine formula)
       function calculateDistance(lat1, lon1, lat2, lon2) {
-        const R = 3959; // Earth's radius in miles
+        const R = 3959;
         const dLat = (lat2 - lat1) * Math.PI / 180;
         const dLon = (lon2 - lon1) * Math.PI / 180;
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+        const a = Math.sin(dLat/2)**2 +
                   Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                  Math.sin(dLon/2) * Math.sin(dLon/2);
+                  Math.sin(dLon/2)**2;
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c; // Distance in miles
+        return R * c;
       }
 
-      // Cities within 560 miles of Boston
       const citiesInRange = [
         { name: 'New York, NY', coords: [40.7128, -74.0060] },
         { name: 'Philadelphia, PA', coords: [39.9526, -75.1652] },
@@ -1726,154 +1352,25 @@
         { name: 'Richmond, VA', coords: [37.5407, -77.4360] }
       ];
 
-      // All major cities in North America for dynamic calculation
-      const allCities = [
-        { name: 'New York, NY', coords: [40.7128, -74.0060] },
-        { name: 'Philadelphia, PA', coords: [39.9526, -75.1652] },
-        { name: 'Washington, DC', coords: [38.9072, -77.0369] },
-        { name: 'Montreal, Canada', coords: [45.5017, -73.5673] },
-        { name: 'Portland, ME', coords: [43.6591, -70.2553] },
-        { name: 'Buffalo, NY', coords: [42.8864, -78.8784] },
-        { name: 'Pittsburgh, PA', coords: [40.4406, -79.9959] },
-        { name: 'Richmond, VA', coords: [37.5407, -77.4360] },
-        { name: 'Atlanta, GA', coords: [33.7490, -84.3880] },
-        { name: 'Chicago, IL', coords: [41.8781, -87.6298] },
-        { name: 'Detroit, MI', coords: [42.3314, -83.0458] },
-        { name: 'Toronto, Canada', coords: [43.6532, -79.3832] },
-        { name: 'Miami, FL', coords: [25.7617, -80.1918] },
-        { name: 'Charlotte, NC', coords: [35.2271, -80.8431] },
-        { name: 'Nashville, TN', coords: [36.1627, -86.7816] },
-        { name: 'Cleveland, OH', coords: [41.4993, -81.6944] },
-        { name: 'Columbus, OH', coords: [39.9612, -82.9988] },
-        { name: 'Indianapolis, IN', coords: [39.7684, -86.1581] },
-        { name: 'Milwaukee, WI', coords: [43.0389, -87.9065] },
-        { name: 'Cincinnati, OH', coords: [39.1031, -84.5120] },
-        { name: 'Kansas City, MO', coords: [39.0997, -94.5786] },
-        { name: 'St. Louis, MO', coords: [38.6270, -90.1994] },
-        { name: 'Minneapolis, MN', coords: [44.9778, -93.2650] },
-        { name: 'Denver, CO', coords: [39.7392, -104.9903] },
-        { name: 'Dallas, TX', coords: [32.7767, -96.7970] },
-        { name: 'Houston, TX', coords: [29.7604, -95.3698] },
-        { name: 'Phoenix, AZ', coords: [33.4484, -112.0740] },
-        { name: 'Los Angeles, CA', coords: [34.0522, -118.2437] },
-        { name: 'San Francisco, CA', coords: [37.7749, -122.4194] },
-        { name: 'Seattle, WA', coords: [47.6062, -122.3321] },
-        { name: 'Portland, OR', coords: [45.5152, -122.6784] },
-        { name: 'Las Vegas, NV', coords: [36.1699, -115.1398] },
-        { name: 'San Diego, CA', coords: [32.7157, -117.1611] },
-        { name: 'Halifax, Canada', coords: [44.6488, -63.5752] },
-        { name: 'Quebec City, Canada', coords: [46.8139, -71.2080] },
-        { name: 'Ottawa, Canada', coords: [45.4215, -75.6972] },
-        { name: 'Winnipeg, Canada', coords: [49.8951, -97.1384] },
-        { name: 'Calgary, Canada', coords: [51.0447, -114.0719] },
-        { name: 'Vancouver, Canada', coords: [49.2827, -123.1207] }
-      ];
-
-      // Function to update city markers based on center location
-      function updateCityMarkers(centerCoords) {
-        // Remove existing city markers
-        cityMarkers.forEach(marker => map.removeLayer(marker));
-        cityMarkers = [];
-
-        // Find cities within 560 miles and add markers
-        allCities.forEach(city => {
-          const distance = calculateDistance(
-            centerCoords[0], centerCoords[1],
-            city.coords[0], city.coords[1]
-          );
-          
-          if (distance <= 560) {
-            // Calculate flight time
-            const flightTimeHours = distance / 45;
-            const hours = Math.floor(flightTimeHours);
-            const minutes = Math.round((flightTimeHours - hours) * 60);
-            
-            let timeText;
-            if (hours === 0) {
-              timeText = `${minutes} minutes`;
-            } else if (minutes === 0) {
-              timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
-            } else {
-              timeText = `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minutes`;
-            }
-
-            const marker = L.marker(city.coords)
-              .addTo(map)
-              .bindPopup(`<b>${city.name}</b><br>Distance: ${Math.round(distance)} miles<br>Flight time: ${timeText}`)
-              .on('mouseover', function(e) {
-                this.openPopup();
-              });
-            
-            cityMarkers.push(marker);
-          }
-        });
-      }
-
-      // Initial city markers
-      updateCityMarkers(bostonCoords);
-
-      // Handle marker drag
-      bostonMarker.on('dragend', function(event) {
-        const newPosition = event.target.getLatLng();
-        const newCoords = [newPosition.lat, newPosition.lng];
-        
-        // Update the circle position
-        map.removeLayer(radiusCircle);
-        radiusCircle = L.circle(newCoords, {
-          color: '#ef4444',
-          fillColor: '#ef4444',
-          fillOpacity: 0.1,
-          radius: 901000,
-          dashArray: '10, 10'
-        }).addTo(map);
-        
-        // Update city markers
-        updateCityMarkers(newCoords);
-        
-        // Update popup
-        bostonMarker.setPopupContent('<b>Custom Location</b><br><i>Drag me to change location!</i>');
-        
-        // Update info control
-        document.querySelector('.distance-info-control').innerHTML = 
-          '<b>Albatross Daily Range</b><br>560 miles from selected location';
-      });
-
-      // Add city markers with flight time calculations (remove old implementation)
-      /*
+      // Add city markers with flight time calculations
       citiesInRange.forEach(city => {
-        // Calculate distance from Boston to this city
-        const distance = calculateDistance(
-          bostonCoords[0], bostonCoords[1], // Boston lat, lon
-          city.coords[0], city.coords[1]    // City lat, lon
-        );
-        
-        // Calculate flight time (distance / 45 mph)
+        const distance = calculateDistance(bostonCoords[0], bostonCoords[1], city.coords[0], city.coords[1]);
         const flightTimeHours = distance / 45;
         const hours = Math.floor(flightTimeHours);
         const minutes = Math.round((flightTimeHours - hours) * 60);
-        
-        // Format time display
         let timeText;
-        if (hours === 0) {
-          timeText = `${minutes} minutes`;
-        } else if (minutes === 0) {
-          timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
-        } else {
-          timeText = `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minutes`;
-        }
+        if (hours === 0) timeText = `${minutes} minutes`;
+        else if (minutes === 0) timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
+        else timeText = `${hours} hour${hours > 1 ? 's' : ''} ${minutes} minutes`;
 
-        L.marker(city.coords)
-          .addTo(map)
+        L.marker(city.coords).addTo(map)
           .bindPopup(`<b>${city.name}</b><br>Distance: ${Math.round(distance)} miles<br>Flight time: ${timeText}`)
-          .on('mouseover', function(e) {
-            this.openPopup();
-          });
+          .on('mouseover', function(){ this.openPopup(); });
       });
       */
 
-      // Custom control for distance info
       const distanceInfo = L.control({position: 'topright'});
-      distanceInfo.onAdd = function(map) {
+      distanceInfo.onAdd = function() {
         const div = L.DomUtil.create('div', 'distance-info-control');
         div.style.backgroundColor = 'white';
         div.style.padding = '10px';
@@ -1884,78 +1381,50 @@
       };
       distanceInfo.addTo(map);
 
-      // Fit map to show the circle and marker
-      map.fitBounds(radiusCircle.getBounds().pad(0.1));
+      // Fit map to show the circle and all cities
+      const group = new L.featureGroup([radiusCircle, bostonMarker, ...citiesInRange.map(city => L.marker(city.coords))]);
+      map.fitBounds(group.getBounds().pad(0.1));
     });
 
-    // Navigation dots functionality
+    /* ---------- Side navigation dots ---------- */
     document.addEventListener('DOMContentLoaded', function() {
       const navDots = document.querySelectorAll('.nav-dot');
       const sections = {
-        // 1–14 in order
-        'home'         : document.getElementById('landing-section'),
-        'anatomy'      : document.getElementById('intro-section'),
-        'quiz'         : document.getElementById('quiz-section'),
-        'map'          : document.getElementById('distance-section'),
-        'info-genus'   : document.getElementById('info-genus-section'),
-        'species'      : document.getElementById('species-section'),
-        'info-wind'    : document.getElementById('transition-4-section'),
-        'flight'       : document.getElementById('flight-section'), 
-        'info-folk'    : document.getElementById('info-folklore-section'),
-        'myths'        : document.getElementById('myths-section'),
-        'info-hazards' : document.getElementById('transition-1-section'),
-        'threats'      : document.getElementById('threats-section'),
-        'info-help'    : document.getElementById('transition-2-section'),
-        'conservation' : document.getElementById('conservation-section'),
-        'how-to-help'  : document.getElementById('how-to-help-section'),
-        'give'         : document.getElementById('give-section'),
-        'sources'      : document.getElementById('sources') 
+        home    : document.getElementById('landing-section'),
+        intro   : document.getElementById('welcome'),
+        quiz    : document.getElementById('quiz-section'),
+        map     : document.getElementById('distance-section'),
+        flight  : document.getElementById('scatter-section'),
+        anatomy : document.getElementById('intro-section'),
+        species : document.getElementById('species-section'),
+        folklore: document.getElementById('myths-section'),
+        threats : document.getElementById('threats-section'),
+        conserv : document.getElementById('conservation-section'),
+        help    : document.getElementById('how-to-help-section'),
+        sources : document.getElementById('sources-section')
       };
 
-      // Handle dot clicks (unchanged)
       navDots.forEach(dot => {
         dot.addEventListener('click', function() {
-          const sectionName = this.getAttribute('data-section');
-          const targetSection = sections[sectionName];
-          if (targetSection) {
-            targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          const key = this.getAttribute('data-section');
+          const el = sections[key];
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       });
 
-      // Update active dot on scroll
       function updateActiveDot() {
-        const scrollPosition = window.scrollY + window.innerHeight / 2;
-        
-        let activeSection = 'landing';
-        
-        Object.entries(sections).forEach(([name, section]) => {
-          if (section) {
-            const sectionTop = section.offsetTop;
-            const sectionBottom = sectionTop + section.offsetHeight;
-            
-            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
-              activeSection = name;
-            }
-          }
+        const mid = window.scrollY + window.innerHeight / 2;
+        let activeKey = 'home';
+        Object.entries(sections).forEach(([k, el]) => {
+          if (!el) return;
+          const t = el.offsetTop, b = t + el.offsetHeight;
+          if (mid >= t && mid < b) activeKey = k;
         });
-
-        // Update active dot
-        navDots.forEach(dot => {
-          dot.classList.remove('active');
-          if (dot.getAttribute('data-section') === activeSection) {
-            dot.classList.add('active');
-          }
-        });
+        navDots.forEach(d => d.classList.toggle('active', d.getAttribute('data-section') === activeKey));
       }
-
-      // Listen for scroll events
       window.addEventListener('scroll', updateActiveDot);
-      
-      // Initial update
       updateActiveDot();
     });
   </script>
 </body>
 </html>
-
