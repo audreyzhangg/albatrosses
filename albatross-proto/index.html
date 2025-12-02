@@ -10,6 +10,13 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
+  @font-face {
+    font-family: 'TAN-Nimbus';
+    src: url('TAN-NIMBUS.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
   :root{
     --ink:#0f172a;
     --ink-2:#1f2937;
@@ -56,6 +63,7 @@
 
   .section h1 {
     font-size: 32px;
+    font-family: 'TAN-Nimbus', sans-serif;
     text-align: center;
     margin-bottom: 10px;
     color: #2c3e50;
@@ -75,7 +83,7 @@
     align-items: center;
     justify-content: center;
 
-    background-image: url('images/ocean7.png');
+    background-image: url('images/titlebackground.png');
     background-size: cover;               /* fill the screen */
     background-position: center;
     background-repeat: no-repeat;
@@ -83,35 +91,51 @@
     color: #ffffff;                       /* make title readable */
   }
   /* Landing title: move up a bit and make white */
+  .landing-title-container {
+    line-height: 1.5;
+    transform: translateY(-60px);            /* lift the text above the horizon */
+  }
+
   #landing-section .landing-title {
     color: #ffffff;                          /* override the dark .section h1 color */
-    font-size: 64px;                         /* same size you had inline */
+    font-family: 'TAN-Nimbus', sans-serif;
     margin: 0;
-    transform: translateY(-60px);            /* lift the text above the horizon */
+    text-shadow: 2.8px -2.8px 0 rgba(19, 92, 184, 0.5);
+  }
+
+  #landing-section .landing-title-top {
+    font-size: 65px;
+  }
+
+  #landing-section .landing-title-bottom {
+    font-size: 90px;
   }
 
   #landing-section h1 {
     color: #ffffff; /* you already changed this, but just to be safe */
-    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
   }
 
   /* Make the shift a bit smaller on narrow screens */
   @media (max-width: 768px) {
-    #landing-section .landing-title {
-      font-size: 40px;
+    .landing-title-container {
       transform: translateY(-40px);
+    }
+
+    #landing-section .landing-title-top {
+      font-size: 35px;
+    }
+
+    #landing-section .landing-title-bottom {
+      font-size: 50px;
     }
   }
 
 /* Intro / welcome hero section */
+
   #welcome {
     display: flex;
-    align-items: center;        /* vertical center */
-    justify-content: center;    /* horizontal center */
-    min-height: 100vh;          /* full-screen hero */
-    /* padding: 0 40px;            override .section vertical padding */
-
-    background: url('images/top3.png') top center / cover no-repeat;
+    align-items: center;
+    justify-content: center;
   }
 
   /* Layout: bird left, text right */
@@ -1045,7 +1069,10 @@
   <!-- 1. Home -->
   <section id="landing-section" class="section">
     <!-- <h1 style="font-size: 64px; margin: 0;">Wings Over Water: The Albatross</h1> -->
-     <h1 class="landing-title">Wings Over Water: The Albatross</h1>
+    <div class="landing-title-container">
+      <h1 class="landing-title landing-title-top">Wings Over Water:</h1>
+      <h1 class="landing-title landing-title-bottom">The Albatross</h1>
+    </div>
   </section>
 
 
