@@ -543,6 +543,59 @@
   /* How You Can Help */
   #how-to-help-section .help-stage{ max-width: var(--panel-w); margin: 0 auto; }
   #how-to-help-section .help-card{
+  height: var(--panel-h);
+  border-radius: 14px;
+  background: #d9ecfb;                     /* unified blue */
+  box-shadow: 0 10px 24px rgba(0,0,0,.06);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  border: 1px solid var(--chip-b);
+}
+
+  #how-to-help-section .help-tabs{
+    background: #ffffff;                     /* same tint behind tabs */
+    border-right: 1px solid var(--chip-b);
+    padding: 10px;
+    display: grid;
+    grid-auto-rows: 1fr;
+    gap: 8px;
+  }
+
+  #how-to-help-section .help-tab{
+    all: unset;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: #ffffff;
+    border: 1px solid var(--chip-b);
+    border-radius: 10px;
+    padding: 10px;
+    font-weight: 700;
+    color: #0f172a;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,.04);
+  }
+
+  #how-to-help-section .help-tab.is-active{
+    background: #d9ecfb;                     /* active tab blue */
+    border-color: #c0daf6;
+    box-shadow: 0 4px 12px rgba(37,99,235,.15);
+  }
+
+  #how-to-help-section .help-content{
+    padding: 22px;
+    overflow: auto;
+    display: grid;
+    align-content: start;
+    gap: 10px;
+    background: #d9ecfb;                     /* main content blue */
+    border-left: 1px solid var(--chip-b);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+  }
+
+  /* #how-to-help-section .help-card{
     height: var(--panel-h); border-radius: 14px; background:#dbf0fe; box-shadow: 0 10px 24px rgba(0,0,0,.06);
     overflow: hidden; display: grid; grid-template-columns: 1fr 3fr; border: 1px solid var(--chip-b);
   }
@@ -552,13 +605,13 @@
   #how-to-help-section .help-tab{
     all: unset; display: flex; align-items: center; justify-content: center; text-align: center; background:#fff; border:1px solid var(--chip-b);
     border-radius:10px; padding: 10px; font-weight: 700; color:#0f172a; cursor:pointer; box-shadow: 0 2px 6px rgba(0,0,0,.04);
-  }
+  } */
   #how-to-help-section .help-tab:hover{ background:#eef6ff; }
-  #how-to-help-section .help-tab.is-active{ background:#e8f0ff; border-color:#bfdbfe; box-shadow: 0 4px 12px rgba(37,99,235,.15); }
+  /* #how-to-help-section .help-tab.is-active{ background:#e8f0ff; border-color:#bfdbfe; box-shadow: 0 4px 12px rgba(37,99,235,.15); }
   #how-to-help-section .help-content{
     padding: 22px; overflow: auto; display: grid; align-content: start; gap: 10px; background:#d1e1f4;
     border-left:1px solid var(--chip-b); box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
-  }
+  } */
   #how-to-help-section .help-content h3{ font-size: 22px; margin:0; }
   #how-to-help-section .help-content p{ font-size: 16px; line-height:1.55; margin:0; }
   #how-to-help-section .help-content .bullets{ margin: 4px 0 0 0; padding-left: 18px; font-size: 15px; color:#334155; }
@@ -1093,14 +1146,16 @@
           const el = boxes[i];
           if (!el) continue;
           if (i === (box - 1)) {
-            el.style.background = 'linear-gradient(90deg, #e8f0ff, #dbeafe)';
-            el.style.borderColor = '#bfdbfe';
-            el.style.boxShadow = '0 6px 18px rgba(37,99,235,0.08)';
+            // selected step: solid light blue
+            el.style.background = '#d9ecfb';
+            el.style.borderColor = '#c0daf6';
+            el.style.boxShadow = '0 6px 18px rgba(15,23,42,0.10)';
             el.style.opacity = '1';
             el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
           } else {
-            el.style.background = '#f8fafc';
-            el.style.borderColor = '#eef2ff';
+            // non-selected steps: white
+            el.style.background = '#ffffff';
+            el.style.borderColor = '#e5e7eb';
             el.style.boxShadow = 'none';
             el.style.opacity = '0.6';
           }
