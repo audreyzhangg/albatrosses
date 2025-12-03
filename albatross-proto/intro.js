@@ -255,14 +255,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     .style('filter', 'drop-shadow(0 3px 6px rgba(15,23,42,0.55))')
                     .style('pointer-events', 'none');  // IMPORTANT: only hit circle handles events
 
-                // Hover behaviour on the *hit* area
-                hit.on('mouseenter', function(e) {
+                // Click behaviour on the *hit* area
+                hit.on('click', function(e) {
                         e.stopPropagation();
-                        showTooltip(info, regionKey);
-                    })
-                    .on('mouseleave', function(e) {
-                        e.stopPropagation();
-                        hideTooltip(regionKey);
+                        // Toggle tooltip: if it's already visible, hide it; otherwise show it
+                        const currentDisplay = tooltips[regionKey].style('display');
+                        if (currentDisplay === 'block') {
+                            hideTooltip(regionKey);
+                        } else {
+                            // Hide all other tooltips first
+                            hideTooltip();
+                            showTooltip(info, regionKey);
+                        }
                     });
             });
         }
@@ -271,10 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const tooltip = tooltips[regionKey];
             if (!tooltip) return;
 
-            // Build HTML from content object with close button
+            // Build HTML from content object
             let html = '<div class="intro-popup-content">';
-            html += `<button class="popup-close-btn" onclick="document.querySelector('.intro-tooltip-${regionKey}').style.display='none'" style="position: absolute; top: 10px; right: 10px; background: transparent; border: none; font-size: 24px; cursor: pointer; color: #666; line-height: 1; padding: 5px 10px;">&times;</button>`;
-            html += `<h3>${content.title}</h3>`;
+            html += `<h3 style="margin-top: 0;">${content.title}</h3>`;
 
             // Add image if present
             if (content.image) {
@@ -293,7 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .style('max-width', '90vw')
                 .style('background', 'white')
                 .style('color', 'black')
-                .style('padding', '30px')
+                .style('padding', '15px 20px')
                 .style('border-radius', '8px')
                 .style('box-shadow', '0 4px 20px rgba(0,0,0,0.3)')
                 .style('z-index', '10000')
