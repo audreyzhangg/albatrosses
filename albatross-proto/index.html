@@ -204,12 +204,58 @@
     display: block;
   }
 
-  .wing-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
+  /* .wing-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
   .wing-hotspot:hover{ fill: rgba(0,0,0,0.06); }
   .stomach-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
   .stomach-hotspot:hover{ fill: rgba(255,165,0,0.12); }
   .beak-hotspot{ fill: rgba(0,0,0,0); cursor:pointer; }
-  .beak-hotspot:hover{ fill: rgba(255,99,71,0.12); }
+  .beak-hotspot:hover{ fill: rgba(255,99,71,0.12); } */
+
+  /* .wing-hotspot {
+    fill: rgba(217, 236, 251, 0.5);
+    cursor: pointer;
+  }
+  .wing-hotspot:hover {
+    fill: rgba(217, 236, 251, 0.8); 
+  }
+
+  .stomach-hotspot {
+    fill: rgba(255, 165, 0, 0.25);
+    cursor: pointer;
+  }
+  .stomach-hotspot:hover {
+    fill: rgba(255, 165, 0, 0.45);
+  }
+
+  .beak-hotspot {
+    fill: rgba(255, 99, 71, 0.35);
+    cursor: pointer;
+  }
+  .beak-hotspot:hover {
+    fill: rgba(255, 99, 71, 0.6);
+  } */
+
+
+  .wing-hotspot,
+  .stomach-hotspot,
+  .beak-hotspot {
+    fill: transparent;
+    cursor: pointer;
+  }
+
+  /* Visible dots that sit on top of the drawing */
+  .hotspot-dot {
+    fill: #0f172a;           /* dark navy */
+    stroke: #ffffff;         /* white ring */
+    stroke-width: 2;
+    transition: transform 0.15s ease, fill 0.15s ease;
+  }
+
+  .hotspot-dot:hover {
+    transform: scale(1.12);
+    filter: drop-shadow(0 3px 5px rgba(0,0,0,0.45));
+  }
+
 
   /* Quiz */
   #quiz-section {
@@ -886,6 +932,7 @@
       #ffffff 0%,
       #d9ecfb 12%
     );
+    font-family: 'TAN-Nimbus';
   }
 
   #credits-inner {
@@ -1220,7 +1267,7 @@
   <!-- 6. Anatomy -->
   <section id="intro-section" class="section">
     <h1>Anatomy of an Albatross</h1>
-    <p class="subtitle">Click the highlighted regions (wings, stomach, beak) to see information.</p>
+    <p class="subtitle">Click on the dots (locatedd on the wings, stomach, and beak) to see more information.</p>
     <div id="intro-visual" data-nosnap></div>
   </section>
 
